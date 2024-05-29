@@ -4,24 +4,13 @@ import say from "say";
 import wrap from "word-wrap";
 import Filter from "bad-words";
 import { getWindows } from "@nut-tree-fork/nut-js";
+import extractUrls from "extract-urls";
+import settings from "./settings.json";
 
 const filter = new Filter();
 
-// ! You only really need to change "streamer", as processTitle is just a custom title for the terminal window.
-// * Please for the love of god make sure the name is spelled right, because this took me too long to figure out myself.
-// * Since it'll just log to "no response from twitch"
-const streamer = "CHANNEL NAME";
-const processTitle = "ChatPlaysCMD";
-// ! Note: Inside the Microsoft "Terminal" program, there is a minimum Width, which is around 456-464-
-// ! Even with the setting "scrollbar visibility" set to "Hidden", still has a dedicated padding-
-// ! for the scroll bar. 
-// * Reason I say this, is because I use a Width smaller than 456 in my OBS scene, to properly fit-
-// * The Terminal Chat
-const width = 441
-const height = 665
-
 const client = new tmi.client({
-	channels: [ streamer ],
+	channels: [ settings.streamer ],
 });
 
 let ActiveGame = "";
@@ -33,12 +22,12 @@ client.connect().then(async (v) => {
 	}
 	
 	// * Title of the terminal window - only tested on Windows CMD, Terminal PWSH and GIT BASH
-	process.title = processTitle;
+	process.title = settings.processTitle;
 	console.info("Connected to Twitch API:\nStarting chat in 5 seconds...\u001B[?25l");
 	setTimeout(() => {
 		console.clear();
 		
-		ResizeWindow(width, height);
+		ResizeWindow(settings.width, settings.height);
 	}, 5000);
 });
 
@@ -60,39 +49,34 @@ client.on("message", async (channel, user, message, self) => {
 			// ? Make list of previous messages to change the └ to a "t" so it connects to the next message bar?
 			if (MultiIterate == 3) { // ! This is set to 4 message, before creating a new "message"
 				console.log(`\n\u2003\x1b[${
-					user["mod"] == true ? "34;1m(Mod) " : "35m"
-				}${user["display-name"]}\x1b[0m in \x1b[36m${channel}\x1b[0m:\n\u2003\x1b[90;1m└──\x1b[0m${wrap(colorMessage(filter.clean(message)), { width: 45 })}`);	
+					user["mod"] == true ? `${settings.moderator};1m(Mod) ` : `${settings.username}m`
+				}${user["display-name"]}\x1b[0m in \x1b[${settings.channel}m${channel}\x1b[0m:\n\u2003\x1b[${settings.bracket};1m└──\x1b[${settings.message}m${wrap(colorMessage(filter.clean(message)), { width: 45 })}`);	
 				MultiIterate = 0;
 			} else {
-				console.log(`\u2003\x1b[90;1m└──\x1b[0m${wrap(colorMessage(filter.clean(message)), { width: 45 })}`);
+				console.log(`\u2003\x1b[${settings.bracket};1m└──\x1b[${settings.message}m${wrap(colorMessage(filter.clean(message)), { width: 45 })}`);
 				MultiIterate++;
 			}
 		} else {
 			PrevMsgAuthor = user["display-name"] as string;
 			MultiIterate = 0;
 			console.log(`\n\u2003\x1b[${
-				user["mod"] == true ? "34;1m(Mod) " : "35m"
-			}${user["display-name"]}\x1b[0m in \x1b[36m${channel}\x1b[0m:\n\u2003\x1b[90;1m└──\x1b[0m${wrap(colorMessage(filter.clean(message)), { width: 45 })}`);
+				user["mod"] == true ? `${settings.moderator};1m(Mod) ` : `${settings.username}m`
+			}${user["display-name"]}\x1b[0m in \x1b[${settings.channel}m${channel}\x1b[0m:\n\u2003\x1b[${settings.bracket};1m└──\x1b[${settings.message}m${wrap(colorMessage(filter.clean(message)), { width: 45 })}`);
 		}
 
 	}
 
 	// ! Chat Plays
-	// TODO: Please for the love of god, fix this ugly shit
-	if (user["display-name"] == streamer) {
-		const Args = message.slice(1).split(" ");
-		if (Args[0] == "start") {
-			say.speak("started")
+	// TODO: Fixed mostly, could be better. Personally, dont like the 3 "if (user['displa...) {...}"
+	const Args = message.toLowerCase().slice(1).split(" ");
+	switch (Args.shift()) {
+	case "start":
+		if (user["display-name"] == settings.streamer) {
+			say.speak("started");
 			return ActiveGame = Args[1];
-		} else if (Args[0] == "set") {
-			say.speak(`Game has been set to: ${Args[1]}`, "voice_kal_diphone");
-			return SetGame = Args[1];
-		} else if (Args[0] == "stop") {
-			return ActiveGame = "";
 		}
 
-	} else if (message.toLowerCase() == "!start" && ActiveGame == "") {
-		if (Math.floor(Math.random() * 100) + 1 == 5) {
+		if (ActiveGame == "" && Math.floor(Math.random() * 100) + 1 == 5) {
 			if (SetGame == "") {
 				return say.speak(`${user["display-name"]} has activated Chat Plays. However, there was no game set. Unable to activate.`);
 			}
@@ -103,6 +87,18 @@ client.on("message", async (channel, user, message, self) => {
 			say.speak("Deactivating Chat Plays.");
 			ActiveGame = "";
 		}, 30_000); // TODO: Set a dedicated timer inside the game controls instead of hard coded value globally
+		break;
+	case "set":
+		if (user["display-name"] == settings.streamer) {
+			say.speak(`Game has been set to: ${Args[1]}`, "voice_kal_diphone");
+			return SetGame = Args[1];
+		}
+		break;
+	case "stop":
+		if (user["display-name"] == settings.streamer) {
+			return ActiveGame = "";
+		}
+		break;
 	}
 
 	try {
@@ -115,6 +111,7 @@ client.on("message", async (channel, user, message, self) => {
 });
 
 function colorMessage(msg: string) {
+	msg = msg.replace(extractUrls(msg), "[LINK]");
 	const list = msg.split(" ");
 	for (const ping of list) {
 		if (ping.includes("@")) {
@@ -127,7 +124,7 @@ function colorMessage(msg: string) {
 async function ResizeWindow(width: number, height: number) {
 	await getWindows().then(async (l) => {
 		for (const window of l) {
-			if (await window.getTitle() != processTitle) continue;
+			if (await window.getTitle() != settings.processTitle) continue;
 			await window.resize({
 				width, height,
 				area: function (): number {

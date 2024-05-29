@@ -52,8 +52,8 @@
  - Helldivers Controls
  - Refactor commands for streamer and viewer
  - Look into Electron for a front end chat app for better UI Design, message history and more
- - Make Colors easier to change via Variables with the other settings
- - MOVE SETTINGS TO SEPARATE FILE SO ITS EASIER TO READ OUTSIDE OF THE INDEX FILE
+ - Github file for game controls
+	- Generator file? since all controls are already made.
  
 
 # Setup (WIP)

@@ -1,5 +1,5 @@
 import { getControls } from "../ControlHandler";
-import { Key } from "@nut-tree/nut-js";
+import { Key } from "@nut-tree-fork/nut-js";
 
 const Controls = {
 	//#region | Mouse Controls

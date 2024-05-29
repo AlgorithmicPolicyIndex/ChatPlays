@@ -1,7 +1,7 @@
 {
   "scripts": {
     "build": "tsc",
-    "test": "bun run build && bun build/index.js",
+    "test": "bun run build && bun build/index.js"
   },
   "devDependencies": {
     "@types/node": "^20.6.0",
@@ -14,9 +14,9 @@
   },
   "dependencies": {
     "@nut-tree-fork/nut-js": "^4.2.1",
-    "@nut-tree/nut-js": "^3.1.2",
     "@types/bad-words": "^3.0.1",
     "bad-words": "^3.0.4",
+    "extract-urls": "^1.4.1",
     "festival": "^1.0.1",
     "python-shell": "^5.0.0",
     "say": "^0.16.0",

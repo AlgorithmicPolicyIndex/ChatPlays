@@ -131,3 +131,5 @@ dist
 node_modules
 build
 test.js
+pnpm-lock.yaml
+bun.lockb

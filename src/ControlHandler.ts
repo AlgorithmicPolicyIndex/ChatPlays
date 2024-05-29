@@ -1,4 +1,4 @@
-import * as nut from "@nut-tree/nut-js";
+import * as nut from "@nut-tree-fork/nut-js";
 import { PythonShell } from "python-shell";
 
 export function getControls(control: { Dir?: string, Key?: nut.Key, Amt: number }) {

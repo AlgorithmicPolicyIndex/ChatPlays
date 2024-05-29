@@ -3,7 +3,7 @@ import { getControls } from "../ControlHandler";
 
 const Controls = {
 	
-}
+};
 const Stratagems = {
 	// Support Weapons
 	mg: "kjkil",
@@ -75,7 +75,7 @@ const Stratagems = {
 	superearth: "kiki",
 	upload: "jliii",
 	hellbomb: "kijkilki"
-}
+};
 
 module.exports = {
 	name: "hd2",
@@ -86,33 +86,33 @@ module.exports = {
 		}
 		if (Object.keys(Stratagems).includes(message.toLowerCase())) {
 			const stratagem = Object.keys(Stratagems);
-			StratagemHandler(Stratagems[stratagem[stratagem.indexOf(message.toLowerCase())] as keyof typeof Stratagems])
+			StratagemHandler(Stratagems[stratagem[stratagem.indexOf(message.toLowerCase())] as keyof typeof Stratagems]);
 		}
 	}
-}
+};
 
 async function StratagemHandler(sequence: string) {
-	let sseq = sequence.split("");
-	let keys = [];
+	const sseq = sequence.split("");
+	const keys = [];
 	for (let i = 0; i < sseq.length; i++) {
 		switch (sseq[i]) {
-			case "i":
-				keys.push(nut.Key.W)
-				continue;
-			case "k":
-				keys.push(nut.Key.S)
-				continue;
-			case "j":
-				keys.push(nut.Key.A)
-				continue;
-			case "l":
-				keys.push(nut.Key.D)
-				continue;
+		case "i":
+			keys.push(nut.Key.W);
+			continue;
+		case "k":
+			keys.push(nut.Key.S);
+			continue;
+		case "j":
+			keys.push(nut.Key.A);
+			continue;
+		case "l":
+			keys.push(nut.Key.D);
+			continue;
 		}
 	}
 
-	nut.keyboard.pressKey(nut.Key.LeftControl)
-	for (let key of keys) {
+	nut.keyboard.pressKey(nut.Key.LeftControl);
+	for (const key of keys) {
 		console.log(key);
 		await delay(50);
 		nut.keyboard.pressKey(key);
@@ -120,7 +120,7 @@ async function StratagemHandler(sequence: string) {
 		nut.keyboard.releaseKey(key);
 		await delay(100);
 	}
-	nut.keyboard.releaseKey(nut.Key.LeftControl)
+	nut.keyboard.releaseKey(nut.Key.LeftControl);
 }
 
 function delay(ms: number) {

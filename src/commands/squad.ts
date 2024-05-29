@@ -1,4 +1,4 @@
-import { Key } from "@nut-tree/nut-js";
+import { Key } from "@nut-tree-fork/nut-js";
 import { getControls } from "../ControlHandler";
 
 const Controls = {
