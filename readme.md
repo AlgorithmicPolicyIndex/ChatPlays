@@ -51,7 +51,11 @@
  - Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
  - Helldivers Controls
  - Refactor commands for streamer and viewer
- - Look into Electron for a front end chat app for better UI Design, message history and more
+ - Electron
+	- Fix History Blobs being created when different "prevAuthor" BUT using first Element for user and instead use the most recent/last element from that user
+	- Max User/Message count to prevent the scrollbar, mostly to not worry about scrolling and to keep element list to a minimum
+	- Add Channel to the list
+	- Add the rest of the Colors
  - Github file for game controls
 	- Generator file? since all controls are already made.
  
@@ -72,7 +76,7 @@ Inside it, you will find:
 	"height": 665,
 
 	// Colors
-	// I personally use this sight to find the values of colors, you can also use formats such as underscores and more
+	// I personally use this site to find the values of colors, you can also use formats such as underscores and more
 	// https://gist.github.com/kkrypt0nn/a02506f3712ff2d1c8ca7c9e0aed7c06
 	"username": "35",
 	"moderator": "34",

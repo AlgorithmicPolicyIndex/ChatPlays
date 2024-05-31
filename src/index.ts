@@ -3,9 +3,10 @@ import { getCommands } from "./functions";
 import say from "say";
 import wrap from "word-wrap";
 import Filter from "bad-words";
-import { getWindows } from "@nut-tree-fork/nut-js";
+// import { getWindows } from "@nut-tree-fork/nut-js";
 import extractUrls from "extract-urls";
 import settings from "./settings.json";
+import { app, BrowserWindow } from "electron";
 
 const filter = new Filter();
 
@@ -25,10 +26,24 @@ client.connect().then(async (v) => {
 	process.title = settings.processTitle;
 	console.info("Connected to Twitch API:\nStarting chat in 5 seconds...\u001B[?25l");
 	setTimeout(() => {
-		console.clear();
-		
-		ResizeWindow(settings.width, settings.height);
+		console.log("Connected!");
 	}, 5000);
+});
+
+// * Electron
+let window: BrowserWindow;
+app.whenReady().then(() => {
+	const win = new BrowserWindow({
+		title: settings.processTitle,
+		width: settings.width,
+		height: settings.height,
+		frame: true,
+		x: 100,
+		y: 250
+	});
+
+	window = win;
+	win.loadFile("../frontend/index.html");
 });
 
 let PrevMsgAuthor = "";
@@ -64,6 +79,40 @@ client.on("message", async (channel, user, message, self) => {
 			}${user["display-name"]}\x1b[0m in \x1b[${settings.channel}m${channel}\x1b[0m:\n\u2003\x1b[${settings.bracket};1m└──\x1b[${settings.message}m${wrap(colorMessage(filter.clean(message)), { width: 45 })}`);
 		}
 
+		// TODO: Will create more history blobs when prevAuthor is different
+		// TODO: However, if prevAuthor matches, it uses the first element under the username ID, instead of the last one.
+		// !
+		// TODO: Max User/Message count to prevent scroll bar
+		// TODO: ^ Auto delete the oldest/first item list
+		// !
+		// TODO: Add all Channel to the list
+		// TODO: Add all Colors
+		window.webContents.executeJavaScript(`(() => {
+		let msghistory = document.getElementById("${user["display-name"]}");
+		if (msghistory && prevAuthor == "${user["display-name"]}") {
+			let msg = document.createElement("p");
+			msg.setAttribute("id", "message");
+			msg.innerText = "${colorMessage(filter.clean(message))}";
+			msghistory.appendChild(msg);
+			return;
+		}
+		
+		
+		let name = document.createElement("h2");
+		name.setAttribute("id", "name");
+		name.innerText = "${user["display-name"]}";
+		let initMsg = document.createElement("p");
+		initMsg.setAttribute("id", "message");
+		initMsg.innerText = "${colorMessage(filter.clean(message))}" ;
+		let historyBlob = document.createElement('li');
+		historyBlob.setAttribute("id", "${user["display-name"]}");
+		
+		historyBlob.appendChild(name);
+		historyBlob.appendChild(initMsg);
+		
+		document.getElementById("history").appendChild(historyBlob);
+		prevAuthor = "${user["display-name"]}";
+		})();`);
 	}
 
 	// ! Chat Plays
@@ -121,16 +170,16 @@ function colorMessage(msg: string) {
 	return list.join(" ");
 }
 
-async function ResizeWindow(width: number, height: number) {
-	await getWindows().then(async (l) => {
-		for (const window of l) {
-			if (await window.getTitle() != settings.processTitle) continue;
-			await window.resize({
-				width, height,
-				area: function (): number {
-					throw new Error("Function not implemented.");
-				}
-			});
-		}
-	});
-}
+// async function ResizeWindow(width: number, height: number) {
+// 	await getWindows().then(async (l) => {
+// 		for (const window of l) {
+// 			if (await window.getTitle() != settings.processTitle) continue;
+// 			await window.resize({
+// 				width, height,
+// 				area: function (): number {
+// 					throw new Error("Function not implemented.");
+// 				}
+// 			});
+// 		}
+// 	});
+// }

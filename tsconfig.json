@@ -7,7 +7,8 @@
 		"resolveJsonModule": true,
 		"lib": [
 			"ES2020",
-			"ES2017"
+			"ES2017",
+			"DOM"
 		],
 
 		"rootDir": "src",

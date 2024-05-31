@@ -1,10 +1,11 @@
 {
   "scripts": {
     "build": "tsc",
-    "test": "bun run build && bun build/index.js"
+    "test": "bun run build && bun build/index.js",
+    "electron": "bun run build && electron build/"
   },
   "devDependencies": {
-    "@types/node": "^20.6.0",
+    "@types/node": "^20.12.13",
     "@types/tmi.js": "^1.8.3",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
@@ -15,7 +16,9 @@
   "dependencies": {
     "@nut-tree-fork/nut-js": "^4.2.1",
     "@types/bad-words": "^3.0.1",
+    "@types/electron": "^1.6.10",
     "bad-words": "^3.0.4",
+    "electron": "^30.0.9",
     "extract-urls": "^1.4.1",
     "festival": "^1.0.1",
     "python-shell": "^5.0.0",
