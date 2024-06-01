@@ -1,13 +1,15 @@
 {
-	"streamer": "AlgorithmicPolicyIndex",
+	"streamer": "algorithmicpolicyindex",
 	"processTitle" : "ChatPlaysCMD",
 
 	"width": 441,
-	"height": 665,
+	"height": 617,
 
-	"username": "35",
-	"moderator": "34",
-	"channel": "36",
-	"message": "0",
-	"bracket": "90"
+	"username": "#c678dd",
+	"moderator": "#0184bc",
+	"broadcaster": "#e06c75",
+	"ping": "#e5c07b",
+	"channel": "#0997b3",
+	"message": "#fafafa",
+	"bracket": "#dcdfe4"
 }

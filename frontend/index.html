@@ -10,7 +10,17 @@
 	</body>
 	<script>
 		let prevAuthor = "";
+		let count = 0;
+		let firstMessage = "";
 
-		
+		function pingMessage(msg) {
+			const list = msg.split(" ");
+			for (const ping of list) {
+				if (ping.includes("@")) {
+					list[list.indexOf(ping)] = `<span id="ping" name="ping"><strong>${ping}</strong></span>`;
+				}
+			}
+			return list.join(" ")
+		}
 	</script>
 </html>

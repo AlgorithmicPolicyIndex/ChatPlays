@@ -6,21 +6,19 @@
 
  Note: This program only reads messages in Twitch chat, so it will not type in your channel and requires no permissions to run.
 
-# Terminal Chat (Looking into Message History for better UI Designs, may be changed from Terminal to an Electron App)
- The Terminal Chat with my current settings of the Windows Terminal 
- 
- ![chat](chat.png)
- ---
- Moderators look like  
- 
- ![mods](mods.png)
- ---
+# Electron Chat
+The Mod and Broadcaster looks like
+![streamer&mod](electron.png)  
+The default chatter color is a purple, which I am unable to properly show as of right now
+
+Message history
+![oops](oops.png)
 
 # Chat Plays
  The features of ChatPlays is really anything.  
  All you need to do is make sure your controls are properly set. 
 
- **Disclaimer: While this is just using the Windows API to do inputs, you may still get banned from games. You shouldn't, as this doesn't hook into games nor give advantage to the player, but I do not know the extent some Devs will go with automated inputs. Example: Helldivers 2 Stratagems. However, that would then disallow the use of Macros/AutoHotKey. You should be fine, but do not come crying to me if you do.**  
+ > **Disclaimer: While this is just using the Windows API to do inputs, you may still get banned from games. You shouldn't, as this doesn't hook into games nor give advantage to the player, but I do not know the extent some Devs will go with automated inputs. Example: Helldivers 2 Stratagems. However, that would then disallow the use of Macros/AutoHotKey. You should be fine, but do not come crying to me if you do.**  
  **I only play with people that know about my Code, so there is no hard feelings at the end of the day.**
 
  You can read over how I handle the general controls of games inside the [Commands Folder](src/commands/)  
@@ -51,11 +49,6 @@
  - Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
  - Helldivers Controls
  - Refactor commands for streamer and viewer
- - Electron
-	- Fix History Blobs being created when different "prevAuthor" BUT using first Element for user and instead use the most recent/last element from that user
-	- Max User/Message count to prevent the scrollbar, mostly to not worry about scrolling and to keep element list to a minimum
-	- Add Channel to the list
-	- Add the rest of the Colors
  - Github file for game controls
 	- Generator file? since all controls are already made.
  
@@ -63,25 +56,39 @@
 # Setup (WIP)
 
 ### Settings
-Editing settings is as simple as open the .json in the "src" folder.
+Editing settings is as simple as open the [.json in the "src"](src/settings.json) folder.
 Inside it, you will find:
 ```json
 {
-	// Main settings
 	"streamer": "CHANNEL NAME",
 	"processTitle" : "ChatPlaysCMD",
-
-	// Window Size of Terminal
+	
 	"width": 441,
 	"height": 665,
-
-	// Colors
-	// I personally use this site to find the values of colors, you can also use formats such as underscores and more
-	// https://gist.github.com/kkrypt0nn/a02506f3712ff2d1c8ca7c9e0aed7c06
-	"username": "35",
-	"moderator": "34",
-	"channel": "36",
-	"message": "0",
-	"bracket": "90"
+	...
 }
 ```
+
+### Colors  
+> ! NOTE: I AM LEAVING THE BACKGROUND COLOR AND `<li>` BORDER COLOR HARD CODED IN THE [STYLES](frontend/style.css) !
+```json
+{	
+	...
+	"username": "#c678dd",
+	"moderator": "#0184bc",
+	"broadcaster": "#e06c75",
+	"ping": "#e5c07b",
+	"channel": "#0997b3",
+	"message": "#fafafa",
+	"bracket": "#dcdfe4"
+}
+```
+
+### Running
+> **!** You'll need to edit any thing to match your package manager, I personally use [Bun](https://bun.sh) **!**
+
+Install packages via `bun i`  
+Edit settings to your preferred options, such as above  
+Run `bun run electron`  
+
+There shouldn't be too much issues after that, if there are, feel free to note them in Issues
