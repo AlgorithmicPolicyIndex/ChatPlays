@@ -7,11 +7,11 @@
  Note: This program only reads messages in Twitch chat, so it will not type in your channel and requires no permissions to run.
 
 # Electron Chat
-The Mod and Broadcaster looks like
+The Mod and Broadcaster looks like  
 ![streamer&mod](electron.png)  
 The default chatter color is a purple, which I am unable to properly show as of right now
 
-Message history
+Message history  
 ![oops](oops.png)
 
 # Chat Plays
