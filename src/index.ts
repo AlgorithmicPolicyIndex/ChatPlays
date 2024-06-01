@@ -40,12 +40,19 @@ client.connect().then(async (v) => {
 
 client.on("message", async (channel, user, message, self) => {
 	if (self) return;
+	message = filter.clean(message);
+	message = message.replace(extractUrls(message), "[LINK]");
 	// ! Electron Chat
 	if (
 		self ||
 		!message.startsWith("!")
 	) {
+		// ! There might be ways to refactor this to be better, but I'm not good enough-
+		// ! at HTML and shit to do that.
+		// ! So this works.
+		// ! Do I hate that this is all a string? YES. VERY MUCH.
 		window.webContents.executeJavaScript(`(() => {
+		// ? If total list is over 7 elements long, delete first/"oldest" list element
 		if (document.getElementById("history").childNodes.length > 6) {
 			let deleteFrom = document.getElementById("history");
 			let fstmsg = document.getElementById(firstMessage);
@@ -53,12 +60,13 @@ client.on("message", async (channel, user, message, self) => {
 			firstMessage = document.getElementById("history").childNodes[0].id;
 		}
 
+		// ? The message history
 		let msghistory = document.getElementById("${user["display-name"]}" + count);
 		if (msghistory && prevAuthor == "${user["display-name"]}") {
 			let msg = document.createElement("p");
 			msg.setAttribute("id", "message");
 			msg.setAttribute("style", "color: ${settings.message}");
-			msg.innerHTML = pingMessage("${message.replace(extractUrls(filter.clean(message)), "[LINK]")}");
+			msg.innerHTML = pingMessage(\`${message}\`);
 			msghistory.appendChild(msg);
 			
 			let pingmsgs = document.getElementsByName("ping");
@@ -70,7 +78,8 @@ client.on("message", async (channel, user, message, self) => {
 			return;
 		}
 
-		count++;
+		count++; // ? used for list Element ID / new list counter
+		// ? The whole message blob creation shit
 		let historyBlob = document.createElement('li');
 		if (firstMessage == "") {
 			firstMessage = "${user["display-name"]}" + count;
@@ -79,7 +88,7 @@ client.on("message", async (channel, user, message, self) => {
 		historyBlob.setAttribute("style", "border-color: rgb(95, 95, 95);")
 		let name = document.createElement("h2");
 		name.setAttribute("id", "name");
-		// TODO: Moderator Colors
+		// TODO: Username Colors
 		if (${user["badges"]?.broadcaster == "1"}) {
 			name.setAttribute("style", "color: ${settings.broadcaster};");
 		} else if (${user["mod"]}) {
@@ -91,16 +100,19 @@ client.on("message", async (channel, user, message, self) => {
 		let initMsg = document.createElement("p");
 		initMsg.setAttribute("id", "message");
 		initMsg.setAttribute("style", "color: ${settings.message}");
-		initMsg.innerHTML = pingMessage("${message.replace(extractUrls(filter.clean(message)), "[LINK]")}");
+		initMsg.innerHTML = pingMessage(\`${message}\`);
 		
 		historyBlob.appendChild(name);
 		historyBlob.appendChild(initMsg);
 		
+		// ? we have a message! oh and then color the ping if there is one.
 		document.getElementById("history").appendChild(historyBlob).scrollIntoView();
-		let ping = document.getElementsByName("ping");
-		if (ping[0]) {
-			ping[0].setAttribute("style", "color: ${settings.ping}");
-		}
+		let pingmsgs = document.getElementsByName("ping");
+			for (let ping of pingmsgs) {
+				if (ping) {
+					ping.setAttribute("style", "color: ${settings.ping}");
+				}
+			};
 		prevAuthor = "${user["display-name"]}";
 		})();`);
 	}

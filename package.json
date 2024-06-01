@@ -1,26 +1,26 @@
 {
-  "scripts": {
-    "build": "tsc",
-    "electron": "bun run build && electron build/"
-  },
-  "devDependencies": {
-    "@types/node": "^20.12.13",
-    "@types/tmi.js": "^1.8.3",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "@typescript-eslint/parser": "^6.7.0",
-    "@types/bad-words": "^3.0.1",
-    "@types/electron": "^1.6.10",
-    "eslint": "^8.49.0",
-    "tmi.js": "^1.8.5",
-    "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "@nut-tree-fork/nut-js": "^4.2.1",
-    "bad-words": "^3.0.4",
-    "electron": "^30.0.9",
-    "extract-urls": "^1.4.1",
-    "python-shell": "^5.0.0",
-    "say": "^0.16.0",
-    "word-wrap": "^1.2.5"
-  }
+	"scripts": {
+		"build": "tsc",
+		"electron": "bun run build && electron build/"
+	},
+	"devDependencies": {
+		"@types/node": "^20.12.13",
+		"@types/tmi.js": "^1.8.3",
+		"@typescript-eslint/eslint-plugin": "^6.7.0",
+		"@typescript-eslint/parser": "^6.7.0",
+		"@types/bad-words": "^3.0.1",
+		"@types/electron": "^1.6.10",
+		"eslint": "^8.49.0"
+	},
+	"dependencies": {
+		"typescript": "^5.2.2",
+		"@nut-tree-fork/nut-js": "^4.2.1",
+		"bad-words": "^3.0.4",
+		"electron": "^30.0.9",
+		"extract-urls": "^1.4.1",
+		"python-shell": "^5.0.0",
+		"say": "^0.16.0",
+		"word-wrap": "^1.2.5",
+		"tmi.js": "^1.8.5"
+	}
 }
