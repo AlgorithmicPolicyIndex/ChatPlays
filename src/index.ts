@@ -14,6 +14,7 @@ const client = new tmi.client({
 
 let ActiveGame = "";
 let SetGame = "";
+let brb = false;
 let window: BrowserWindow;
 client.connect().then(async (v) => {
 	if (v[1] != 443) {
@@ -29,13 +30,16 @@ client.connect().then(async (v) => {
 			width: settings.width,
 			height: settings.height,
 			frame: false,
-			x: 100,
-			y: 250
+			roundedCorners: false,
+			webPreferences: {
+				
+			}
 		});
 
 		window = win;
 		win.loadFile("../frontend/index.html");
 	});
+	console.info("Connected!");
 });
 
 client.on("message", async (channel, user, message, self) => {
@@ -62,7 +66,7 @@ client.on("message", async (channel, user, message, self) => {
 
 		// ? The message history
 		let msghistory = document.getElementById("${user["display-name"]}" + count);
-		if (msghistory && prevAuthor == "${user["display-name"]}") {
+		if (msghistory && msghistory.childNodes.length <= ${settings.maxhistory} && prevAuthor == "${user["display-name"]}") {
 			let msg = document.createElement("p");
 			msg.setAttribute("id", "message");
 			msg.setAttribute("style", "color: ${settings.message}");
@@ -72,7 +76,7 @@ client.on("message", async (channel, user, message, self) => {
 			let pingmsgs = document.getElementsByName("ping");
 			for (let ping of pingmsgs) {
 				if (ping) {
-					ping.setAttribute("style", "color: ${settings.ping}");
+					return ping.setAttribute("style", "color: ${settings.ping}");
 				}
 			}
 			return;
@@ -106,7 +110,7 @@ client.on("message", async (channel, user, message, self) => {
 		historyBlob.appendChild(initMsg);
 		
 		// ? we have a message! oh and then color the ping if there is one.
-		document.getElementById("history").appendChild(historyBlob).scrollIntoView();
+		document.getElementById("history").appendChild(historyBlob);
 		let pingmsgs = document.getElementsByName("ping");
 			for (let ping of pingmsgs) {
 				if (ping) {
@@ -122,7 +126,7 @@ client.on("message", async (channel, user, message, self) => {
 	const Args = message.toLowerCase().slice(1).split(" ");
 	switch (Args.shift()) {
 	case "start":
-		if (user["display-name"] == settings.streamer) {
+		if (user["username"]?.toLowerCase() == settings.streamer.toLowerCase()) {
 			say.speak("started");
 			return ActiveGame = Args[1];
 		}
@@ -138,18 +142,51 @@ client.on("message", async (channel, user, message, self) => {
 			say.speak("Deactivating Chat Plays.");
 			ActiveGame = "";
 		}, 30_000); // TODO: Set a dedicated timer inside the game controls instead of hard coded value globally
-		break;
+		return;
 	case "set":
-		if (user["display-name"] == settings.streamer) {
-			say.speak(`Game has been set to: ${Args[1]}`, "voice_kal_diphone");
-			return SetGame = Args[1];
+		if (user["username"]?.toLowerCase() == settings.streamer.toLowerCase()) {
+			SetGame = Args[0];
+			
+			// say.speak(`Game has been set to: ${SetGame}`, "voice_kal_diphone");
+			window.webContents.executeJavaScript(`(() => {
+				let curgame = document.getElementById("curgame");
+				curgame.style.color = "${settings.currentGame}";
+				curgame.innerHTML = "Current Game: ${SetGame} - ChatPlays Active!";
+			})();
+			`);
 		}
-		break;
-	case "stop":
-		if (user["display-name"] == settings.streamer) {
-			return ActiveGame = "";
+		return;
+	case "reset":
+		if (user["username"]?.toLowerCase() == settings.streamer.toLowerCase()) {
+			ActiveGame = "";
+			SetGame = "";
+			window.webContents.executeJavaScript(`(() => {
+				let curgame = document.getElementById("curgame");
+				curgame.style.color = "#e45649";
+				curgame.innerHTML = "Current Game: None - ChatPlays Offline!";
+			})();
+			`);
 		}
-		break;
+		return;
+	case "brb": 
+		if (user["username"]?.toLowerCase() == settings.streamer.toLowerCase()) {
+			if (brb) {
+				window.webContents.executeJavaScript(`(() => {
+					let x = document.getElementById("brb");
+					x.setAttribute("class", "");
+				})();
+				`);
+				return brb = false;
+			}
+
+			window.webContents.executeJavaScript(`(() => {
+				let x = document.getElementById("brb");
+				x.setAttribute("class", "vis");
+			})();
+			`);
+			return brb = true;
+		}
+		return;
 	}
 
 	try {

@@ -49,6 +49,9 @@ Message history
  - Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
  - Helldivers Controls
  - Refactor commands for streamer and viewer
+ - Set Command - Check if game name matches names in Commands folder.
+ - Electron App
+ 	- Pop-ups - Followers and the like ?
  - Github file for game controls
 	- Generator file? since all controls are already made.
  

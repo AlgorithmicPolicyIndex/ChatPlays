@@ -2,7 +2,34 @@ import * as nut from "@nut-tree-fork/nut-js";
 import { getControls } from "../ControlHandler";
 
 const Controls = {
-	
+	// walk: {},
+	// walkleft: {},
+	// walkright: {},
+	// walkback: {},
+	// step: {},
+	// stepleft: {},
+	// stepright: {},
+	// stepback: {},
+	// dive: {},
+	// melee: {},
+	// crouch: {},
+	// aim: {},
+	// aimmode: {},
+
+	// primary: {},
+	// secondary: {},
+	// power: {},
+
+	// fire: {},
+
+	// lookup: {},
+	// lookdown: {},
+	// lookright: {},
+	// lookleft: {},
+	// lightlookup: {},
+	// lightlookdown: {},
+	// lightlookright: {},
+	// lightlookleft: {},
 };
 const Stratagems = {
 	// Support Weapons
@@ -77,6 +104,7 @@ const Stratagems = {
 	hellbomb: "kijkilki"
 };
 
+// TODO: Make handler for changing flashlight, RPM and zoom levels.
 module.exports = {
 	name: "hd2",
 	execute: async (message: string) => {

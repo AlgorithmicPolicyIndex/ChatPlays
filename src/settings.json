@@ -4,6 +4,7 @@
 
 	"width": 441,
 	"height": 617,
+	"maxhistory": 5,
 
 	"username": "#c678dd",
 	"moderator": "#0184bc",
@@ -11,5 +12,6 @@
 	"ping": "#e5c07b",
 	"channel": "#0997b3",
 	"message": "#fafafa",
+	"currentGame": "#c18401",
 	"bracket": "#dcdfe4"
 }

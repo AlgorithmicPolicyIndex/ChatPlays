@@ -1,14 +1,31 @@
 body {
 	background-color: #282c34;
 	overflow: hidden !important;
-	font-family: 'FiraCode Nerd Font Mono'
+	font-family: 'FiraCode Nerd Font Mono';
+	padding: 0;
+	margin: 0;
+	-webkit-user-select: none;
+	-webkit-app-region: drag;
+}
+
+:not(input):not(textarea),
+:not(input):not(textarea)::after,
+:not(input):not(textarea)::before {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+input, button, textarea, :focus {
+    outline: none;
 }
 
 ul {
+	position: absolute;
 	list-style-type: none;
 	font-size: 0;
 	padding-left: 5px;
-	max-height: 100%;
+	bottom: 6vh;
+	margin:auto;
 }
 
 li {
@@ -30,4 +47,58 @@ li {
 
 #message {
 	margin: 10px;
+}
+
+#curgame {
+	position: fixed;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	bottom: 5px;
+	width: 100%;
+	height: 3%;
+	padding-top: 1%;
+	border-top: solid 2px;
+	border-color: #5f5f5f;
+}
+
+#notifications {
+	width: 100vw;
+	height: 100vh;
+	z-index: 1;
+	
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#notifications>* {
+	padding: 5px;
+	visibility: hidden;
+	border: solid 2px;
+	font-size: 30px;
+	color: #e45649;
+	border-color: #5f5f5f;
+	background: linear-gradient(0.45turn, #383a42 75%, #535763)
+}
+
+#notifications>#brb.vis {
+	visibility: visible;
+	animation: gb-popup-bounce-to-bottom 1.1s both;
+}
+/* TODO: Follower notif? */
+/* #notifications>#follower.vis {
+	visibility: visible;
+	animation: gb-popup-bounce-to-bottom 1.1s both;
+} */
+
+@keyframes gb-popup-bounce-to-bottom {
+	0% {transform: translateY(-500px);animation-timing-function: ease-in;opacity: 0;}
+	38% {transform: translateY(0);animation-timing-function: ease-out;opacity: 1;}
+	55% {transform: translateY(-65px);animation-timing-function: ease-in;}
+	72% {transform: translateY(0);animation-timing-function: ease-out;}
+	81% {transform: translateY(-28px);animation-timing-function: ease-in;}
+	90% {transform: translateY(0);animation-timing-function: ease-out;}
+	95% {transform: translateY(-8px);animation-timing-function: ease-in;}
+	100% {transform: translateY(0);animation-timing-function: ease-out;}
 }
