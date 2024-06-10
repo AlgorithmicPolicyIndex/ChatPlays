@@ -52,7 +52,8 @@ Message history
  - Electron App
  	- Pop-ups - Followers and the like ?
  - Github file for game controls
-	- Generator file? since all controls are already made.
+	- Fix the controls JSON
+	- 
  - Add BunJS internal function support
  
 
