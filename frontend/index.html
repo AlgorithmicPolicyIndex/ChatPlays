@@ -62,20 +62,6 @@
 			}
 		}
 
-		function messageHistory(user, settings, message) {
-			let msghistory = document.getElementById(user + count);
-			if (msghistory && msghistory.childNodes.length <= settings.maxhistory && prevAuthor == user) {
-				let msg = document.createElement("p");
-				msg.setAttribute("id", "message");
-				msg.setAttribute("style", `color: ${settings.message}`);
-				msg.innerHTML = pingMessage(message);
-				msghistory.appendChild(msg);
-				// ? color ping
-				colorPing();
-				return;
-			}
-		}
-
 		function pingMessage(msg) {
 			const list = msg.split(" ");
 			for (const ping of list) {

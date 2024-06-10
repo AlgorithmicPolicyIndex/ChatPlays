@@ -53,7 +53,17 @@ client.on("message", async (channel, user, message, self) => {
 		blobHistory(${settings.maxblobs});
 
 		// ? The message history inside the blob
-		messageHistory("${user["display-name"]}", ${JSON.stringify(settings)}, \`${message}\`);
+		let msghistory = document.getElementById("${user["display-name"]}" + count);
+		if (msghistory && msghistory.childNodes.length <= ${settings.maxhistory} && prevAuthor == "${user["display-name"]}") {
+			let msg = document.createElement("p");
+			msg.setAttribute("id", "message");
+			msg.setAttribute("style", "color: ${settings.message}");
+			msg.innerHTML = pingMessage("${message}");
+			msghistory.appendChild(msg);
+			// ? color ping
+			colorPing();
+			return;
+		}
 
 		count++; // ? used for list Element ID / new list counter
 		initializeMessage("${user["display-name"]}", ${user["mod"]}, ${user["badges"]?.broadcaster}, ${JSON.stringify(settings)}, \`${message}\`, "${channel}");

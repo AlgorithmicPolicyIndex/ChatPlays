@@ -1,3 +1,5 @@
+import { keyboard } from "@nut-tree-fork/nut-js";
+
 const { Key } = require("@nut-tree-fork/nut-js");
 const { getControls } = require("../ControlHandler");
 
@@ -126,30 +128,30 @@ async function StratagemHandler(sequence: string) {
 	for (let i = 0; i < sseq.length; i++) {
 		switch (sseq[i]) {
 		case "i":
-			keys.push(nut.Key.W);
+			keys.push(Key.W);
 			continue;
 		case "k":
-			keys.push(nut.Key.S);
+			keys.push(Key.S);
 			continue;
 		case "j":
-			keys.push(nut.Key.A);
+			keys.push(Key.A);
 			continue;
 		case "l":
-			keys.push(nut.Key.D);
+			keys.push(Key.D);
 			continue;
 		}
 	}
 
-	nut.keyboard.pressKey(nut.Key.LeftControl);
+	keyboard.pressKey(Key.LeftControl);
 	for (const key of keys) {
 		console.log(key);
 		await delay(50);
-		nut.keyboard.pressKey(key);
+		keyboard.pressKey(key);
 		await delay(50);
-		nut.keyboard.releaseKey(key);
+		keyboard.releaseKey(key);
 		await delay(100);
 	}
-	nut.keyboard.releaseKey(nut.Key.LeftControl);
+	keyboard.releaseKey(Key.LeftControl);
 }
 
 function delay(ms: number) {
