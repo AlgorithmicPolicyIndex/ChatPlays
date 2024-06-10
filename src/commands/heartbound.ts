@@ -1,5 +1,5 @@
-import { Key } from "@nut-tree-fork/nut-js";
-import { getControls } from "../ControlHandler";
+const { Key } = require("@nut-tree-fork/nut-js");
+const { getControls } = require("../ControlHandler");
 
 const Controls = {
 	movup: { Key: Key.W, Amt: 500 },
@@ -27,5 +27,8 @@ module.exports = {
 			const control = Object.keys(Controls);
 			getControls(Controls[control[control.indexOf(message)] as keyof typeof Controls]);
 		}
-	}
+	},
+	controls: [ Controls ]
 };
+
+export {};

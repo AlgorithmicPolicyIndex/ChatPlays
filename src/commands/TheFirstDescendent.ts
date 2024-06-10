@@ -1,5 +1,5 @@
-import { Key } from "@nut-tree-fork/nut-js";
-import { getControls } from "../ControlHandler";
+const { Key } = require("@nut-tree-fork/nut-js");
+const { getControls } = require("../ControlHandler");
 
 const controls = {
 	//#region | Mouse Controls
@@ -19,7 +19,7 @@ const controls = {
 
 	// Control pressses are done in MS
 	shoot: { Dir: "lclick", Amt: 0 },
-	aim: { Dir: "aim", Amt: 0 },
+	aim: { Dir: "toggleRClick", Amt: 0 },
 	//#endregion
 
 	//#region | Mechanics
@@ -60,5 +60,8 @@ module.exports = {
 			const control = Object.keys(controls);
 			getControls(controls[control[control.indexOf(message)] as keyof typeof controls]);
 		}
-	}
+	},
+	controls: [ controls ]
 };
+
+export {};

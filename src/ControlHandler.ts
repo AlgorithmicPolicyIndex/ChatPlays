@@ -20,7 +20,7 @@ async function MouseHandler(control: { Dir: string, Amt: number}) {
 	case "rclick":
 		nut.mouse.rightClick();
 		return;
-	case "aim": // ? Change to holdRClick?
+	case "toggleRClick":
 		if (aiming == 0) {
 			aiming = 1;
 			nut.mouse.pressButton(nut.Button.RIGHT);

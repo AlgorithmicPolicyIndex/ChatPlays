@@ -1,9 +1,11 @@
 {
-	"streamer": "CHANNEL NAME",
+	"streamer": "piratesoftware",
 	"processTitle" : "ChatPlaysCMD",
+	"usingBunJs": false,
 
-	"width": 441,
-	"height": 617,
+	"width": 555,
+	"height": 1025,
+	"maxblobs": 10,
 	"maxhistory": 5,
 
 	"username": "#c678dd",

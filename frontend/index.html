@@ -19,6 +19,63 @@
 		let count = 0;
 		let firstMessage = "";
 
+
+		function initializeMessage(user, mod, broadcaster, settings, message, channel) {
+			// ? The whole message blob creation shit
+			let historyBlob = document.createElement('li');
+			if (firstMessage == "") {
+				firstMessage = user + count;
+			}
+			historyBlob.setAttribute("id", user + count);
+			historyBlob.setAttribute("style", "border-color: rgb(95, 95, 95);")
+			let name = document.createElement("h2");
+			name.setAttribute("id", "name");
+			// ? Username
+			if (broadcaster == "1") {
+				name.setAttribute("style", `color: ${settings.broadcaster};`);
+			} else if (mod) {
+				name.setAttribute("style", `color: ${settings.moderator};`);
+			} else {
+				name.setAttribute("style", `color: ${settings.username};`);
+			}
+			name.innerHTML = `${mod ? "(mod) " + user : user} <span class='channel' style='color: ${settings.channel}'>- ${channel}</span>`;
+			// ? First Message in Blob
+			let initMsg = document.createElement("p");
+			initMsg.setAttribute("id", "message");
+			initMsg.setAttribute("style", `color: ${settings.message}`);
+			initMsg.innerHTML = pingMessage(message);
+			
+			historyBlob.appendChild(name);
+			historyBlob.appendChild(initMsg);
+			
+			// ? we have a message! append to list!
+			document.getElementById("history").appendChild(historyBlob);
+
+		}
+
+		function blobHistory(maxblobs) {
+			if (document.getElementById("history").childNodes.length >= maxblobs) {
+				let deleteFrom = document.getElementById("history");
+				let fstmsg = document.getElementById(firstMessage);
+				deleteFrom.removeChild(fstmsg);
+				firstMessage = document.getElementById("history").childNodes[0].id;
+			}
+		}
+
+		function messageHistory(user, settings, message) {
+			let msghistory = document.getElementById(user + count);
+			if (msghistory && msghistory.childNodes.length <= settings.maxhistory && prevAuthor == user) {
+				let msg = document.createElement("p");
+				msg.setAttribute("id", "message");
+				msg.setAttribute("style", `color: ${settings.message}`);
+				msg.innerHTML = pingMessage(message);
+				msghistory.appendChild(msg);
+				// ? color ping
+				colorPing();
+				return;
+			}
+		}
+
 		function pingMessage(msg) {
 			const list = msg.split(" ");
 			for (const ping of list) {
@@ -27,6 +84,15 @@
 				}
 			}
 			return list.join(" ")
+		}
+
+		function colorPing(color) {
+			let pingmsgs = document.getElementsByName("ping");
+			for (let ping of pingmsgs) {
+				if (ping) {
+					ping.setAttribute("style", `color: ${color}`);
+				}
+			};
 		}
 	</script>
 </html>

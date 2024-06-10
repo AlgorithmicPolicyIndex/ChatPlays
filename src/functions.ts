@@ -9,7 +9,7 @@ export async function getCommands(name: string, message: string) {
 		const filePath = path.join(cmdPath, file);
 		const command = await import(filePath);
 		if (name.toLowerCase() == command.name.toLowerCase()) {
-			return command.execute(message);
+			return command.execute(message.toLowerCase());
 		}
 	}
 }

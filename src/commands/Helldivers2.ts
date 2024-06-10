@@ -1,5 +1,5 @@
-import * as nut from "@nut-tree-fork/nut-js";
-import { getControls } from "../ControlHandler";
+const { Key } = require("@nut-tree-fork/nut-js");
+const { getControls } = require("../ControlHandler");
 
 const Controls = {
 	// walk: {},
@@ -116,7 +116,8 @@ module.exports = {
 			const stratagem = Object.keys(Stratagems);
 			StratagemHandler(Stratagems[stratagem[stratagem.indexOf(message.toLowerCase())] as keyof typeof Stratagems]);
 		}
-	}
+	},
+	controls: [ Controls, Stratagems]
 };
 
 async function StratagemHandler(sequence: string) {
@@ -156,3 +157,5 @@ function delay(ms: number) {
 		setTimeout(resolve, ms);
 	});
 }
+
+export {};
