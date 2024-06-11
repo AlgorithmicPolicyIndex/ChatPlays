@@ -4,10 +4,13 @@
 	--channel-font-size: 13px;
 	--curgame-font-size: 20px;
 	--notifications-font-size: 30px;
+	--notifications-color: #e45649;
+	--bracket-color: #5f5f5f;
+	--background-color: #282c34;
 }
 
 body {
-	background-color: #282c34;
+	background-color: var(--background-color);
 	overflow: hidden !important;
 	font-family: 'FiraCode Nerd Font Mono';
 	padding: 0;
@@ -39,7 +42,7 @@ ul {
 li {
 	border-left: solid 2px;
 	border-bottom: solid 2px;
-	border-color: #5f5f5f;
+	border-color: var(--bracket-color);
 	padding-left: 15px;
 	font-size: var(--list-font-size);
 }
@@ -69,7 +72,7 @@ li {
 	height: 3%;
 	padding-top: 1%;
 	border-top: solid 2px;
-	border-color: #5f5f5f;
+	border-color: var(--bracket-color);
 }
 
 #notifications {
@@ -87,8 +90,8 @@ li {
 	visibility: hidden;
 	border: solid 2px;
 	font-size: var(--notifications-font-size);
-	color: #e45649;
-	border-color: #5f5f5f;
+	color: var(--notifications-color);
+	border-color: var(--bracket-color);
 	background: linear-gradient(0.45turn, #383a42 75%, #535763)
 }
 

@@ -39,7 +39,7 @@ Message history
 	lookup: { Dir: "up", Amt: 250 }, // Moves mouse up 250 pixels (Uses Python, because nut.js/robot.js had positioning issues at the time of creation of this project.)
 	shoot: { Dir: "lclick", Amt: 500 }, // Presses Left Click
 	aim: { Dir: "aim", Amt: 0 }, // Switches between Holding Right Click and releasing
-	scrollup: {Dir: "sup", Amt: 500} // Scrolls up 500 "steps"
+	scrollup: { Dir: "sup", Amt: 500 } // Scrolls up 500 "steps"
  }
  ```
 
@@ -53,7 +53,6 @@ Message history
  	- Pop-ups - Followers and the like ?
  - Github file for game controls
 	- Fix the controls JSON
-	- 
  - Add BunJS internal function support
  
 

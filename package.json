@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "@nut-tree-fork/nut-js": "^4.2.1",
+    "@types/discord-rich-presence": "^0.0.2",
     "bad-words": "^3.0.4",
+    "discord-rich-presence": "^0.0.8",
     "electron": "^30.0.9",
     "extract-urls": "^1.4.1",
     "python-shell": "^5.0.0",

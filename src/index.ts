@@ -5,10 +5,30 @@ import Filter from "bad-words";
 import extractUrls from "extract-urls";
 import settings from "./settings.json";
 import { app, BrowserWindow } from "electron";
+import client from "discord-rich-presence";
+
+if (settings.discordRPC == true) { // ! If you want to have a discord Presence
+	// TODO: Will move to settings.json
+	// ! Yes this had no point, I just wanted to make it. fight me. I'm not sure what to really add atm, other than fixing some things.
+	// ! Such as the control generator, control scheme in files, and some other very small things.
+	// ! To be fair, it's all I really need to do anyways, this is essentially done, except the chat part.
+	// ! Since I wanted this to be more than just ChatPlays, but also a chat overlay.
+	// * Change this string of text to your client ID, from https://discord.com/developers/applications
+	client("CLIENT ID").updatePresence({
+		details: 'TOP TEXT',
+		state: 'BOTTOM TEXT',
+		startTimestamp: Date.now(),
+		largeImageKey: 'LargeImage', // * the Image Keys are set inside the Art Assets in Rich Presence of your application
+		largeImageText: "LargeText",
+		smallImageKey: 'SmallImage',
+		smallImageText: "SmallText",
+		instance: true,
+	});
+}
 
 const filter = new Filter();
 
-const client = new tmi.client({
+const tmiclient = new tmi.client({
 	channels: [ settings.streamer ],
 });
 
@@ -16,7 +36,7 @@ let ActiveGame = "";
 let SetGame = "";
 let brb = false;
 let window: BrowserWindow;
-client.connect().then(async (v) => {
+tmiclient.connect().then(async (v) => {
 	if (v[1] != 443) {
 		return console.info("There was an error connecting to the Twitch API");
 	}
@@ -39,7 +59,7 @@ client.connect().then(async (v) => {
 	console.info("Connected!");
 });
 
-client.on("message", async (channel, user, message, self) => {
+tmiclient.on("message", async (channel, user, message, self) => {
 	if (self) return;
 	message = filter.clean(message).replace(extractUrls(message), "[LINK]");
 	// ! Electron Chat
