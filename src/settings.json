@@ -2,7 +2,6 @@
 	"streamer": "CHANNEL NAME",
 	"processTitle" : "ChatPlaysCMD",
 	"usingBunJs": false,
-	"discordRPC": false,
 
 	"width": 555,
 	"height": 1025,
@@ -16,5 +15,14 @@
 	"channel": "#0997b3",
 	"message": "#fafafa",
 	"currentGame": "#c18401",
-	"bracket": "#dcdfe4"
+	"bracket": "#dcdfe4",
+
+	"discordRPC": false,
+	"RPCClientID": "",
+	"details": "",
+	"state": "",
+	"LargeImage": "",
+	"LargeText": "",
+	"SmallImage": "",
+	"SmallText": ""
 }

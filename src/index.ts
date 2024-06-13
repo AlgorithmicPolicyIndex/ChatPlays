@@ -8,20 +8,18 @@ import { app, BrowserWindow } from "electron";
 import client from "discord-rich-presence";
 
 if (settings.discordRPC == true) { // ! If you want to have a discord Presence
-	// TODO: Will move to settings.json
-	// ! Yes this had no point, I just wanted to make it. fight me. I'm not sure what to really add atm, other than fixing some things.
-	// ! Such as the control generator, control scheme in files, and some other very small things.
-	// ! To be fair, it's all I really need to do anyways, this is essentially done, except the chat part.
-	// ! Since I wanted this to be more than just ChatPlays, but also a chat overlay.
-	// * Change this string of text to your client ID, from https://discord.com/developers/applications
-	client("CLIENT ID").updatePresence({
-		details: 'TOP TEXT',
-		state: 'BOTTOM TEXT',
+	// ? Yes this had no point, I just wanted to make it. fight me. I'm not sure what to really add atm, other than fixing some things.
+	// ? Such as the control generator, control scheme in files, and some other very small things.
+	// ? To be fair, it's all I really need to do anyways, this is essentially done, except the chat part.
+	// ? Since I wanted this to be more than just ChatPlays, but also a chat overlay.
+	client(settings.RPCClientID).updatePresence({
+		details: settings.details,
+		state: settings.state,
 		startTimestamp: Date.now(),
-		largeImageKey: 'LargeImage', // * the Image Keys are set inside the Art Assets in Rich Presence of your application
-		largeImageText: "LargeText",
-		smallImageKey: 'SmallImage',
-		smallImageText: "SmallText",
+		largeImageKey: settings.LargeImage,
+		largeImageText: settings.LargeText,
+		smallImageKey: settings.SmallImage,
+		smallImageText: settings.SmallText,
 		instance: true,
 	});
 }
@@ -78,7 +76,7 @@ tmiclient.on("message", async (channel, user, message, self) => {
 			let msg = document.createElement("p");
 			msg.setAttribute("id", "message");
 			msg.setAttribute("style", "color: ${settings.message}");
-			msg.innerHTML = pingMessage("${message}");
+			msg.innerHTML = pingMessage(${JSON.stringify(message)});
 			msghistory.appendChild(msg);
 			// ? color ping
 			colorPing();
@@ -86,7 +84,7 @@ tmiclient.on("message", async (channel, user, message, self) => {
 		}
 
 		count++; // ? used for list Element ID / new list counter
-		initializeMessage("${user["display-name"]}", ${user["mod"]}, ${user["badges"]?.broadcaster}, ${JSON.stringify(settings)}, \`${message}\`, "${channel}");
+		initializeMessage("${user["display-name"]}", ${user["mod"]}, ${user["badges"]?.broadcaster}, ${JSON.stringify(settings)}, ${JSON.stringify(message)}, "${channel}");
 		// ? color ping
 		colorPing("${settings.ping}");
 		prevAuthor = "${user["display-name"]}";
