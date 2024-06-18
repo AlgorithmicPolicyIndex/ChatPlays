@@ -3,6 +3,8 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
 
 
 # Work Load / Plans
+ - Major Plan
+	- YOUTUBE SUPPORT
  - Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
  - Helldivers Controls
  - Set Command - Check if game name matches names in Commands folder.
