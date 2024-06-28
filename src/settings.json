@@ -1,10 +1,10 @@
 {
 	"streamer": "CHANNEL NAME",
 	"processTitle" : "ChatPlaysCMD",
-	"usingBunJs": false,
+	"useChat": true,
 
-	"width": 555,
-	"height": 1025,
+	"width": 650,
+	"height": 950,
 	"maxblobs": 10,
 	"maxhistory": 5,
 

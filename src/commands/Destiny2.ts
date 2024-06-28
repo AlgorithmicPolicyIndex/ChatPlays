@@ -1,5 +1,5 @@
-const { Key } = require("@nut-tree-fork/nut-js");
-const { getControls } = require("../ControlHandler");
+import { Key } from "@nut-tree-fork/nut-js";
+import { getControls } from "../ControlHandler";
 
 const Controls = {
 	//#region | Mouse Controls
@@ -64,5 +64,3 @@ module.exports = {
 	},
 	controls: [ Controls ]
 };
-
-export {};

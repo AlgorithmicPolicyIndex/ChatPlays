@@ -49,18 +49,18 @@ async function KeyboardHandler(control: { Key: nut.Key, Amt: number }) {
 	switch (control.Amt) {
 	case -1:
 		heldKeys.push(control.Key);
-		nut.keyboard.pressKey(control.Key);
+		await nut.keyboard.pressKey(control.Key);
 		return;
 	case 0:
 		for (const key of heldKeys) {
-			nut.keyboard.releaseKey(key);
+			await nut.keyboard.releaseKey(key);
 		}
 		heldKeys = [];
 		return;
 	default:
-		nut.keyboard.pressKey(control.Key);
+		await nut.keyboard.pressKey(control.Key);
 		await delay(control.Amt);
-		nut.keyboard.releaseKey(control.Key);
+		await nut.keyboard.releaseKey(control.Key);
 		return;
 	}
 }

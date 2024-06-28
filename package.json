@@ -17,12 +17,12 @@
     "@types/discord-rich-presence": "^0.0.2",
     "bad-words": "^3.0.4",
     "discord-rich-presence": "^0.0.8",
-    "electron": "^30.0.9",
+    "electron": "^31.0.1",
     "extract-urls": "^1.4.1",
     "python-shell": "^5.0.0",
     "say": "^0.16.0",
     "tmi.js": "^1.8.5",
-    "typescript": "^5.2.2",
+    "typescript": "^5.4.5",
     "word-wrap": "^1.2.5"
   }
 }

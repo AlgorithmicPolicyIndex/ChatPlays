@@ -17,15 +17,11 @@
 	<script>
 		let prevAuthor = "";
 		let count = 0;
-		let firstMessage = "";
 
 
 		function initializeMessage(user, mod, broadcaster, settings, message, channel) {
 			// ? The whole message blob creation shit
 			let historyBlob = document.createElement('li');
-			if (firstMessage == "") {
-				firstMessage = user + count;
-			}
 			historyBlob.setAttribute("id", user + count);
 			historyBlob.setAttribute("style", "border-color: rgb(95, 95, 95);")
 			let name = document.createElement("h2");
@@ -55,10 +51,12 @@
 
 		function blobHistory(maxblobs) {
 			if (document.getElementById("history").childNodes.length >= maxblobs) {
-				let deleteFrom = document.getElementById("history");
-				let fstmsg = document.getElementById(firstMessage);
-				deleteFrom.removeChild(fstmsg);
-				firstMessage = document.getElementById("history").childNodes[0].id;
+				// ! I'm leaving this code comment here, just to show what I did because I was honestly stupid.
+				// let deleteFrom = document.getElementById("history");
+				// let fstmsg = document.getElementById(firstMessage);
+				// deleteFrom.removeChild(fstmsg);
+				// firstMessage = document.getElementById("history").childNodes[0].id;
+				document.getElementById("history").removeChild(document.getElementById("history").childNodes[0]);
 			}
 		}
 

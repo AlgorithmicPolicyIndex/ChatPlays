@@ -18,7 +18,7 @@ text += "\n\n### Okay. I'll fix this alright? this is just a bases for now.";
 
 for (const game in controls) {
 	for (const scheme of controls[game]) {
-		text += `\n\n# ${game}\n\`\`\`json\n${JSON.stringify(scheme)}\n\`\`\``;
+		text += `\n\n# ${game}\n\`\`\`json\n${JSON.stringify(scheme).replace(",", ",\n")}\n\`\`\``;
 	}
 }
 

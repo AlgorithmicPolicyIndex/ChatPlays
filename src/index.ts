@@ -1,5 +1,5 @@
 import * as tmi from "tmi.js";
-import { getCommands } from "./functions";
+import { getCommandName, getCommands } from "./functions";
 import say from "say";
 import Filter from "bad-words";
 import extractUrls from "extract-urls";
@@ -7,7 +7,7 @@ import settings from "./settings.json";
 import { app, BrowserWindow } from "electron";
 import client from "discord-rich-presence";
 
-if (settings.discordRPC == true) { // ! If you want to have a discord Presence
+if (settings.discordRPC) { // ! If you want to have a discord Presence
 	// ? Yes this had no point, I just wanted to make it. fight me. I'm not sure what to really add atm, other than fixing some things.
 	// ? Such as the control generator, control scheme in files, and some other very small things.
 	// ? To be fair, it's all I really need to do anyways, this is essentially done, except the chat part.
@@ -25,35 +25,41 @@ if (settings.discordRPC == true) { // ! If you want to have a discord Presence
 }
 
 const filter = new Filter();
+let ActiveGame = "";
+let SetGame = "";
+let brb = false;
+let window: BrowserWindow;
 
 const tmiclient = new tmi.client({
 	channels: [ settings.streamer ],
 });
 
-let ActiveGame = "";
-let SetGame = "";
-let brb = false;
-let window: BrowserWindow;
 tmiclient.connect().then(async (v) => {
 	if (v[1] != 443) {
 		return console.info("There was an error connecting to the Twitch API");
 	}
 	
-	console.info("Connected to Twitch API:\nStarting chat in 5 seconds...\u001B[?25l");
+	console.info("Connected to Twitch API:\nStarting chat...");
 		
 	// * Electron
-	app.whenReady().then(() => {
-		const win = new BrowserWindow({
-			title: settings.processTitle,
-			width: settings.width,
-			height: settings.height,
-			frame: false,
-			roundedCorners: false
+	if (settings.useChat) {
+		app.whenReady().then(() => {
+			const win = new BrowserWindow({
+				title: settings.processTitle,
+				width: settings.width,
+				height: settings.height,
+				frame: false,
+				roundedCorners: false,
+				thickFrame: false,
+				minWidth: settings.width,
+				minHeight: settings.height,
+				maxHeight: settings.height
+			});
+	
+			window = win;
+			win.loadFile("../frontend/index.html");
 		});
-
-		window = win;
-		win.loadFile("../frontend/index.html");
-	});
+	}
 	console.info("Connected!");
 });
 
@@ -62,10 +68,10 @@ tmiclient.on("message", async (channel, user, message, self) => {
 	message = filter.clean(message).replace(extractUrls(message), "[LINK]");
 	// ! Electron Chat
 	if (
-		self ||
-		!message.startsWith("!")
+		self
+		|| !message.startsWith("!")
+		&& settings.useChat
 	) {
-		window.show();
 		window.webContents.executeJavaScript(`(() => {
 		// ? User blob history
 		blobHistory(${settings.maxblobs});
@@ -92,11 +98,16 @@ tmiclient.on("message", async (channel, user, message, self) => {
 	}
 
 	// ! Chat Plays
-	// TODO: Fixed mostly, could be better. Personally, dont like the 3 "if (user['displa...) {...}"
+	// TODO: Fixed mostly, could be better. Personally, dont like the 3 "if (user['usernam...) {...}"
 	const Args = message.toLowerCase().slice(1).split(" ");
 	switch (Args.shift()) {
 	case "start":
 		if (user["username"]?.toLowerCase() == settings.streamer.toLowerCase()) {
+			if (await getCommandName(Args[0]) == undefined){
+				say.speak("This game name does not exist in the commands folder. Please make sure the name is spelled correctly.");
+				return console.log("Not a game name does not match");
+			}
+
 			say.speak("started");
 			return ActiveGame = Args[0];
 		}
@@ -115,8 +126,12 @@ tmiclient.on("message", async (channel, user, message, self) => {
 		return;
 	case "set":
 		if (user["username"]?.toLowerCase() == settings.streamer.toLowerCase()) {
+			if (await getCommandName(Args[0]) == undefined){
+				say.speak("This game name does not exist in the commands folder. Please make sure the name is spelled correctly.");
+				return console.log("Not a game name does not match");
+			}
+				
 			SetGame = Args[0];
-			
 			say.speak(`Game has been set to: ${SetGame}`, "voice_kal_diphone");
 			window.webContents.executeJavaScript(`(() => {
 				let curgame = document.getElementById("curgame");

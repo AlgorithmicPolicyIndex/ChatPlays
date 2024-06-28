@@ -1,18 +1,23 @@
 :root {
-	--list-font-size: 15px;
-	--message-font-size: 15px;
-	--channel-font-size: 13px;
-	--curgame-font-size: 20px;
+	--list-font-size: 17px;
+	--message-font-size: 17px;
+	--channel-font-size: 15px;
+	--curgame-font-size: 23px;
 	--notifications-font-size: 30px;
 	--notifications-color: #e45649;
 	--bracket-color: #5f5f5f;
 	--background-color: #282c34;
+	--font-family: 'Cascadia Code NF';
+	--notifications-bg-1: #383a42;
+	--notifications-bg-1: #535763;
+	
 }
 
 body {
+	min-width: 15vw;
 	background-color: var(--background-color);
 	overflow: hidden !important;
-	font-family: 'FiraCode Nerd Font Mono';
+	font-family: var(--font-family);
 	padding: 0;
 	margin: 0;
 	-user-select: none;
@@ -68,8 +73,8 @@ li {
 	align-items: center;
 	bottom: 5px;
 	font-size: var(--curgame-font-size);
-	width: 100%;
-	height: 3%;
+	width: 100vw;
+	height: 3vh;
 	padding-top: 1%;
 	border-top: solid 2px;
 	border-color: var(--bracket-color);
@@ -92,7 +97,7 @@ li {
 	font-size: var(--notifications-font-size);
 	color: var(--notifications-color);
 	border-color: var(--bracket-color);
-	background: linear-gradient(0.45turn, #383a42 75%, #535763)
+	background: linear-gradient(0.45turn, var(--notifications-bg-1) 75%, var(--notifications-bg-2));
 }
 
 #notifications>#brb.vis {

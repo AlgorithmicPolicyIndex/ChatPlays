@@ -13,3 +13,17 @@ export async function getCommands(name: string, message: string) {
 		}
 	}
 }
+
+export async function getCommandName(name: string) {
+	const cmdPath = path.join(__dirname, "commands");
+	const cmdFiles = fs.readdirSync(cmdPath).filter(file => file.endsWith(".js"));
+
+	for (const file of cmdFiles) {
+		const filePath = path.join(cmdPath, file);
+		const command = await import(filePath);
+		
+		if (name.toLowerCase() == command.name.toLowerCase()) {
+			return command.name;
+		}
+	}
+}

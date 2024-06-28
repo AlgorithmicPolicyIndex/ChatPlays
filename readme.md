@@ -3,6 +3,8 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
 
 
 # Work Load / Plans
+ - Major Plan
+	- YOUTUBE SUPPORT
  - Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
  - Helldivers Controls
  - Set Command - Check if game name matches names in Commands folder.
@@ -15,7 +17,7 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
 ### Running
 > **!** You'll need to edit any thing to match your package manager, I personally use [Bun](https://bun.sh) **!**
 
-Install packages via `bun i`  
+Install packages via `bun i` AND install `python` and run `pip install pydirectinput`  
 Edit settings mainly stated inside the [wiki settings](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki/Settings#main-settings), such as your Channel Name.  
 Run `bun run electron`  
 
