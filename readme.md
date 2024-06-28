@@ -22,3 +22,4 @@ Edit settings mainly stated inside the [wiki settings](https://github.com/Algori
 Run `bun run electron`  
 
 There shouldn't be too much issues after that, if there are, feel free to note them in Issues
+
