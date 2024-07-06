@@ -3,47 +3,77 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link id="css" rel="stylesheet" href="theme/default/default.css">
+		<link id="css" rel="stylesheet" href="theme/WinXP/WinXP.css">
 	</head>
 	<body>
-		<ul id="history"></ul>
-		<div id="curgame" style="color: #e45649;">
+		<!-- ! All WinXP related options should be added via the Change Theme command, instead of being in the HTML -->
+		<div class="window" id="chatWindow">
+			<div class="title-bar">
+				<div class="title-bar-text">Twitch Chat</div>
+				<div class="title-bar-controls">
+					<button aria-label="Minimize"></button>
+					<button aria-label="Maximize"></button>
+					<button aria-label="Close"></button>
+				</div>				  
+			</div>
+			<div class="window-body">
+				<div class="ui">
+					<div id="recipent">To: AlgorithmicPolicyIndex &lt;AlgorithmicPolicyIndex@twitch.tv&gt; </div> <!-- Change based on which channel is active in settings.json -->
+					<div id="sidebar">
+						<ul>
+							<li class="liItem">Start Camera</li>
+							<li class="liItem">Start Talking</li>
+							<!-- <li class="liItem">I want to...
+								<ul>
+									<li>Invite Someone to this Converstation</li>
+									<li>Send a File or Photo</li>
+									<li>Send E-mail</li>
+									<li>Ask for Remote Assistance</li>
+									<li>Make a Phone Call</li>
+									<li>Start Application Sharing</li>
+									<li>Start Whiteboard</li>
+								</ul>
+							</li> -->
+						</ul>
+					</div>
+					<div class="messageBox">
+						<ul id="history"></ul>
+					</div>
+					<div class="chatBox">
+						<textarea></textarea>
+						<button><u>S</u>end</button>
+					</div>
+					<!-- TODO: Status bar for Current Game -->
+				</div>
+			</div>
+			<div class="status-bar">
+				<p class="status-bar-field" id="curgame">
+					Current Game: None - ChatPlays Offline!
+				</p>
+			</div>
+		</div>
+		<!-- <div id="curgame" style="color: #e45649;">
 			Current Game: None - ChatPlays Offline!
-		</div>
-		<div id="notifications">
+		</div> -->
+		<!-- <div id="notifications">
 			<div id="brb">Be right Back!</div>
-		</div>
+		</div> -->
 	</body>
 	<script>
 		let prevAuthor = "";
 		let count = 0;
 
-		async function changeCSS(theme, channel) {
-			const scripts = document.getElementsByTagName("script");
-			for (let script of scripts) {
-				if (script.src != '') {
-					script.remove();
-				}
-			}
-
-			let themejs = document.createElement("script");
-			themejs.onload = async () => {
-				this.initTheme(channel);
-			}
-			themejs.src = `theme/${theme}/${theme}.js`;
-			document.documentElement.appendChild(themejs);
-			
+		function changeCSS(theme) {
 			const oldCSS = document.getElementById("css");
 			const newCSS = document.createElement("link");
 			newCSS.setAttribute("rel", "stylesheet");
 			newCSS.setAttribute("type", "text/css");
-			newCSS.setAttribute("id", "css");
-			newCSS.setAttribute("href", `theme/${theme}/${theme}.css`);
+			newCSS.setAttribute("href", theme);
 
-			document.getElementsByTagName("head")[0].replaceChild(newCSS, oldCSS);
+			document.getElementsByTagName("head").item(0).replaceChild(newCSS, oldCSS);
 		}
 
-		// TODO: Change Colors when theme is active, based on exported function for color schemes via the theme.js
+		// TODO: Change Message Color when theme is active, based on exported function for color schemes via the theme.js
 		function initializeMessage(user, mod, broadcaster, settings, message, channel) {
 			// ? The whole message blob creation shit
 			let historyBlob = document.createElement('li');

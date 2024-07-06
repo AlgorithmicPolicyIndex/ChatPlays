@@ -1,8 +1,8 @@
 import * as path from "path";
 import * as fs from "fs";
 
-export async function getCommands(name: string, message: string) {
-	const cmdPath = path.join(__dirname, "commands");
+export async function getGames(name: string, message: string) {
+	const cmdPath = path.join(__dirname, "games");
 	const cmdFiles = fs.readdirSync(cmdPath).filter(file => file.endsWith(".js"));
 
 	for (const file of cmdFiles) {
@@ -14,8 +14,8 @@ export async function getCommands(name: string, message: string) {
 	}
 }
 
-export async function getCommandName(name: string) {
-	const cmdPath = path.join(__dirname, "commands");
+export async function getGameName(name: string) {
+	const cmdPath = path.join(__dirname, "games");
 	const cmdFiles = fs.readdirSync(cmdPath).filter(file => file.endsWith(".js"));
 
 	for (const file of cmdFiles) {

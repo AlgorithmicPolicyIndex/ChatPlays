@@ -13,6 +13,7 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
 	- Fix the controls JSON
  - Add BunJS internal function support
  - Custom Themes and JS files to handle all HTML intercations
+	- Comes default with WinXP! which has a feature missing, but will be added later when I feel like dealing with CSS again.
 
 ### Running
 > **!** You'll need to edit any thing to match your package manager, I personally use [Bun](https://bun.sh) **!**

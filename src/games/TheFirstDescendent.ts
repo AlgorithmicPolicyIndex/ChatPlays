@@ -32,7 +32,7 @@ const controls = {
 	skill2: { Key: Key.C, Amt: 500 },
 	skill3: { Key: Key.V, Amt: 500 },
 	skill4: { Key: Key.Z, Amt: 500 },
-	sub: { Key: Key.F, Amt: 500 },
+	melee: { Key: Key.F, Amt: 500 },
 	weapon1: { Key: Key.Num1, Amt: 500 },
 	weapon2: { Key: Key.Num2, Amt: 500 },
 	weapon3: { Key: Key.Num3, Amt: 500 },

@@ -37,6 +37,6 @@
 	"include": [
 		"typings/**/*",
 		"src/**/*",
-		"src/commands/config.ts"
+		"src/games/config.ts"
 	]
 }

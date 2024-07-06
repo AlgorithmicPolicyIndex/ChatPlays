@@ -1,5 +1,5 @@
 import * as tmi from "tmi.js";
-import { getCommandName, getCommands } from "./functions";
+import { getGameName, getGames } from "./functions";
 import say from "say";
 import Filter from "bad-words";
 import extractUrls from "extract-urls";
@@ -50,10 +50,10 @@ tmiclient.connect().then(async (v) => {
 				height: settings.height,
 				frame: false,
 				roundedCorners: false,
-				thickFrame: false,
+				transparent: true, // ! this is for rounded top corner but square bottom corners (WindowsOS)
 				minWidth: settings.width,
 				minHeight: settings.height,
-				maxHeight: settings.height
+				maxHeight: settings.height,
 			});
 	
 			window = win;
@@ -62,6 +62,7 @@ tmiclient.connect().then(async (v) => {
 	}
 	console.info("Connected!");
 });
+
 
 tmiclient.on("message", async (channel, user, message, self) => {
 	if (self) return;
@@ -72,6 +73,7 @@ tmiclient.on("message", async (channel, user, message, self) => {
 		|| !message.startsWith("!")
 		&& settings.useChat
 	) {
+		window.show();
 		window.webContents.executeJavaScript(`(() => {
 		// ? User blob history
 		blobHistory(${settings.maxblobs});
@@ -98,12 +100,12 @@ tmiclient.on("message", async (channel, user, message, self) => {
 	}
 
 	// ! Chat Plays
-	// TODO: Fixed mostly, could be better. Personally, dont like the 3 "if (user['usernam...) {...}"
+	// TODO: Convert into separate commands and files, while using window from Electron to handle "activeGame" as the varible, instead of written in code.
 	const Args = message.toLowerCase().slice(1).split(" ");
 	switch (Args.shift()) {
 	case "start":
 		if (user["username"]?.toLowerCase() == settings.streamer.toLowerCase()) {
-			if (await getCommandName(Args[0]) == undefined){
+			if (await getGameName(Args[0]) == undefined){
 				say.speak("This game name does not exist in the commands folder. Please make sure the name is spelled correctly.");
 				return console.log("Not a game name does not match");
 			}
@@ -126,7 +128,7 @@ tmiclient.on("message", async (channel, user, message, self) => {
 		return;
 	case "set":
 		if (user["username"]?.toLowerCase() == settings.streamer.toLowerCase()) {
-			if (await getCommandName(Args[0]) == undefined){
+			if (await getGameName(Args[0]) == undefined){
 				say.speak("This game name does not exist in the commands folder. Please make sure the name is spelled correctly.");
 				return console.log("Not a game name does not match");
 			}
@@ -172,11 +174,18 @@ tmiclient.on("message", async (channel, user, message, self) => {
 			return brb = true;
 		}
 		return;
+	case "theme":
+		ActiveGame = "";
+		SetGame = "";
+
+		return window.webContents.executeJavaScript(`(() => {
+		changeCSS("${Args[0]}", "${channel}");
+		})();`);
 	}
 
 	try {
 		if (ActiveGame != "") {
-			getCommands(ActiveGame, message);
+			getGames(ActiveGame, message);
 		}
 	} catch (err) {
 		return console.error(err);
