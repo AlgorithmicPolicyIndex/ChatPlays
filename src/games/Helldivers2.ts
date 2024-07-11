@@ -1,7 +1,5 @@
-import { keyboard } from "@nut-tree-fork/nut-js";
-
-const { Key } = require("@nut-tree-fork/nut-js");
-const { getControls } = require("../ControlHandler");
+import { Key, keyboard } from "@nut-tree-fork/nut-js";
+import { getControls } from "../ControlHandler";
 
 const Controls = {
 	// walk: {},
@@ -119,7 +117,7 @@ module.exports = {
 			StratagemHandler(Stratagems[stratagem[stratagem.indexOf(message.toLowerCase())] as keyof typeof Stratagems]);
 		}
 	},
-	controls: [ Controls, Stratagems]
+	controls: [ Controls, Stratagems ]
 };
 
 async function StratagemHandler(sequence: string) {

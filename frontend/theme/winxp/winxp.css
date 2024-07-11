@@ -157,6 +157,9 @@ ul {
 .status-bar-field {
 	color:#222 !important;
 }
+#curgame.active {
+	margin: 0px;
+}
 
 
 /* WINXP */  

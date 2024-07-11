@@ -13,6 +13,7 @@ async function initTheme(channel) { // Make required elements and structure for 
 	// Remove unneeded items
 	document.getElementById("curgame").remove();
 	document.getElementById("notifications").remove();
+	document.getElementById("history").remove();
 
 	// Elements
 	let windowelm = document.createElement("div");
@@ -47,7 +48,8 @@ async function initTheme(channel) { // Make required elements and structure for 
 	side_bar_2.setAttribute("class", "liItem");
 	let messageBox = document.createElement("div")
 	messageBox.setAttribute("class", "messageBox");
-	let history = document.getElementById("history");
+	const history = document.createElement("ul");
+	history.setAttribute("id", "history");
 	
 	let chatBox = document.createElement("div")
 	chatBox.setAttribute("class", "chatBox");
@@ -100,4 +102,31 @@ async function initTheme(channel) { // Make required elements and structure for 
 	status_bar_field.setAttribute("id", "curgame");
 	status_bar_field.innerHTML = "Current Game: None - ChatPlays Offline!";
 	console.log("finished!");
+}
+
+async function initMsg(user, mod, broadcaster, settings, message, channel) {
+	// ? The whole message blob creation shit
+	let historyBlob = document.createElement('li');
+	historyBlob.setAttribute("id", user + count);
+	historyBlob.setAttribute("style", "border-color: rgb(95, 95, 95);")
+	let name = document.createElement("h2");
+	name.setAttribute("id", "name");
+
+	// ? Username
+	name.innerHTML = `${broadcaster == "1" 
+		? `<span class='broadcaster'>${user}</span>`
+		: mod
+		? `<span class='moderator'>${user}</span>`
+		: `<span class='chatter'>${user}</span>`} says:`;
+	// ? First Message in Blob
+	let initMsg = document.createElement("p");
+	initMsg.setAttribute("id", "message");
+	initMsg.setAttribute("style", `color: ${settings.message}`);
+	initMsg.innerHTML = pingMessage(message);
+	
+	historyBlob.appendChild(name);
+	historyBlob.appendChild(initMsg);
+	
+	// ? we have a message! append to list!
+	document.getElementById("history").appendChild(historyBlob);
 }

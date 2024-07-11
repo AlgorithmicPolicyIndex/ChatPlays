@@ -1,11 +1,11 @@
 import * as tmi from "tmi.js";
-import { getGameName, getGames } from "./functions";
-import say from "say";
+import { defineCommands, getGames, Chat } from "./functions";
 import Filter from "bad-words";
 import extractUrls from "extract-urls";
 import settings from "./settings.json";
 import { app, BrowserWindow } from "electron";
 import client from "discord-rich-presence";
+import { create, exists, getData } from "./JSON/db";
 
 if (settings.discordRPC) { // ! If you want to have a discord Presence
 	// ? Yes this had no point, I just wanted to make it. fight me. I'm not sure what to really add atm, other than fixing some things.
@@ -24,14 +24,12 @@ if (settings.discordRPC) { // ! If you want to have a discord Presence
 	});
 }
 
+const commands = defineCommands();
 const filter = new Filter();
-let ActiveGame = "";
-let SetGame = "";
-let brb = false;
 let window: BrowserWindow;
 
 const tmiclient = new tmi.client({
-	channels: [ settings.streamer ],
+	channels: [ settings.streamer ]
 });
 
 tmiclient.connect().then(async (v) => {
@@ -50,7 +48,7 @@ tmiclient.connect().then(async (v) => {
 				height: settings.height,
 				frame: false,
 				roundedCorners: false,
-				transparent: true, // ! this is for rounded top corner but square bottom corners (WindowsOS)
+				transparent: true, // ! this is for rounded top corner but square bottom corners (WindowsOS | FOR WINXP THEME AND ANY OTHERS WITH SPECIFIC CORNERS!)
 				minWidth: settings.width,
 				minHeight: settings.height,
 				maxHeight: settings.height,
@@ -68,126 +66,32 @@ tmiclient.on("message", async (channel, user, message, self) => {
 	if (self) return;
 	message = filter.clean(message).replace(extractUrls(message), "[LINK]");
 	// ! Electron Chat
-	if (
-		self
-		|| !message.startsWith("!")
-		&& settings.useChat
-	) {
-		window.show();
-		window.webContents.executeJavaScript(`(() => {
-		// ? User blob history
-		blobHistory(${settings.maxblobs});
-
-		// ? The message history inside the blob
-		let msghistory = document.getElementById("${user["display-name"]}" + count);
-		if (msghistory && msghistory.childNodes.length <= ${settings.maxhistory} && prevAuthor == "${user["display-name"]}") {
-			let msg = document.createElement("p");
-			msg.setAttribute("id", "message");
-			msg.setAttribute("style", "color: ${settings.message}");
-			msg.innerHTML = pingMessage(${JSON.stringify(message)});
-			msghistory.appendChild(msg);
-			// ? color ping
-			colorPing();
-			return;
-		}
-
-		count++; // ? used for list Element ID / new list counter
-		initializeMessage("${user["display-name"]}", ${user["mod"]}, ${user["badges"]?.broadcaster}, ${JSON.stringify(settings)}, ${JSON.stringify(message)}, "${channel}");
-		// ? color ping
-		colorPing("${settings.ping}");
-		prevAuthor = "${user["display-name"]}";
-		})();`);
-	}
+	await Chat(channel, user, message, self, settings, window);
 
 	// ! Chat Plays
-	// TODO: Convert into separate commands and files, while using window from Electron to handle "activeGame" as the varible, instead of written in code.
-	const Args = message.toLowerCase().slice(1).split(" ");
-	switch (Args.shift()) {
-	case "start":
-		if (user["username"]?.toLowerCase() == settings.streamer.toLowerCase()) {
-			if (await getGameName(Args[0]) == undefined){
-				say.speak("This game name does not exist in the commands folder. Please make sure the name is spelled correctly.");
-				return console.log("Not a game name does not match");
-			}
 
-			say.speak("started");
-			return ActiveGame = Args[0];
-		}
-
-		if (ActiveGame == "" && Math.floor(Math.random() * 100) + 1 == 5) {
-			if (SetGame == "") {
-				return say.speak(`${user["display-name"]} has activated Chat Plays. However, there was no game set. Unable to activate.`);
-			}
-			say.speak(`${user["display-name"]} has Activated Chat Plays for: ${SetGame} for 30 seconds.`);
-			ActiveGame = SetGame;
-		}
-		setTimeout(() => {
-			say.speak("Deactivating Chat Plays.");
-			ActiveGame = "";
-		}, 30_000); // TODO: Set a dedicated timer inside the game controls instead of hard coded value globally
-		return;
-	case "set":
-		if (user["username"]?.toLowerCase() == settings.streamer.toLowerCase()) {
-			if (await getGameName(Args[0]) == undefined){
-				say.speak("This game name does not exist in the commands folder. Please make sure the name is spelled correctly.");
-				return console.log("Not a game name does not match");
-			}
-				
-			SetGame = Args[0];
-			say.speak(`Game has been set to: ${SetGame}`, "voice_kal_diphone");
-			window.webContents.executeJavaScript(`(() => {
-				let curgame = document.getElementById("curgame");
-				curgame.style.color = "${settings.currentGame}";
-				curgame.innerHTML = "Current Game: ${SetGame} - ChatPlays Active!";
-			})();
-			`);
-		}
-		return;
-	case "reset":
-		if (user["username"]?.toLowerCase() == settings.streamer.toLowerCase()) {
-			ActiveGame = "";
-			SetGame = "";
-			window.webContents.executeJavaScript(`(() => {
-				let curgame = document.getElementById("curgame");
-				curgame.style.color = "#e45649";
-				curgame.innerHTML = "Current Game: None - ChatPlays Offline!";
-			})();
-			`);
-		}
-		return;
-	case "brb": 
-		if (user["username"]?.toLowerCase() == settings.streamer.toLowerCase()) {
-			if (brb) {
-				window.webContents.executeJavaScript(`(() => {
-					let x = document.getElementById("brb");
-					x.setAttribute("class", "");
-				})();
-				`);
-				return brb = false;
-			}
-
-			window.webContents.executeJavaScript(`(() => {
-				let x = document.getElementById("brb");
-				x.setAttribute("class", "vis");
-			})();
-			`);
-			return brb = true;
-		}
-		return;
-	case "theme":
-		ActiveGame = "";
-		SetGame = "";
-
-		return window.webContents.executeJavaScript(`(() => {
-		changeCSS("${Args[0]}", "${channel}");
-		})();`);
+	if (!await exists()) {
+		create({ ActiveGame: "", SetGame: "" });
 	}
 
+	const Args = message.toLowerCase().slice(1).split(" ");
+	
+	const command = commands.get(Args.shift() as string);
+	if (!command) return;
+	const ActiveGame = await getData("ActiveGame");
+
+	try {
+		await command(Args, user, settings, window, channel).catch((err: any) => {
+			throw new Error(err)
+		});
+	} catch (err: any) {
+		throw new Error(err);
+	}
 	try {
 		if (ActiveGame != "") {
 			getGames(ActiveGame, message);
 		}
-	} catch (err) {
-		return console.error(err);
+	} catch (err: any) {
+		throw new Error(err);
 	}
 });

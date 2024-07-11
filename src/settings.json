@@ -8,15 +8,6 @@
 	"maxblobs": 10,
 	"maxhistory": 5,
 
-	"username": "#c678dd",
-	"moderator": "#0184bc",
-	"broadcaster": "#e06c75",
-	"ping": "#e5c07b",
-	"channel": "#0997b3",
-	"message": "#fafafa",
-	"currentGame": "#c18401",
-	"bracket": "#dcdfe4",
-
 	"discordRPC": false,
 	"RPCClientID": "",
 	"details": "",

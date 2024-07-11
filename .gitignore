@@ -133,3 +133,6 @@ build
 test.js
 pnpm-lock.yaml
 bun.lockb
+/JSON
+settings.json
+test.ts

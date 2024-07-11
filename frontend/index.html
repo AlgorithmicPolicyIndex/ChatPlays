@@ -7,16 +7,18 @@
 	</head>
 	<body>
 		<ul id="history"></ul>
-		<div id="curgame" style="color: #e45649;">
+		<div id="curgame">
 			Current Game: None - ChatPlays Offline!
 		</div>
 		<div id="notifications">
 			<div id="brb">Be right Back!</div>
 		</div>
 	</body>
+	<script src="theme/default/default.js"></script>
 	<script>
 		let prevAuthor = "";
 		let count = 0;
+		let brb = false;
 
 		async function changeCSS(theme, channel) {
 			const scripts = document.getElementsByTagName("script");
@@ -43,35 +45,13 @@
 			document.getElementsByTagName("head")[0].replaceChild(newCSS, oldCSS);
 		}
 
-		// TODO: Change Colors when theme is active, based on exported function for color schemes via the theme.js
-		function initializeMessage(user, mod, broadcaster, settings, message, channel) {
-			// ? The whole message blob creation shit
-			let historyBlob = document.createElement('li');
-			historyBlob.setAttribute("id", user + count);
-			historyBlob.setAttribute("style", "border-color: rgb(95, 95, 95);")
-			let name = document.createElement("h2");
-			name.setAttribute("id", "name");
-			// ? Username
-			if (broadcaster == "1") {
-				name.setAttribute("style", `color: ${settings.broadcaster};`);
-			} else if (mod) {
-				name.setAttribute("style", `color: ${settings.moderator};`);
-			} else {
-				name.setAttribute("style", `color: ${settings.username};`);
+		function brbHandler() {
+			let x = document.getElementById("brb");
+			if (brb) {
+				return x.setAttribute("class", "");
 			}
-			name.innerHTML = `${mod ? "(mod) " + user : user} <span class='channel' style='color: ${settings.channel}'>- ${channel}</span>`;
-			// ? First Message in Blob
-			let initMsg = document.createElement("p");
-			initMsg.setAttribute("id", "message");
-			initMsg.setAttribute("style", `color: ${settings.message}`);
-			initMsg.innerHTML = pingMessage(message);
-			
-			historyBlob.appendChild(name);
-			historyBlob.appendChild(initMsg);
-			
-			// ? we have a message! append to list!
-			document.getElementById("history").appendChild(historyBlob);
 
+			return x.setAttribute("class", "vis");
 		}
 
 		function blobHistory(maxblobs) {
@@ -95,13 +75,10 @@
 			return list.join(" ");
 		}
 
-		function colorPing(color) {
-			let pingmsgs = document.getElementsByName("ping");
-			for (let ping of pingmsgs) {
-				if (ping) {
-					ping.setAttribute("style", `color: ${color}`);
-				}
-			}
+		// TODO: Change Colors when theme is active, based on exported function for color schemes via the theme.js
+		function initializeMessage(user, mod, broadcaster, settings, message, channel) {
+			let themejs = document.getElementById("themejs");
+			this.initMsg(user, mod, broadcaster, settings, message, channel);
 		}
 	</script>
 </html>

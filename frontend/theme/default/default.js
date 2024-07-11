@@ -1,5 +1,6 @@
-async function initTheme(channel) { 
-	const history = document.getElementById("history");
+async function initTheme(channel) {
+	const history = document.createElement("ul");
+	history.setAttribute("id", "history");
 	const curgame = document.createElement("div");
 	curgame.setAttribute("id", "curgame");
 	curgame.setAttribute("style", "color: #e45649;");
@@ -17,4 +18,32 @@ async function initTheme(channel) {
 	document.body.appendChild(notifications);
 
 	console.log(channel);
+}
+
+async function initMsg(user, mod, broadcaster, settings, message, channel) {
+	// ? The whole message blob creation shit
+	let historyBlob = document.createElement('li');
+	historyBlob.setAttribute("id", user + count);
+	historyBlob.setAttribute("style", "border-color: rgb(95, 95, 95);")
+	let name = document.createElement("h2");
+	name.setAttribute("id", "name");
+
+	name.innerHTML = `${
+		broadcaster == "1" 
+		? `<span class='broadcaster'>${user}</span>`
+		: mod
+		? `<span class='moderator'>${user}</span>`
+		: `<span class='chatter'>${user}</span>`
+	} <span class='channel'>&gt- ${channel}</span>`;
+	// ? First Message in Blob
+	let initMsg = document.createElement("p");
+	initMsg.setAttribute("id", "message");
+	initMsg.setAttribute("style", `color: ${settings.message}`);
+	initMsg.innerHTML = pingMessage(message);
+	
+	historyBlob.appendChild(name);
+	historyBlob.appendChild(initMsg);
+	
+	// ? we have a message! append to list!
+	document.getElementById("history").appendChild(historyBlob);
 }
