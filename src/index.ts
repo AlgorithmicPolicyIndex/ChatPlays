@@ -66,9 +66,11 @@ tmiclient.on("message", async (channel, user, message, self) => {
 	if (self) return;
 	message = filter.clean(message).replace(extractUrls(message), "[LINK]");
 	// ! Electron Chat
-	await Chat(channel, user, message, self, settings, window);
-
-	// ! Chat Plays
+	if (
+		self
+		|| !message.startsWith("!")
+		&& settings.useChat
+	) { await Chat(channel, user, message, settings, window); }
 
 	if (!await exists()) {
 		create({ ActiveGame: "", SetGame: "" });
@@ -87,6 +89,7 @@ tmiclient.on("message", async (channel, user, message, self) => {
 	} catch (err: any) {
 		throw new Error(err);
 	}
+	
 	try {
 		if (ActiveGame != "") {
 			getGames(ActiveGame, message);

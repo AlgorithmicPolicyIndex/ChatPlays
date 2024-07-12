@@ -45,32 +45,27 @@ export function defineCommands() {
 	return commands;
 };
 
-export async function Chat(channel: string, user: any, message: string, self: any, settings: any, window: BrowserWindow) {
+export async function Chat(channel: string, user: any, message: string, settings: any, window: BrowserWindow) {
 	// TODO: When integrating Youtube chat, change how this works if needed.
-	if (
-		self
-		|| !message.startsWith("!")
-		&& settings.useChat
-	) {
-		window.show();
-		window.webContents.executeJavaScript(`(() => {
-		// ? User blob history
-		blobHistory(${settings.maxblobs});
+	
+	window.show();
+	window.webContents.executeJavaScript(`(() => {
+	// ? User blob history
+	blobHistory(${settings.maxblobs});
 
-		// ? The message history inside the blob
-		let msghistory = document.getElementById("${user["display-name"]}" + count);
-		if (msghistory && msghistory.childNodes.length <= ${settings.maxhistory} && prevAuthor == "${user["display-name"]}") {
-			let msg = document.createElement("p");
-			msg.setAttribute("id", "message");
-			msg.innerHTML = pingMessage(${JSON.stringify(message)});
-			msghistory.appendChild(msg);
-			return;
-		}
-
-		count++; // ? used for list Element ID / new list counter
-		initializeMessage("${user["display-name"]}", ${user["mod"]}, ${user["badges"]?.broadcaster}, ${JSON.stringify(settings)}, ${JSON.stringify(message)}, "${channel}");
-		// ? color ping
-		prevAuthor = "${user["display-name"]}";
-		})();`);
+	// ? The message history inside the blob
+	let msghistory = document.getElementById("${user["display-name"]}" + count);
+	if (msghistory && msghistory.childNodes.length <= ${settings.maxhistory} && prevAuthor == "${user["display-name"]}") {
+		let msg = document.createElement("p");
+		msg.setAttribute("id", "message");
+		msg.innerHTML = pingMessage(${JSON.stringify(message)});
+		msghistory.appendChild(msg);
+		return;
 	}
+
+	count++; // ? used for list Element ID / new list counter
+	initializeMessage("${user["display-name"]}", ${user["mod"]}, ${user["badges"]?.broadcaster}, ${JSON.stringify(settings)}, ${JSON.stringify(message)}, "${channel}");
+	// ? color ping
+	prevAuthor = "${user["display-name"]}";
+	})();`);
 }

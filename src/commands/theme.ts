@@ -10,9 +10,7 @@ module.exports = {
 		) {
 			await create({ ActiveGame: "", SetGame: "" }, true);
 	
-			return window.webContents.executeJavaScript(`(() => {
-			changeCSS("${Args[0]}", "${channel}");
-			})();`);
+			return window.webContents.executeJavaScript(`(() => { changeCSS("${Args[0]}", "${channel}"); })();`);
 		}
 	}
 }

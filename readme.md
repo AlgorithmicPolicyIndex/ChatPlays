@@ -5,6 +5,9 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
 # Work Load / Plans
  - Major Plan
 	- YOUTUBE SUPPORT
+		- Has client to work (Needs to be added)
+		- Look into chat function to make sure it works across both Twitch and YouTube platforms.
+		- Change how the app shows YouTube Messages, as it is focused on Twitch. (Use different classes for Twitch and YouTube Messages)
  - Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
  - Helldivers Controls
  - Electron App
@@ -12,8 +15,7 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
  - Github file for game controls
 	- Fix the controls JSON
  - Add BunJS internal function support
- - Custom Themes and JS files to handle all HTML intercations
-	- Comes default with WinXP! which has a feature missing, but will be added later when I feel like dealing with CSS again.
+ - Comes default with WinXP! which has a feature missing, but will be added later when I feel like dealing with CSS again.
 
 ### Running
 > **!** You'll need to edit any thing to match your package manager, I personally use [Bun](https://bun.sh) **!**
