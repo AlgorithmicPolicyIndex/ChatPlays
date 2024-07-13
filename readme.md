@@ -6,9 +6,8 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
  - TWITCH
  	- Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
  - YOUTUBE
-	- Check to see about removing the pull of ALL previous YouTube messages when restarting ChatPlays in the middle of streaming.
  - OVERALL
-	- Helldivers Controls
+	- Helldivers / L4D2 Controls
  	- Github file for game controls
 		- Fix the controls JSON
  	- Add BunJS internal function support

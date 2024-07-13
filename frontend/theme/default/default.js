@@ -12,6 +12,7 @@ async function initTheme(channel) {
 	brb.innerText = "Be right Back!";
 
 	document.getElementById("chatWindow").remove();
+	document.getElementById("brb").remove();
 	document.body.appendChild(history);
 	document.body.appendChild(curgame);
 	notifications.appendChild(brb);

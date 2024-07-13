@@ -107,6 +107,12 @@ if (settings.platform.toUpperCase() == "YOUTUBE" || settings.platform.toUpperCas
 	});
 
 	ytclient.on("chat", async (ChatItem) => {
+		const latestDate = [new Date(), ChatItem.timestamp].reduce((a, b) => {
+			return a > b ? a : b;
+		});
+		// * Prevents loading of all messages that happened BEFORE application connects.
+		if (ChatItem.timestamp < latestDate) return;
+
 		const message = new Map();
 		const user = { // * Fake Twitch user Structure for moderator and broadcaster flags in Chat()
 			"display-name": ChatItem.author.name,
@@ -131,12 +137,7 @@ if (settings.platform.toUpperCase() == "YOUTUBE" || settings.platform.toUpperCas
 		const command = commands.get(Args.shift() as string);
 		if (!command) return;
 		
-		const latestDate = [new Date(), ChatItem.timestamp].reduce((a, b) => {
-			return a > b ? a : b;
-		});
 		try {	
-			if (ChatItem.timestamp < latestDate) return; // ? Youtube pulls all previous messages that were sent throughout the stream.
-									// ? This prevents previous commands from activating on restart of application.
 			await command(Args, user, settings, window, settings.universalName).catch((err: any) => {
 				throw new Error(err)
 			});

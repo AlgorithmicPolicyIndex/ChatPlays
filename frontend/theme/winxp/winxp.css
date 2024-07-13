@@ -54,7 +54,7 @@ input, button, textarea, :focus {
 }
 #history {
 	margin-left: 5px;
-	bottom: 13vh;
+	bottom: 15vh;
 	border-radius: 25%;
 }
 #name {
@@ -67,6 +67,7 @@ input, button, textarea, :focus {
 #message {
 	color: #232630 !important;
 	margin-top: 5px;
+	margin-bottom: 5px;
 	font-size:20px;
 }
 
@@ -161,6 +162,39 @@ ul {
 	margin: 0px;
 }
 
+/* NOTIFICATIONS */
+#brb {
+	left: 55%;
+	right: auto;
+	top: 10%;
+	bottom: auto;
+
+	position: absolute;
+	z-index: 5;
+	
+	visibility: hidden;
+}
+#brb.vis {
+	visibility: visible;
+}
+#brb-text {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	font-size: 15px;
+	top: 10%;
+}
+#brb>.window {
+	background: #ece9d8;
+	width: 25vh;
+	height: 15vh;
+}
+#brb>.window>.window-body {
+	height: 100%;
+	margin: 8px;
+}
 
 /* WINXP */  
     @font-face {

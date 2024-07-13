@@ -45,9 +45,7 @@ export function defineCommands() {
 	return commands;
 };
 
-export async function Chat(platform: string, user: any, message: string, settings: any, window: BrowserWindow) {
-	// TODO: When integrating Youtube chat, change how this works if needed.
-	
+export async function Chat(platform: string, user: any, message: string, settings: any, window: BrowserWindow) {	
 	window.show();
 	window.webContents.executeJavaScript(`(() => {
 	// ? User blob history
@@ -56,6 +54,11 @@ export async function Chat(platform: string, user: any, message: string, setting
 	// ? The message history inside the blob
 	let msghistory = document.getElementById("${user["display-name"]}" + count);
 	if (msghistory && msghistory.childNodes.length <= ${settings.maxhistory} && prevAuthor == "${user["display-name"]}") {
+		let css = document.getElementById("css");
+		// TODO: Will probably be moving message history into the theme .js file to make this line theme specific
+		if (brb && css.getAttribute("href") == "theme/winxp/winxp.css") {
+			return;
+		}
 		let msg = document.createElement("p");
 		msg.setAttribute("id", "message");
 		msg.setAttribute("class", "${platform}");

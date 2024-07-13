@@ -61,9 +61,18 @@ async function initTheme(channel) { // Make required elements and structure for 
 	let status_bar_field = document.createElement("p")
 	status_bar_field.setAttribute("class", "status-bar-field");
 
+	let notifications = document.createElement("div");
+	notifications.setAttribute("id", "brb");
+	let notif_win = document.createElement("div");
+	notif_win.setAttribute("class", "window");
+	let notif_body = document.createElement("div");
+	notif_body.setAttribute("class", "window-body");
+	let brb_text = document.createElement("div");
+	brb_text.setAttribute("id", "brb-text");
+
 	// Structering
-	// TODO: Find out why title_bar is undefined and not appending
 	document.body.appendChild(windowelm);
+	document.body.appendChild(notifications);
 	windowelm.appendChild(title_bar);
 	windowelm.appendChild(window_body);
 	windowelm.appendChild(status_bar);
@@ -92,6 +101,16 @@ async function initTheme(channel) { // Make required elements and structure for 
 
 	status_bar.appendChild(status_bar_field);
 
+	let notif_bar = title_bar.cloneNode(true);
+	notif_bar.childNodes[1].childNodes[0].remove();
+	notif_bar.childNodes[1].childNodes[0].remove();
+
+
+	notif_body.appendChild(brb_text);
+	notif_win.appendChild(notif_bar);
+	notif_win.appendChild(notif_body);
+	notifications.appendChild(notif_win);
+
 	channel.slice(0,1);
 	title_bar_text.innerHTML = "Twitch Chat";
 	recipent.innerHTML = `To: ${channel} &lt;${channel.length >= 15 ? "..."+channel.slice(14) : channel}@stream.tv&gt;`;
@@ -101,10 +120,17 @@ async function initTheme(channel) { // Make required elements and structure for 
 
 	status_bar_field.setAttribute("id", "curgame");
 	status_bar_field.innerHTML = "Current Game: None - ChatPlays Offline!";
+
+	notif_bar.childNodes[0].innerHTML = "C:\\ChatPlays has stopped...";
+	brb_text.innerHTML = "Be right back!";
 	console.log("finished!");
 }
 
-async function initMsg(user, mod, broadcaster, settings, message, platform) {
+async function initMsg(user, mod, broadcaster, settings, message, platform, brb) {
+	if (brb) {
+		return;
+	}
+
 	// ? The whole message blob creation shit
 	let historyBlob = document.createElement('li');
 	historyBlob.setAttribute("id", user + count);

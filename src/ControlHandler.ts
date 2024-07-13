@@ -2,7 +2,6 @@ import * as nut from "@nut-tree-fork/nut-js";
 import { PythonShell } from "python-shell";
 
 export function getControls(control: { Dir?: string, Key?: nut.Key, Amt: number }) {
-	// TODO: Handle Mouse vs Keyboard controls, then separate into separate functions
 	if (Object.keys(control).includes("Dir")) {
 		return MouseHandler(control as { Dir: string, Amt: number });
 	}

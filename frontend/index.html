@@ -21,6 +21,7 @@
 		let brb = false;
 
 		async function changeCSS(theme, channel) {
+			brb = false;
 			const scripts = document.getElementsByTagName("script");
 			for (let script of scripts) {
 				if (script.src != '') {
@@ -48,9 +49,11 @@
 		function brbHandler() {
 			let x = document.getElementById("brb");
 			if (brb) {
+				brb = false;
 				return x.setAttribute("class", "");
 			}
 
+			brb = true;
 			return x.setAttribute("class", "vis");
 		}
 
@@ -77,8 +80,10 @@
 
 		// TODO: Change Colors when theme is active, based on exported function for color schemes via the theme.js
 		function initializeMessage(user, mod, broadcaster, settings, message, platform) {
+
 			let themejs = document.getElementById("themejs");
-			this.initMsg(user, mod, broadcaster, settings, message, platform);
+			// passing in BRB only for WinXp theme, if your theme handles BRB differently, you have this avaiable to you.
+			this.initMsg(user, mod, broadcaster, settings, message, platform, brb);
 		}
 	</script>
 </html>

@@ -5,12 +5,11 @@ import { BrowserWindow } from "electron";
 
 module.exports = {
 	name: "start",
-	// TODO: Use a JSONDB to handle ActiveGame and SetGame
 	excute: async (Args: string[], user: any, settings: any, _window: BrowserWindow, _channel: string) => {
 		const ActiveGame = await getData("ActiveGame");
 		const SetGame = await getData("SetGame");
 
-		if (user["display-name"].toLowerCase() == settings.twitch.toLowerCase() || user.id.toLowerCase() == settings.youtube.toLowerCase()) {
+		if (user.toLowerCase() == settings.twitch.toLowerCase() || user.id.toLowerCase() == settings.youtube.toLowerCase()) {
 			if (await getGameName(Args[0]) == undefined){
 				say.speak("This game name does not exist in the commands folder. Please make sure the name is spelled correctly.");
 				return console.log("Not a game name does not match");
