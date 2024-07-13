@@ -60,8 +60,7 @@ if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase
 		if (v[1] != 443) {
 			return console.info("There was an error connecting to the Twitch API");
 		}
-		console.info("Connected to Twitch API:\nStarting chat...");
-		console.info("Connected!");
+		console.info("Connected to Twitch API");
 	});
 	
 	
@@ -156,7 +155,6 @@ if (settings.platform.toUpperCase() == "YOUTUBE" || settings.platform.toUpperCas
 	});
 
 	ytclient.on("error", async (err:any) => {
-		console.log("FUCK");
 		ytclient.stop();
 		throw new Error(err);
 	});

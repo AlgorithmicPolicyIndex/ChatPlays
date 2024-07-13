@@ -65,7 +65,7 @@ export async function Chat(platform: string, user: any, message: string, setting
 	}
 
 	count++; // ? used for list Element ID / new list counter
-	initializeMessage("${user["display-name"]}", ${user["mod"]}, ${user["badges"]?.broadcaster}, ${JSON.stringify(settings)}, ${JSON.stringify(message)}, "${platform}", "${platform}");
+	initializeMessage("${user["display-name"]}", ${user["mod"]}, ${user["badges"]?.broadcaster}, ${JSON.stringify(settings)}, ${JSON.stringify(message)}, "${platform}");
 	// ? color ping
 	prevAuthor = "${user["display-name"]}";
 	})();`);
