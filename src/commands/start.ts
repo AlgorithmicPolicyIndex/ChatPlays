@@ -10,7 +10,7 @@ module.exports = {
 		const ActiveGame = await getData("ActiveGame");
 		const SetGame = await getData("SetGame");
 
-		if (user["username"].toLowerCase() == settings.streamer.toLowerCase()) {
+		if (user["display-name"].toLowerCase() == settings.twitch.toLowerCase() || user.id.toLowerCase() == settings.youtube.toLowerCase()) {
 			if (await getGameName(Args[0]) == undefined){
 				say.speak("This game name does not exist in the commands folder. Please make sure the name is spelled correctly.");
 				return console.log("Not a game name does not match");
@@ -22,9 +22,9 @@ module.exports = {
 
 		if (ActiveGame == "" && Math.floor(Math.random() * 100) + 1 == 5) {
 			if (SetGame == "") {
-				return say.speak(`${user["display-name"]} has activated Chat Plays. However, there was no game set. Unable to activate.`);
+				return say.speak(`${user} has activated Chat Plays. However, there was no game set. Unable to activate.`);
 			}
-			say.speak(`${user["display-name"]} has Activated Chat Plays for: ${SetGame} for 30 seconds.`);
+			say.speak(`${user} has Activated Chat Plays for: ${SetGame} for 30 seconds.`);
 			return create({ ActiveGame: SetGame, SetGame }, false);
 		}
 		setTimeout(() => {

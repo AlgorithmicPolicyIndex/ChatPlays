@@ -1,8 +1,12 @@
 {
-	"streamer": "CHANNEL NAME",
-	"processTitle" : "ChatPlaysCMD",
+	"universalName": "API",
+	"twitch": "AlgorithmicPolicyIndex",
+	"youtube": "UCcjSFzs-NZuNUbYHM--o6bA",
+	"platform": "both",
 	"useChat": true,
 
+	
+	"processTitle" : "ChatPlaysCMD",
 	"width": 650,
 	"height": 959,
 	"maxblobs": 10,

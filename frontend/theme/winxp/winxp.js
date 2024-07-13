@@ -94,7 +94,7 @@ async function initTheme(channel) { // Make required elements and structure for 
 
 	channel.slice(0,1);
 	title_bar_text.innerHTML = "Twitch Chat";
-	recipent.innerHTML = `To: ${channel} &lt;${channel.length >= 15 ? "..."+channel.slice(14) : channel}@twitch.tv&gt;`;
+	recipent.innerHTML = `To: ${channel} &lt;${channel.length >= 15 ? "..."+channel.slice(14) : channel}@stream.tv&gt;`;
 	side_bar_1.innerHTML ="Start Camera";
 	side_bar_2.innerHTML = "Start Talking";
 	sendButton.innerHTML = "<u>S</u>end";
@@ -104,7 +104,7 @@ async function initTheme(channel) { // Make required elements and structure for 
 	console.log("finished!");
 }
 
-async function initMsg(user, mod, broadcaster, settings, message, channel) {
+async function initMsg(user, mod, broadcaster, settings, message, platform) {
 	// ? The whole message blob creation shit
 	let historyBlob = document.createElement('li');
 	historyBlob.setAttribute("id", user + count);
@@ -121,7 +121,6 @@ async function initMsg(user, mod, broadcaster, settings, message, channel) {
 	// ? First Message in Blob
 	let initMsg = document.createElement("p");
 	initMsg.setAttribute("id", "message");
-	initMsg.setAttribute("style", `color: ${settings.message}`);
 	initMsg.innerHTML = pingMessage(message);
 	
 	historyBlob.appendChild(name);

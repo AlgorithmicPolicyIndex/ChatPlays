@@ -20,7 +20,7 @@ async function initTheme(channel) {
 	console.log(channel);
 }
 
-async function initMsg(user, mod, broadcaster, settings, message, channel) {
+async function initMsg(user, mod, broadcaster, settings, message, platform) {
 	// ? The whole message blob creation shit
 	let historyBlob = document.createElement('li');
 	historyBlob.setAttribute("id", user + count);
@@ -34,11 +34,11 @@ async function initMsg(user, mod, broadcaster, settings, message, channel) {
 		: mod
 		? `<span class='moderator'>${user}</span>`
 		: `<span class='chatter'>${user}</span>`
-	} <span class='channel'>&gt- ${channel}</span>`;
+	} <span class='channel'>&gt- ${platform}</span>`;
 	// ? First Message in Blob
 	let initMsg = document.createElement("p");
 	initMsg.setAttribute("id", "message");
-	initMsg.setAttribute("style", `color: ${settings.message}`);
+	initMsg.setAttribute("class", platform);
 	initMsg.innerHTML = pingMessage(message);
 	
 	historyBlob.appendChild(name);

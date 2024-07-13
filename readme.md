@@ -3,19 +3,19 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
 
 
 # Work Load / Plans
- - Major Plan
-	- YOUTUBE SUPPORT
-		- Has client to work (Needs to be added)
-		- Look into chat function to make sure it works across both Twitch and YouTube platforms.
-		- Change how the app shows YouTube Messages, as it is focused on Twitch. (Use different classes for Twitch and YouTube Messages)
- - Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
- - Helldivers Controls
+ - TWITCH
+ 	- Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
+ - YOUTUBE
+	- Check to see about removing the pull of ALL previous YouTube messages when restarting ChatPlays in the middle of streaming.
+ - OVERALL
+	- Helldivers Controls
+ 	- Github file for game controls
+		- Fix the controls JSON
+ 	- Add BunJS internal function support
  - Electron App
- 	- Pop-ups - Followers and the like ?
- - Github file for game controls
-	- Fix the controls JSON
- - Add BunJS internal function support
- - Comes default with WinXP! which has a feature missing, but will be added later when I feel like dealing with CSS again.
+	- Pop-ups - Followers and the like ?
+ 	- THEMES
+ 		- Comes default with WinXP! which has a feature missing, but will be added later when I feel like dealing with CSS again.
 
 ### Running
 > **!** You'll need to edit any thing to match your package manager, I personally use [Bun](https://bun.sh) **!**
