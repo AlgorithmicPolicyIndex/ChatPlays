@@ -1,8 +1,8 @@
 {
-	"universalName": "API",
+	"universalName": "NAME",
 	"twitch": "CHANNEL NAME",
 	"youtube": "CHANNEL ID",
-	"platform": "TWITCH",
+	"platform": "twitch",
 	"useChat": true,
 
 	

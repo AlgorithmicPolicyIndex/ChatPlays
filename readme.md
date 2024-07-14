@@ -7,9 +7,6 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
  	- Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
  - YOUTUBE
  - OVERALL
-	- Fix commands to work with both or either platform.
-		- Currently only looks at if platform is twitch, if platform is set to "both" or youtube, it will either break on Twitch commands, or you can only use YOUTUBE.
-		- Method to fix: Use the Fake Twitch user structure and have one singular check.
 	- Helldivers / L4D2 Controls
  	- Github file for game controls
 		- Fix the controls JSON

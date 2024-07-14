@@ -4,11 +4,7 @@ import { create } from "../JSON/db";
 module.exports = {
 	name: "reset",
 	execute: async (_Args: string[], user: any, settings: any, window: BrowserWindow, _channel: string) => {
-		if (
-			settings.platform.toLowerCase() == "twitch"
-				? user.toLowerCase() == settings.twitch.toLowerCase()
-			: user.id == settings.youtube
-		) {
+		if (user.toLowerCase() == settings.twitch.toLowerCase() || user == settings.youtube) {
 			await create({ ActiveGame: "", SetGame: "" }, true);
 
 			if (settings.useChat) {

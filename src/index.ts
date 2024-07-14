@@ -136,7 +136,7 @@ if (settings.platform.toUpperCase() == "YOUTUBE" || settings.platform.toUpperCas
 		if (!command) return;
 		
 		try {	
-			await command(Args, user, settings, window, settings.universalName).catch((err: any) => {
+			await command(Args, user.id, settings, window, settings.universalName).catch((err: any) => {
 				throw new Error(err)
 			});
 		} catch (err: any) {
