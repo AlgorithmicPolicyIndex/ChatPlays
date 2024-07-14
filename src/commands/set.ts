@@ -6,7 +6,11 @@ import { create, getData } from "../JSON/db";
 module.exports = {
 	name: "set",
 	execute: async (Args: string[], user: any, settings: any, window: BrowserWindow, _channel: string) => {
-		if (user.toLowerCase() == settings.twitch.toLowerCase() || user.id.toLowerCase() == settings.youtube.toLowerCase()) {
+		if (
+			settings.platform.toLowerCase() == "twitch"
+				? user.toLowerCase() == settings.twitch.toLowerCase()
+			: user.id == settings.youtube
+		) {
 			if (await getGameName(Args[0]) == undefined){
 				say.speak("This game name does not exist in the commands folder. Please make sure the name is spelled correctly.");
 				return console.log("Not a game name does not match");

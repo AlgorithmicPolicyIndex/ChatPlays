@@ -121,6 +121,21 @@ input, button, textarea, :focus {
 
 	background: linear-gradient(#8cade2 25%, rgb(42, 102, 192));
 }
+.liItem#expand {
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='16' height='17' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M0 0h16v17H0V0zm1 16h14V1H1v15z' fill='gray'/%3E%3Cpath fill='silver' d='M1 1h14v15H1z'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M12 7H5v1h1v1h1v1h1v1h1v-1h1V9h1V8h1V7z' fill='%23000'/%3E%3C/svg%3E");
+}
+.liItem#expand>ul {
+	background: #ece9d8;
+	color: #232630;
+	padding-left: 1%;
+	margin-top: 5px;
+	width: 99%;
+	left: 0px;
+}
+.liItem#expand>ul>li {
+	list-style: circle;
+	margin: 5px 0px 5px 20px;
+}
 
 ul {
 	margin: 0px;

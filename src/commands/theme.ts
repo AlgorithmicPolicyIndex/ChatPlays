@@ -5,8 +5,9 @@ module.exports = {
 	name: "theme",
 	execute: async (Args: string[], user: any, settings: any, window: BrowserWindow, channel: string) => {
 		if (
-			user.toLowerCase() == settings.twitch.toLowerCase()
-			|| user.id.toLowerCase() == settings.youtube.toLowerCase()
+			settings.platform.toLowerCase() == "twitch"
+				? user.toLowerCase() == settings.twitch.toLowerCase()
+			: user.id == settings.youtube
 			&& settings.useChat
 		) {
 			await create({ ActiveGame: "", SetGame: "" }, true);

@@ -106,12 +106,10 @@ if (settings.platform.toUpperCase() == "YOUTUBE" || settings.platform.toUpperCas
 		console.log(`Started on: ${liveId}`);
 	});
 
+	const date = new Date();
 	ytclient.on("chat", async (ChatItem) => {
-		const latestDate = [new Date(), ChatItem.timestamp].reduce((a, b) => {
-			return a > b ? a : b;
-		});
 		// * Prevents loading of all messages that happened BEFORE application connects.
-		if (ChatItem.timestamp < latestDate) return;
+		if (ChatItem.timestamp <= date) return;
 
 		const message = new Map();
 		const user = { // * Fake Twitch user Structure for moderator and broadcaster flags in Chat()

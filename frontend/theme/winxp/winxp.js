@@ -46,6 +46,28 @@ async function initTheme(channel) { // Make required elements and structure for 
 	side_bar_1.setAttribute("class", "liItem");
 	let side_bar_2 = document.createElement("li")
 	side_bar_2.setAttribute("class", "liItem");
+	
+	let side_bar_3 = document.createElement("li");
+	side_bar_3.setAttribute("class", "liItem");
+	side_bar_3.setAttribute("id", "expand");
+	side_bar_3.innerHTML = "I want to...";
+	let side_bar_3_ul = document.createElement("ul");
+	let text = [
+		"Invite Someone to this Conversation",
+		"Send a File or Photo",
+		"Send E-Mail",
+		"Ask for Remote Assistance",
+		"Make a Phone Call",
+		"Start Application Sharing",
+		"Start Whiteboard"
+	];
+	for (let i=1;i<=text.length;i++) {
+		let doc = document.createElement("li");
+		doc.innerHTML = text[i-1];
+		side_bar_3_ul.appendChild(doc);	
+	}
+	side_bar_3.appendChild(side_bar_3_ul);
+
 	let messageBox = document.createElement("div")
 	messageBox.setAttribute("class", "messageBox");
 	const history = document.createElement("ul");
@@ -88,6 +110,7 @@ async function initTheme(channel) { // Make required elements and structure for 
 	side_bar.appendChild(side_bar_ul);
 	side_bar_ul.appendChild(side_bar_1);
 	side_bar_ul.appendChild(side_bar_2);
+	side_bar_ul.appendChild(side_bar_3);
 	
 	messageBox.appendChild(history);
 
