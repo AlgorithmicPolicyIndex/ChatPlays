@@ -45,7 +45,55 @@ export function defineCommands() {
 	return commands;
 };
 
-export async function Chat(platform: string, user: any, message: string, settings: any, window: BrowserWindow) {	
+export async function Chat(platform: string, user: any, message: string, settings: any, window: BrowserWindow) {
+	// ! Get Emote and replace with img tag
+	// * Twitch Emotes
+	if (platform == "TWITCH" || platform == "BOTH") {
+		let replacements: { strToReplace: string; replacement: string; }[] = [];
+		const emotes: { string: [ string ] } = user["emotes"];
+	
+		if (emotes) {
+			Object.entries(emotes).forEach(([id, positions]) => {
+				const position = positions[0];
+				const [start, end] = position.split("-");
+				const strToReplace = message.substring(
+					parseInt(start, 10),
+					parseInt(end, 10) + 1
+				);
+		
+				replacements.push({
+					strToReplace,
+					replacement: `<img src="https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/dark/1.0">`
+				});
+			});
+		}
+	
+		// * BTTV
+		// ? Global BTTV Emotes
+		await fetch(`https://api.betterttv.net/3/cached/emotes/global`).then(async (res) => {
+			let data = await res.json();
+
+			for (let emote of data) {
+				let idx = message.split(" ").indexOf(emote.code);
+				if (idx > -1) {
+					replacements.push({
+						strToReplace: emote.code,
+						replacement: `<img src="https://cdn.betterttv.net/emote/${emote.id}/1x">`
+					});	
+				}
+			}
+		});
+
+		// TODO: Figure out how to get a channels BTTV userID 
+
+		message = replacements.reduce(
+			(acc, { strToReplace, replacement }) => {
+				return acc.split(strToReplace).join(replacement);
+			},
+			message
+		);
+	}
+	
 	window.show();
 	window.webContents.executeJavaScript(`(() => {
 	// ? User blob history

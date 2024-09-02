@@ -67,6 +67,7 @@ if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase
 	tmiclient.on("message", async (_channel, user, message, self) => {
 		if (self) return;
 		message = filter.clean(message).replace(extractUrls(message), "[LINK]");
+
 		// ! Electron Chat
 		if (
 			self
@@ -74,6 +75,7 @@ if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase
 			&& settings.useChat
 		) { await Chat("TWITCH", user, message, settings, window); }
 	
+		// ! Commands
 		const Args = message.toLowerCase().slice(1).split(" ");
 		
 		const command = commands.get(Args.shift() as string);
