@@ -11,11 +11,16 @@ async function initTheme(channel) {
 	brb.setAttribute("id", "brb");
 	brb.innerText = "Be right Back!";
 
+	const sub = document.createElement("sub");
+	sub.setAttribute("id", "sub");
+
 	document.getElementById("chatWindow").remove();
 	document.getElementById("brb").remove();
+	document.getElementById("sub").remove();
 	document.body.appendChild(history);
 	document.body.appendChild(curgame);
 	notifications.appendChild(brb);
+	notifications.appendChild(sub);
 	document.body.appendChild(notifications);
 
 	console.log(channel);
@@ -47,4 +52,13 @@ async function initMsg(user, mod, broadcaster, settings, message, platform) {
 	
 	// ? we have a message! append to list!
 	document.getElementById("history").appendChild(historyBlob);
+}
+
+async function sub(username) {
+	let x = document.getElementById("sub");
+	x.setAttribute("class", "vis");
+	x.innerText = `${username} has subscribed!`;
+	setTimeout(() => {
+		return x.setAttribute("class", "");
+	}, 10_000);
 }

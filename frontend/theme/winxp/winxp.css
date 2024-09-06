@@ -210,6 +210,56 @@ ul {
 	height: 100%;
 	margin: 8px;
 }
+
+#sub {
+	left: 3%;
+	right: auto;
+	top: 20%;
+	bottom: auto;
+
+	position: absolute;
+	z-index: 5;
+	
+	visibility: hidden;
+}
+#sub.vis {
+	visibility: visible;
+}
+#sub-text {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	font-size: 18px;
+	top: 10%;
+}
+#sub>.window {
+	background: #ece9d8;
+	width: 50vh;
+	height: 15vh;
+}
+#sub>.window>.window-body {
+	height: 100%;
+	margin: 8px;
+}
+#sub-button-yes {
+	position: absolute;
+	top: 67%;
+	left: 21%;
+	width: 17%;
+	height: 22%;
+	font-size: 15px;
+}
+#sub-button-no {
+	position: absolute;
+	top: 67%;
+	left: 58%;
+	width: 17%;
+	height: 22%;
+	font-size: 15px;
+}
+
 img {
 	filter: grayscale(100%);
 }

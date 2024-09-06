@@ -12,6 +12,7 @@
 		</div>
 		<div id="notifications">
 			<div id="brb">Be right Back!</div>
+			<div id="sub"></div>
 		</div>
 	</body>
 	<script src="theme/default/default.js"></script>
@@ -78,12 +79,14 @@
 			return list.join(" ");
 		}
 
-		// TODO: Change Colors when theme is active, based on exported function for color schemes via the theme.js
 		function initializeMessage(user, mod, broadcaster, settings, message, platform) {
+			// passing in BRB only for WinXp theme, if your theme handles BRB differently,
+			// you have this avaiable to you.
+			return this.initMsg(user, mod, broadcaster, settings, message, platform, brb);
+		}
 
-			let themejs = document.getElementById("themejs");
-			// passing in BRB only for WinXp theme, if your theme handles BRB differently, you have this avaiable to you.
-			this.initMsg(user, mod, broadcaster, settings, message, platform, brb);
+		function subscription(username) {
+			return this.sub(username);
 		}
 	</script>
 </html>

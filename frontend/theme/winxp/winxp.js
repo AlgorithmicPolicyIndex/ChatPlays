@@ -83,18 +83,35 @@ async function initTheme(channel) { // Make required elements and structure for 
 	let status_bar_field = document.createElement("p")
 	status_bar_field.setAttribute("class", "status-bar-field");
 
-	let notifications = document.createElement("div");
-	notifications.setAttribute("id", "brb");
-	let notif_win = document.createElement("div");
-	notif_win.setAttribute("class", "window");
-	let notif_body = document.createElement("div");
-	notif_body.setAttribute("class", "window-body");
+	let brb = document.createElement("div");
+	brb.setAttribute("id", "brb");
+	let brb_win = document.createElement("div");
+	brb_win.setAttribute("class", "window");
+	let brb_body = document.createElement("div");
+	brb_body.setAttribute("class", "window-body");
 	let brb_text = document.createElement("div");
 	brb_text.setAttribute("id", "brb-text");
 
+	let sub = document.createElement("div");
+	sub.setAttribute("id", "sub");
+	let sub_win = document.createElement("div");
+	sub_win.setAttribute("class", "window");
+	let sub_body = document.createElement("div");
+	sub_body.setAttribute("class", "window-body");
+	let sub_text = document.createElement("div");
+	sub_text.setAttribute("id", "sub-text");
+	let sub_button_yes = document.createElement("button");
+	sub_button_yes.setAttribute("id", "sub-button-yes");
+	sub_button_yes.innerHTML = "Yes"
+	
+	let sub_button_no = document.createElement("button");
+	sub_button_no.setAttribute("id", "sub-button-no");
+	sub_button_no.innerHTML = "No"
+
 	// Structering
 	document.body.appendChild(windowelm);
-	document.body.appendChild(notifications);
+	document.body.appendChild(brb);
+	document.body.appendChild(sub);
 	windowelm.appendChild(title_bar);
 	windowelm.appendChild(window_body);
 	windowelm.appendChild(status_bar);
@@ -124,15 +141,26 @@ async function initTheme(channel) { // Make required elements and structure for 
 
 	status_bar.appendChild(status_bar_field);
 
-	let notif_bar = title_bar.cloneNode(true);
-	notif_bar.childNodes[1].childNodes[0].remove();
-	notif_bar.childNodes[1].childNodes[0].remove();
+	let brb_bar = title_bar.cloneNode(true);
+	brb_bar.childNodes[1].childNodes[0].remove();
+	brb_bar.childNodes[1].childNodes[0].remove();
 
+	brb_body.appendChild(brb_text);
+	brb_win.appendChild(brb_bar);
+	brb_win.appendChild(brb_body);
+	brb.appendChild(brb_win);
 
-	notif_body.appendChild(brb_text);
-	notif_win.appendChild(notif_bar);
-	notif_win.appendChild(notif_body);
-	notifications.appendChild(notif_win);
+	let sub_bar = title_bar.cloneNode(true);
+	sub_bar.childNodes[1].childNodes[0].remove();
+	sub_bar.childNodes[1].childNodes[0].remove();
+	
+	sub_body.appendChild(sub_text);
+	sub_body.appendChild(sub_button_yes);
+	sub_body.appendChild(sub_button_no);
+	sub_win.appendChild(sub_bar);
+	sub_win.appendChild(sub_body);
+	sub.appendChild(sub_win);
+
 
 	channel.slice(0,1);
 	title_bar_text.innerHTML = "Twitch Chat";
@@ -144,8 +172,9 @@ async function initTheme(channel) { // Make required elements and structure for 
 	status_bar_field.setAttribute("id", "curgame");
 	status_bar_field.innerHTML = "Current Game: None - ChatPlays Offline!";
 
-	notif_bar.childNodes[0].innerHTML = "C:\\ChatPlays has stopped...";
+	brb_bar.childNodes[0].innerHTML = "C:\\ChatPlays has stopped...";
 	brb_text.innerHTML = "Be right back!";
+	sub_bar.childNodes[0].innerHTML = "Subscription";
 	console.log("finished!");
 }
 
@@ -177,4 +206,13 @@ async function initMsg(user, mod, broadcaster, settings, message, platform, brb)
 	
 	// ? we have a message! append to list!
 	document.getElementById("history").appendChild(historyBlob);
+}
+
+async function subscription(username) {
+	let x = document.getElementById("sub");
+	x.setAttribute("class", "vis");
+	x.childNodes[0].childNodes[1].childNodes[0].innerHTML = `Run:\nC:\\users\\${username}\\subscription.exe?`;
+	setTimeout(() => {
+		return x.setAttribute("class", "");
+	}, 10_000);
 }

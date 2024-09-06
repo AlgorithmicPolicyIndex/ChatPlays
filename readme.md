@@ -15,9 +15,6 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
 		- 7TV and FFZ Emotes
  - Electron App
 	- Pop-ups - Followers and the like ?
-		- subscription
-			- Add funciton in \[theme\].js to handle subscription element window like the BRB
-			- Add CSS to \[theme\].css to place the follower popup somewhere else and make closing animation
  	- THEMES
 		- WINXP
 			- Make it work correctly with different window sizes.

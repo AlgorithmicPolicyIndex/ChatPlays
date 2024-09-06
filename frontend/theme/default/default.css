@@ -131,6 +131,11 @@ li {
 	visibility: visible;
 	animation: gb-popup-bounce-to-bottom 1.1s both;
 }
+#notifications>#sub.vis {
+	visibility: visible;
+	animation: gb-popup-bounce-to-bottom 1.1s both;
+}
+
 /* TODO: Follower notif? */
 /* #notifications>#follower.vis {
 	visibility: visible;
