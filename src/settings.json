@@ -1,10 +1,10 @@
 {
-	"universalName": "NAME",
-	"twitch": "CHANNEL NAME",
+	"universalName": "API",
+	"twitch": "algorithmicpolicyindex",
 	"youtube": "CHANNEL ID",
 	"platform": "twitch",
 	"useChat": true,
-
+	"useOtherEmotes": true,
 	
 	"processTitle" : "ChatPlaysCMD",
 	"width": 650,

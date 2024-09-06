@@ -53,6 +53,10 @@ if (settings.useChat) {
 
 if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase() == "BOTH") {
 	const tmiclient = new tmi.client({
+		connection: {
+			reconnect: true,
+			secure: true
+		},
 		channels: [ settings.twitch ]
 	});
 	
@@ -62,7 +66,6 @@ if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase
 		}
 		console.info("Connected to Twitch API");
 	});
-	
 	
 	tmiclient.on("message", async (_channel, user, message, self) => {
 		if (self) return;
@@ -98,6 +101,12 @@ if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase
 			throw new Error(err);
 		}
 	});
+
+	tmiclient.on("subscription", async (_channel, username, _methods, _message, _user) => {
+		window.webContents.executeJavaScript(`(() => {
+			subscription(${username});
+		})();`);
+	});	
 }
 
 if (settings.platform.toUpperCase() == "YOUTUBE" || settings.platform.toUpperCase() == "BOTH") {

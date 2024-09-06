@@ -6,26 +6,26 @@
   "devDependencies": {
     "@types/bad-words": "^3.0.3",
     "@types/electron": "^1.6.10",
-    "@types/node": "^20.14.10",
+    "@types/node": "^20.16.5",
     "@types/tmi.js": "^1.8.6",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.57.0"
   },
   "dependencies": {
-    "@nut-tree-fork/nut-js": "^4.2.1",
+    "@nut-tree-fork/nut-js": "^4.2.2",
     "@types/discord-rich-presence": "^0.0.2",
     "@types/gapi": "^0.0.47",
     "bad-words": "^3.0.4",
     "discord-rich-presence": "^0.0.8",
-    "electron": "^31.2.0",
+    "electron": "^31.5.0",
     "extract-urls": "^1.4.1",
     "googleapis": "^140.0.1",
     "node-json-db": "^2.3.0",
     "python-shell": "^5.0.0",
     "say": "^0.16.0",
     "tmi.js": "^1.8.5",
-    "typescript": "^5.5.3",
+    "typescript": "^5.5.4",
     "word-wrap": "^1.2.5",
     "youtube-chat": "^2.2.0"
   }

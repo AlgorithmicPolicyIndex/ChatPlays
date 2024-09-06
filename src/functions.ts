@@ -1,7 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
 import { BrowserWindow } from "electron";
-
 const extensions = [".ts", ".js"];
 
 export async function getGames(name: string, message: string) {
@@ -45,7 +44,18 @@ export function defineCommands() {
 	return commands;
 };
 
+let user_id: string | undefined = undefined;
 export async function Chat(platform: string, user: any, message: string, settings: any, window: BrowserWindow) {
+	if (
+		// ! This is gross
+		// TODO: Figure out how to get the ID without the streamer typing in chat for their userID
+		settings.useOtherEmotes
+		&& user["display-name"]?.toLowerCase() == settings.twitch.toLowerCase()
+		&& user_id == undefined
+	) {
+		user_id = user["user-id"];
+	}
+
 	// ! Get Emote and replace with img tag
 	// * Twitch Emotes
 	if (platform == "TWITCH" || platform == "BOTH") {
@@ -68,24 +78,31 @@ export async function Chat(platform: string, user: any, message: string, setting
 			});
 		}
 	
-		// * BTTV
-		// ? Global BTTV Emotes
-		await fetch(`https://api.betterttv.net/3/cached/emotes/global`).then(async (res) => {
-			let data = await res.json();
-
-			for (let emote of data) {
-				let idx = message.split(" ").indexOf(emote.code);
-				if (idx > -1) {
-					replacements.push({
-						strToReplace: emote.code,
-						replacement: `<img src="https://cdn.betterttv.net/emote/${emote.id}/1x">`
-					});	
+		if (settings.useOtherEmotes && user_id != undefined) {
+			// * BTTV
+			// ? Global BTTV Emotes
+			await fetch(`https://api.betterttv.net/3/cached/emotes/global`).then(async (res) => {
+				let data = await res.json();
+				
+				for (let emote of data) {
+					strToEmote(message, emote, replacements);
 				}
-			}
-		});
-
-		// TODO: Figure out how to get a channels BTTV userID 
-
+			});
+			// ? Channel BTTV Emotes
+			await fetch(`https://api.betterttv.net/3/cached/users/${platform.toLowerCase()}/${user_id}`).then(async (res) => {
+				let data = await res.json();
+				
+				for (let emote of data["sharedEmotes"]) {
+					strToEmote(message, emote, replacements);
+				}
+				for (let emote of data["channelEmotes"]) {
+					strToEmote(message, emote, replacements);
+				}
+			});
+		} else {
+			console.info("Please make sure to type into your own chat.\nI need your user-id to be able to search the BTTV channel emotes");
+		}
+		
 		message = replacements.reduce(
 			(acc, { strToReplace, replacement }) => {
 				return acc.split(strToReplace).join(replacement);
@@ -120,4 +137,14 @@ export async function Chat(platform: string, user: any, message: string, setting
 	// ? color ping
 	prevAuthor = "${user["display-name"]}";
 	})();`);
+}
+
+function strToEmote(message: string, emote: any, replacements: { strToReplace: string; replacement: string; }[]) {
+	let idx = message.split(" ").indexOf(emote.code);
+	if (idx > -1) {
+		replacements.push({
+			strToReplace: emote.code,
+			replacement: `<img src="https://cdn.betterttv.net/emote/${emote.id}/1x">`
+		});
+	}
 }
