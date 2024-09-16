@@ -1,20 +1,24 @@
 # ChatPlays
-Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki) to read more and specific things about Controls and Settings!
+Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki) to read more and specific things about Controls and Settings!  
+**Have fix the Wiki to be up-to-date**
 
 
 # Work Load / Plans
  - TWITCH
  	- Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
+	- Follower Request (as it's not apart of the API)
  - YOUTUBE
+	- Subscribe / Membership Event (not apart of the chat module I use)
  - OVERALL
-	- Helldivers / L4D2 Controls
+	- Helldivers Controls
  	- Github file for game controls
 		- Fix the controls JSON
  	- Add BunJS internal function support
-	- Mot a priority
+	- Not a priority
 		- 7TV and FFZ Emotes
  - Electron App
-	- Pop-ups - Followers and the like ?
+	- Plugins
+		- For separate overlay functions that can be run in tandem outside of the Theme Developers or Program Scope
  	- THEMES
 		- WINXP
 			- Make it work correctly with different window sizes.
