@@ -54,13 +54,14 @@ const Controls = {
 	stop: { Amt: 0 }
 };
 
-module.exports = {
-	name: "destiny2",
-	execute: async (message: string) => {
-		if (Object.keys(Controls).includes(message)) {
-			const control = Object.keys(Controls);
-			getControls(Controls[control[control.indexOf(message)] as keyof typeof Controls]);
-		}
-	},
-	controls: [ Controls ]
-};
+
+const name = "destiny2";
+const execute = async (message: string) => {
+	if (Object.keys(Controls).includes(message)) {
+		const control = Object.keys(Controls);
+		getControls(Controls[control[control.indexOf(message)] as keyof typeof Controls]);
+	}
+}
+const controls = [ Controls ];
+
+export {name, execute, controls};

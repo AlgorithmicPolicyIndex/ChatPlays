@@ -9,7 +9,7 @@
 	* This file is more showing what the JS file should look like. Mainly function wise, since your code will vary.
 */
 
-async function initTheme(channel) { // Make required elements and structure for theme to work
+async function initTheme(channel, title) { // Make required elements and structure for theme to work
 	// Remove unneeded items
 	document.getElementById("curgame").remove();
 	document.getElementById("notifications").remove();
@@ -163,7 +163,7 @@ async function initTheme(channel) { // Make required elements and structure for 
 
 
 	channel.slice(0,1);
-	title_bar_text.innerHTML = "Twitch Chat";
+	title_bar_text.innerHTML = title;
 	recipent.innerHTML = `To: ${channel} &lt;${channel.length >= 15 ? "..."+channel.slice(14) : channel}@stream.tv&gt;`;
 	side_bar_1.innerHTML ="Start Camera";
 	side_bar_2.innerHTML = "Start Talking";
@@ -208,10 +208,14 @@ async function initMsg(user, mod, broadcaster, settings, message, platform, brb)
 	document.getElementById("history").appendChild(historyBlob);
 }
 
-async function subscription(username) {
+async function sub(username, recipent) {
 	let x = document.getElementById("sub");
 	x.setAttribute("class", "vis");
-	x.childNodes[0].childNodes[1].childNodes[0].innerHTML = `Run:\nC:\\users\\${username}\\subscription.exe?`;
+	if (recipent) {
+		x.childNodes[0].childNodes[1].childNodes[0].innerHTML = `${username} has ran:</br>C:\\users\\${recipent}\\gift.exe`;
+	} else {
+		x.childNodes[0].childNodes[1].childNodes[0].innerHTML = `Run:</br>C:\\users\\${username}\\subscription.exe?`;
+	}
 	setTimeout(() => {
 		return x.setAttribute("class", "");
 	}, 10_000);

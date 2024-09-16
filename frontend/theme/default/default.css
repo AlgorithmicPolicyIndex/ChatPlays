@@ -4,8 +4,8 @@
 	
 	--message-font-size: 17px;
 	--message-color: #fafafa;
-	--channel-font-size: 15px;
-	--channel-color: #0997b3;
+	--platform-font-size: 15px;
+	--platform-color: #0997b3;
 	--curgame-font-size: 23px;
 	--curgame-color: #e45649;
 	--curgame-active-color: #c18401;
@@ -73,9 +73,9 @@ li {
 	color: var(--chatter-color);
 }
 
-.channel {
-	color: var(--channel-color);
-	font-size: var(--channel-font-size);
+.platform {
+	color: var(--platform-color);
+	font-size: var(--platform-font-size);
 }
 
 #name {

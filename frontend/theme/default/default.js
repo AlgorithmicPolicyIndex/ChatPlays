@@ -40,7 +40,7 @@ async function initMsg(user, mod, broadcaster, settings, message, platform) {
 		: mod
 		? `<span class='moderator'>${user}</span>`
 		: `<span class='chatter'>${user}</span>`
-	} <span class='channel'>&gt- ${platform}</span>`;
+	} <span class='platform'>&gt- ${platform}</span>`;
 	// ? First Message in Blob
 	let initMsg = document.createElement("p");
 	initMsg.setAttribute("id", "message");
@@ -54,10 +54,14 @@ async function initMsg(user, mod, broadcaster, settings, message, platform) {
 	document.getElementById("history").appendChild(historyBlob);
 }
 
-async function sub(username) {
+async function sub(username, recipent) {
 	let x = document.getElementById("sub");
 	x.setAttribute("class", "vis");
-	x.innerText = `${username} has subscribed!`;
+	if (recipent) {
+		x.innerText = `${username} has given ${recipent} a subscription!`;
+	} else {
+		x.innerText = `${username} has subscribed!`;
+	}
 	setTimeout(() => {
 		return x.setAttribute("class", "");
 	}, 10_000);

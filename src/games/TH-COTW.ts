@@ -63,15 +63,14 @@ const Controls = {
 	// ? To iterate on last, this assumes that, in the ControlHandler.ts, the mouse button is in the "HeldKeys" array.
 	stop: { Amt: 0 }
 };
-module.exports = {
-	name: "THCOTW",
-	execute: async (message: string) => {
-		if (Object.keys(Controls).includes(message)) {
-			const control = Object.keys(Controls);
-			getControls(Controls[control[control.indexOf(message)] as keyof typeof Controls]);
-		}
-	},
-	controls: [ Controls ]
-};
 
-export {};
+const name = "THCOTW";
+const execute = async (message: string) => {
+	if (Object.keys(Controls).includes(message)) {
+		const control = Object.keys(Controls);
+		getControls(Controls[control[control.indexOf(message)] as keyof typeof Controls]);
+	}
+};
+const controls = [ Controls ];
+
+export { name, execute, controls };

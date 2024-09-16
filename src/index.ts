@@ -49,6 +49,7 @@ if (settings.useChat) {
 		window = win;
 		win.loadFile("../frontend/index.html");
 	});
+
 }
 
 if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase() == "BOTH") {
@@ -104,9 +105,14 @@ if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase
 
 	tmiclient.on("subscription", async (_channel, username, _methods, _message, _user) => {
 		window.webContents.executeJavaScript(`(() => {
-			subscription(${username});
+			subscription("${username}");
 		})();`);
-	});	
+	});
+	tmiclient.on("subgift", async (_channel, username, _streak, recipient, _methods) => {
+		window.webContents.executeJavaScript(`(() => {
+			subscription("${username}", "${recipient}");
+		})();`);
+	});
 }
 
 if (settings.platform.toUpperCase() == "YOUTUBE" || settings.platform.toUpperCase() == "BOTH") {
@@ -114,7 +120,7 @@ if (settings.platform.toUpperCase() == "YOUTUBE" || settings.platform.toUpperCas
 	ytclient.start();
 
 	ytclient.on("start", async (liveId) => {
-		console.log(`Started on: ${liveId}`);
+		console.log(`Connected to Youtube on: ${liveId}`);
 	});
 
 	const date = new Date();

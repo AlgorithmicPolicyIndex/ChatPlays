@@ -44,6 +44,7 @@ export function defineCommands() {
 	return commands;
 };
 
+let emoteWarn = false;
 let user_id: string | undefined = undefined;
 export async function Chat(platform: string, user: any, message: string, settings: any, window: BrowserWindow) {
 	if (
@@ -100,7 +101,10 @@ export async function Chat(platform: string, user: any, message: string, setting
 				}
 			});
 		} else {
-			console.info("Please make sure to type into your own chat.\nI need your user-id to be able to search the BTTV channel emotes");
+			if (!emoteWarn)  {
+				console.info("Please make sure to type into your own chat.\nI need your user-id to be able to search the BTTV channel emotes");
+				emoteWarn = true;
+			}
 		}
 		
 		message = replacements.reduce(

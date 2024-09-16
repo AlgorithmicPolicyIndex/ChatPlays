@@ -105,20 +105,20 @@ const Stratagems = {
 };
 
 // TODO: Make handler for changing flashlight, RPM and zoom levels.
-module.exports = {
-	name: "hd2",
-	execute: async (message: string) => {
-		if (Object.keys(Controls).includes(message.toLowerCase())) {
-			const control = Object.keys(Controls);
-			getControls(Controls[control[control.indexOf(message.toLowerCase())] as keyof typeof Controls]);
-		}
-		if (Object.keys(Stratagems).includes(message.toLowerCase())) {
-			const stratagem = Object.keys(Stratagems);
-			StratagemHandler(Stratagems[stratagem[stratagem.indexOf(message.toLowerCase())] as keyof typeof Stratagems]);
-		}
-	},
-	controls: [ Controls, Stratagems ]
-};
+const name=  "hd2";
+const execute = async (message: string) => {
+	if (Object.keys(Controls).includes(message.toLowerCase())) {
+		const control = Object.keys(Controls);
+		getControls(Controls[control[control.indexOf(message.toLowerCase())] as keyof typeof Controls]);
+	}
+	if (Object.keys(Stratagems).includes(message.toLowerCase())) {
+		const stratagem = Object.keys(Stratagems);
+		StratagemHandler(Stratagems[stratagem[stratagem.indexOf(message.toLowerCase())] as keyof typeof Stratagems]);
+	}
+}
+const controls = [ Controls, Stratagems ];
+
+export {name, execute, controls}
 
 async function StratagemHandler(sequence: string) {
 	const sseq = sequence.split("");

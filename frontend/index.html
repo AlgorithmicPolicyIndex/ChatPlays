@@ -4,6 +4,7 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link id="css" rel="stylesheet" href="theme/default/default.css">
+		<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'"> 
 	</head>
 	<body>
 		<ul id="history"></ul>
@@ -21,7 +22,7 @@
 		let count = 0;
 		let brb = false;
 
-		async function changeCSS(theme, channel) {
+		async function changeCSS(theme, channel, title) {
 			brb = false;
 			const scripts = document.getElementsByTagName("script");
 			for (let script of scripts) {
@@ -32,7 +33,7 @@
 
 			let themejs = document.createElement("script");
 			themejs.onload = async () => {
-				this.initTheme(channel);
+				this.initTheme(channel, title);
 			}
 			themejs.src = `theme/${theme}/${theme}.js`;
 			document.documentElement.appendChild(themejs);
@@ -85,8 +86,15 @@
 			return this.initMsg(user, mod, broadcaster, settings, message, platform, brb);
 		}
 
-		function subscription(username) {
-			return this.sub(username);
+		function subscription(username, recipient) {
+			return this.sub(
+				username.length >= 15
+				? username.slice(0, -14)
+				: username,
+				recipient ? recipient.length >= 15
+				? recipient.slice(0, -14)
+				: recipient : ""
+			);
 		}
 	</script>
 </html>

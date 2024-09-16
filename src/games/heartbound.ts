@@ -20,15 +20,13 @@ const Controls = {
 	pause: { Key: Key.Escape, Amt: 500 }
 };
 
-module.exports = {
-	name: "heartbound",
-	execute: async (message: string) => {
-		if (Object.keys(Controls).includes(message)) {
-			const control = Object.keys(Controls);
-			getControls(Controls[control[control.indexOf(message)] as keyof typeof Controls]);
-		}
-	},
-	controls: [ Controls ]
-};
+const name = "heartbound";
+const execute = async (message: string) => {
+	if (Object.keys(Controls).includes(message)) {
+		const control = Object.keys(Controls);
+		getControls(Controls[control[control.indexOf(message)] as keyof typeof Controls]);
+	}
+}
+const controls = [ Controls ];
 
-export {};
+export {name, execute, controls};

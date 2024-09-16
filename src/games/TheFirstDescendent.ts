@@ -1,7 +1,7 @@
 const { Key } = require("@nut-tree-fork/nut-js");
 const { getControls } = require("../ControlHandler");
 
-const controls = {
+const Controls = {
 	//#region | Mouse Controls
 	// ! Amount for Mouse controls are in Pixels.
 	lightleft: { Dir: "left", Amt: 100 },
@@ -53,15 +53,14 @@ const controls = {
 	sprint: { Key: Key.LeftShift, Amt: -1 },
 	//#endregion
 };
-module.exports = {
-	name: "TFD",
-	execute: async (message: string) => {
-		if (Object.keys(controls).includes(message)) {
-			const control = Object.keys(controls);
-			getControls(controls[control[control.indexOf(message)] as keyof typeof controls]);
-		}
-	},
-	controls: [ controls ]
-};
 
-export {};
+const name = "TFD";
+const execute = async (message: string) => {
+	if (Object.keys(controls).includes(message)) {
+		const control = Object.keys(controls);
+		getControls(controls[control[control.indexOf(message)] as keyof typeof controls]);
+	}
+};
+const controls = [ Controls ];
+
+export { name, execute, controls };

@@ -2,7 +2,7 @@ import { Glob } from "bun";
 import path from "path";
 import * as fs from "fs";
 
-const glob = new Glob("**/commands/*.ts");
+const glob = new Glob("**/games/*.ts");
 let text = "# Games";
 const controls = {};
 for await (const cmdPath of glob.scan("src")) {

@@ -8,13 +8,14 @@ const Controls = {
 	lookright: { Dir: "right", Amt: 1000 }
 };
 
-module.exports = {
-	name: "l4d2",
-	execute: async (message: string) => {
-		if (Object.keys(Controls).includes(message)) {
-			const control = Object.keys(Controls);
-			getControls(Controls[control[control.indexOf(message)] as keyof typeof Controls]);
-		}
-	},
-	controls: [ Controls ]
-};
+
+const name = "l4d2";
+const execute = async (message: string) => {
+	if (Object.keys(Controls).includes(message)) {
+		const control = Object.keys(Controls);
+		getControls(Controls[control[control.indexOf(message)] as keyof typeof Controls]);
+	}
+}
+const controls = [ Controls ];
+
+export {name, execute, controls}
