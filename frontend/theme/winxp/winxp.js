@@ -186,7 +186,6 @@ async function initMsg(user, mod, broadcaster, settings, message, platform, brb)
 	// ? The whole message blob creation shit
 	let historyBlob = document.createElement('li');
 	historyBlob.setAttribute("id", user + count);
-	historyBlob.setAttribute("style", "border-color: rgb(95, 95, 95);")
 	let name = document.createElement("h2");
 	name.setAttribute("id", "name");
 
@@ -212,7 +211,7 @@ async function sub(username, recipent) {
 	let x = document.getElementById("sub");
 	x.setAttribute("class", "vis");
 	if (recipent) {
-		x.childNodes[0].childNodes[1].childNodes[0].innerHTML = `${username} has ran:</br>C:\\users\\${recipent}\\gift.exe`;
+		x.childNodes[0].childNodes[1].childNodes[0].innerHTML = `Let ${username} run:</br>C:\\users\\${recipent}\\gift.exe?`;
 	} else {
 		x.childNodes[0].childNodes[1].childNodes[0].innerHTML = `Run:</br>C:\\users\\${username}\\subscription.exe?`;
 	}

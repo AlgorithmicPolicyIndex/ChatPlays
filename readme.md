@@ -20,6 +20,10 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
 	- Plugins
 		- For separate overlay functions that can be run in tandem outside of the Theme Developers or Program Scope
  	- THEMES
+		- Delete ALL elements from the previous theme just so there is no specific `.remove()` in the InitTheme functions.
+		- Correct Dynamic sizing for different window sizes. For now, recommended sizes are:
+			- 1440p = 650x959
+			- So far that's it, since it was made originally for a 3440x1440 monitor shrunk down to a 1080p stream. Will do more testing and CSS styling.
 		- WINXP
 			- Make it work correctly with different window sizes.
 

@@ -8,7 +8,7 @@ module.exports = {
 			|| user == settings.youtube
 			&& settings.useChat
 		) {
-			return window.webContents.executeJavaScript(`(() => { subscription("ThisIsALongTestName"); })();`);
+			return window.webContents.executeJavaScript(`(() => { subscription("ThisIsALongTestName"${_Args[0] ? `, "${_Args[0]}"` : ""}); })();`);
 		}
 	}
 }

@@ -130,7 +130,6 @@ export async function Chat(platform: string, user: any, message: string, setting
 		}
 		let msg = document.createElement("p");
 		msg.setAttribute("id", "message");
-		msg.setAttribute("class", "${platform}");
 		msg.innerHTML = pingMessage(${JSON.stringify(message)});
 		msghistory.appendChild(msg);
 		return;
