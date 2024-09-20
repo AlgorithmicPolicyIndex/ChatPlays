@@ -13,19 +13,12 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
 	- Helldivers Controls
  	- Github file for game controls
 		- Fix the controls JSON
- 	- Add BunJS internal function support
 	- Not a priority
 		- 7TV and FFZ Emotes
  - Electron App
+	- Max WxH: 850x1159 | Min WxH: 650x959 - This is due to it being too large or too small. I dont believe other sizes beyond those will be very readible. These were found out by means of WinXP theme testing for dyanmic sizing.
 	- Plugins
 		- For separate overlay functions that can be run in tandem outside of the Theme Developers or Program Scope
- 	- THEMES
-		- Delete ALL elements from the previous theme just so there is no specific `.remove()` in the InitTheme functions.
-		- Correct Dynamic sizing for different window sizes. For now, recommended sizes are:
-			- 1440p = 650x959
-			- So far that's it, since it was made originally for a 3440x1440 monitor shrunk down to a 1080p stream. Will do more testing and CSS styling.
-		- WINXP
-			- Make it work correctly with different window sizes.
 
 ### Running
 > **!** You'll need to edit any thing to match your package manager, I personally use [Bun](https://bun.sh) **!**

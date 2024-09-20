@@ -6,7 +6,7 @@
 	"useChat": true,
 	"useOtherEmotes": true,
 	
-	"processTitle" : "ChatPlays",
+	"processTitle" : "ChatPlaysOverlay",
 	"width": 650,
 	"height": 959,
 	"maxblobs": 10,
@@ -19,5 +19,10 @@
 	"LargeImage": "",
 	"LargeText": "",
 	"SmallImage": "",
-	"SmallText": ""
+	"SmallText": "",
+
+	"maxWitdh": 850,
+	"maxHeight": 1159,
+	"minWidth": 650,
+	"minHeight": 959
 }

@@ -30,6 +30,10 @@
 					script.remove();
 				}
 			}
+			
+			// ! gross way to do it, but does what I want it to.
+			document.getElementsByTagName("body") [0].remove();
+			document.getElementsByTagName("html")[0].appendChild(document.createElement("body"));
 
 			let themejs = document.createElement("script");
 			themejs.onload = async () => {

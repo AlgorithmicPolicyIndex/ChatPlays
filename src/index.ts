@@ -41,9 +41,10 @@ if (settings.useChat) {
 			frame: false,
 			roundedCorners: false,
 			transparent: true, // ! this is for rounded top corner but square bottom corners (WindowsOS | FOR WINXP THEME AND ANY OTHERS WITH SPECIFIC CORNERS!)
-			minWidth: settings.width,
-			minHeight: settings.height,
-			maxHeight: settings.height,
+			minWidth: settings.minWidth,
+			minHeight: settings.minHeight,
+			maxWidth: settings.maxWitdh,
+			maxHeight: settings.maxHeight
 		});
 
 		window = win;

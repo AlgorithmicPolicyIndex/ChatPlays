@@ -14,9 +14,6 @@ async function initTheme(channel) {
 	const sub = document.createElement("sub");
 	sub.setAttribute("id", "sub");
 
-	document.getElementById("chatWindow").remove();
-	document.getElementById("brb").remove();
-	document.getElementById("sub").remove();
 	document.body.appendChild(history);
 	document.body.appendChild(curgame);
 	notifications.appendChild(brb);

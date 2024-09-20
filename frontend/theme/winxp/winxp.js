@@ -9,12 +9,7 @@
 	* This file is more showing what the JS file should look like. Mainly function wise, since your code will vary.
 */
 
-async function initTheme(channel, title) { // Make required elements and structure for theme to work
-	// Remove unneeded items
-	document.getElementById("curgame").remove();
-	document.getElementById("notifications").remove();
-	document.getElementById("history").remove();
-
+async function initTheme(channel, title) { // Make required elements and structure for theme to wor
 	// Elements
 	let windowelm = document.createElement("div");
 	windowelm.setAttribute("class", "window");
