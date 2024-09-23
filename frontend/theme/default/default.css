@@ -1,12 +1,12 @@
 :root {
 	--font-family: 'Cascadia Code NF';
-	--list-font-size: 17px;
+	--list-font-size: 2vh;
 
-	--message-font-size: 17px;
+	--message-font-size: 2vh;
 	--message-color: #fafafa;
-	--platform-font-size: 15px;
+	--platform-font-size: 2vh;
 	--platform-color: #0997b3;
-	--curgame-font-size: 23px;
+	--curgame-font-size: 2vh;
 	--curgame-color: #e45649;
 	--curgame-active-color: #c18401;
 	--bracket-color: #5f5f5f;
@@ -17,7 +17,7 @@
 	--moderator-color: #0184bc;
 	--chatter-color: #c678dd;
 
-	--notifications-font-size: 30px;
+	--notifications-font-size: 3vh;
 	--notifications-color: #e45649;
 	--notifications-bg-1: #383a42;
 	--notifications-bg-2: #535763;
@@ -92,6 +92,7 @@ li {
 #message {
 	color: var(--message-color);
 	margin: 10px;
+	word-break: break-word;
 	font-size: var(--message-font-size);
 }
 

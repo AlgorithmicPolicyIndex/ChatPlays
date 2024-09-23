@@ -1,6 +1,5 @@
 {
 	"universalName": "NAME",
-	"twitch": "CHANNEL NAME",
 	"youtube": "CHANNEL ID",
 	"platform": "twitch",
 	"useChat": true,
@@ -23,6 +22,6 @@
 
 	"maxWitdh": 850,
 	"maxHeight": 1159,
-	"minWidth": 650,
-	"minHeight": 959
+	"minWidth": 450,
+	"minHeight": 759
 }

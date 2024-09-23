@@ -105,7 +105,7 @@ const Stratagems = {
 };
 
 // TODO: Make handler for changing flashlight, RPM and zoom levels.
-const name=  "hd2";
+const name = "hd2";
 const execute = async (message: string) => {
 	if (Object.keys(Controls).includes(message.toLowerCase())) {
 		const control = Object.keys(Controls);
