@@ -3,22 +3,26 @@ import * as fs from "fs";
 import { BrowserWindow } from "electron";
 const extensions = [".ts", ".js"];
 
-export async function getGames(name: string, message: string) {
+export async function getGames(name: string) {
 	const cmdPath = path.join(__dirname, "games");
-	const cmdFiles = fs.readdirSync(cmdPath).filter(file => file.endsWith(".js"));
+	const cmdFiles = fs.readdirSync(cmdPath).filter(file => {
+		return extensions.some(ex => file.endsWith(ex));
+	});
 
 	for (const file of cmdFiles) {
 		const filePath = path.join(cmdPath, file);
 		const command = await import(filePath);
 		if (name.toLowerCase() == command.name.toLowerCase()) {
-			return command.execute(message.toLowerCase());
+			return command;
 		}
 	}
 }
 
 export async function getGameName(name: string) {
 	const cmdPath = path.join(__dirname, "games");
-	const cmdFiles = fs.readdirSync(cmdPath).filter(file => file.endsWith(".js"));
+	const cmdFiles = fs.readdirSync(cmdPath).filter(file => {
+		return extensions.some(ex => file.endsWith(ex));
+	});
 
 	for (const file of cmdFiles) {
 		const filePath = path.join(cmdPath, file);
@@ -115,7 +119,7 @@ export async function Chat(platform: string, user: any, message: string, setting
 		);
 	}
 	
-	window.show();
+	// window.show();
 	window.webContents.executeJavaScript(`(() => {
 	// ? User blob history
 	blobHistory(${settings.maxblobs});

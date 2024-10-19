@@ -14,10 +14,16 @@ let aiming = 0;
 async function MouseHandler(control: { Dir: string, Amt: number}) {
 	switch (control.Dir) {
 	case "lclick":
-		nut.mouse.leftClick();
+		nut.mouse.pressButton(nut.Button.LEFT);
+		setTimeout(() => {
+			nut.mouse.releaseButton(nut.Button.LEFT);
+		}, control.Amt);
 		return;
 	case "rclick":
-		nut.mouse.rightClick();
+		nut.mouse.pressButton(nut.Button.RIGHT);
+		setTimeout(() => {
+			nut.mouse.releaseButton(nut.Button.RIGHT);
+		}, control.Amt);
 		return;
 	case "toggleRClick":
 		if (aiming == 0) {

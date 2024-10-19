@@ -26,10 +26,10 @@ if (settings.discordRPC) { // ! If you want to have a discord Presence
 	});
 }
 
-const commands = defineCommands();
+export const commands = defineCommands();
 const filter = new Filter();
 let window: BrowserWindow;
-create({ ActiveGame: "", SetGame: "" });
+create({ ActiveGame: "", SetGame: "", Voice: false });
 
 // * Electron
 if (settings.useChat) {
@@ -73,6 +73,15 @@ if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase
 		if (self) return;
 		message = filter.clean(message).replace(extractUrls(message), "[LINK]");
 
+		const ActiveGame = await getData("ActiveGame");
+		try {
+			if (ActiveGame != "") {
+				(await getGames(ActiveGame)).execute(message.toLowerCase());
+			}
+		} catch (err: any) {
+			throw new Error(err);
+		}
+
 		// ! Electron Chat
 		if (
 			self
@@ -85,7 +94,6 @@ if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase
 		
 		const command = commands.get(Args.shift() as string);
 		if (!command) return;
-		const ActiveGame = await getData("ActiveGame");
 	
 		try {
 			await command(Args, user["display-name"], settings, window, settings.universalName).catch((err: any) => {
@@ -95,13 +103,6 @@ if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase
 			throw new Error(err);
 		}
 		
-		try {
-			if (ActiveGame != "") {
-				getGames(ActiveGame, message);
-			}
-		} catch (err: any) {
-			throw new Error(err);
-		}
 	});
 
 	tmiclient.on("subscription", async (_channel, username, _methods, _message, _user) => {
@@ -145,6 +146,15 @@ if (settings.platform.toUpperCase() == "YOUTUBE" || settings.platform.toUpperCas
 			}
 		});
 
+		const ActiveGame = await getData("ActiveGame");
+		try {
+			if (ActiveGame != "") {
+				(await getGames(ActiveGame)).execute(message.get("text"));
+			}
+		} catch (err: any) {
+			throw new Error(err);
+		}
+
 		if (!message.get("text").startsWith("!") && settings.useChat) {
 			await Chat("YOUTUBE", user, message.get("text"), settings, window);
 		}
@@ -157,15 +167,6 @@ if (settings.platform.toUpperCase() == "YOUTUBE" || settings.platform.toUpperCas
 			await command(Args, user.id, settings, window, settings.universalName).catch((err: any) => {
 				throw new Error(err)
 			});
-		} catch (err: any) {
-			throw new Error(err);
-		}
-		
-		const ActiveGame = await getData("ActiveGame");
-		try {
-			if (ActiveGame != "") {
-				getGames(ActiveGame, message.get("text"));
-			}
 		} catch (err: any) {
 			throw new Error(err);
 		}

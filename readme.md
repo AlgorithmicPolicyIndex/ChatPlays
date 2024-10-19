@@ -10,7 +10,10 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
  - YOUTUBE
 	- Subscribe / Membership Event (not apart of the chat module I use)
  - OVERALL
-	- Helldivers Controls
+	- Allow Chat to Interact with Game Voice Chat.
+		- Need to figure out virtual microphone input or hooking. Such as Steel Series Sonar Aux or other channels.
+		- You can add via "export const VoiceKey = Key.V"; inside your game files. Check [Destiny2](./src/games/Destiny2.ts) for an example.
+	- Need to update Wiki to match current changes.
  	- Github file for game controls
 		- Fix the controls JSON
 	- Not a priority

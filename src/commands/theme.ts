@@ -9,7 +9,7 @@ module.exports = {
 			|| user == settings.youtube
 			&& settings.useChat
 		) {
-			await create({ ActiveGame: "", SetGame: "" }, true);
+			await create({ ActiveGame: "", SetGame: "", Voice: false}, true);
 	
 			return window.webContents.executeJavaScript(`(() => { changeCSS("${Args[0]}", "${channel}", "${settings.processTitle}"); })();`);
 		}

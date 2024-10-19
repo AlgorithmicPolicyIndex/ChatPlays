@@ -2,34 +2,39 @@ import { Key, keyboard } from "@nut-tree-fork/nut-js";
 import { getControls } from "../ControlHandler";
 
 const Controls = {
-	// walk: {},
-	// walkleft: {},
-	// walkright: {},
-	// walkback: {},
-	// step: {},
-	// stepleft: {},
-	// stepright: {},
-	// stepback: {},
-	// dive: {},
-	// melee: {},
-	// crouch: {},
-	// aim: {},
-	// aimmode: {},
+	walk: { Key: Key.W, Amt: -1},
+	walkleft: { Key: Key.A, Amt: -1 },
+	walkright: { Key: Key.D, Amt: -1 },
+	walkback: { Key: Key.S, Amt: -1 },
+	step: { Key: Key.W, Amt: 500 },
+	stepleft: { Key: Key.A, Amt: 500 },
+	stepright: { Key: Key.D, Amt: 500 },
+	stepback: { Key: Key.S, Amt: 500 },
+	dive: { Key: Key.LeftAlt, Amt: 100 },
+	melee: { Key: Key.F, Amt: 100 },
+	crouch: { Key: Key.C, Amt: 100 },
+	jump: { Key: Key.Space, Amt: 1000 },
+	aim: { Dir: "toggleRClick", Amt: 0 },
 
-	// primary: {},
-	// secondary: {},
-	// power: {},
+	primary: { Key: Key.Num1, Amt: 100 },
+	secondary: { Key: Key.Num2, Amt: 100 },
+	power: { Key: Key.Num3, Amt: 100 },
 
-	// fire: {},
+	fire: { Dir: "lclick", Amt: 0 },
+	burst: { Dir: "lclick", Amt: 1000 },
+	quafire: { Dir: "lclick", Amt: 5000 },
+	reload: { Key: Key.R, Amt: 50 },
+	grenade: { Key: Key.G, Amt: 100 },
+	stim: { Key: Key.V, Amt: 100 },
 
-	// lookup: {},
-	// lookdown: {},
-	// lookright: {},
-	// lookleft: {},
-	// lightlookup: {},
-	// lightlookdown: {},
-	// lightlookright: {},
-	// lightlookleft: {},
+	lookup: { Dir: "up", Amt: 500 },
+	lookdown: { Dir: "down", Amt: 500 },
+	lookright: { Dir: "right", Amt: 500 },
+	lookleft: { Dir: "left", Amt: 500 },
+	lightlookup: { Dir: "up", Amt: 100 },
+	lightlookdown: { Dir: "down", Amt: 100 },
+	lightlookright: { Dir: "right", Amt: 100 },
+	lightlookleft: { Dir: "left", Amt: 100 }
 };
 const Stratagems = {
 	// Support Weapons
@@ -142,7 +147,6 @@ async function StratagemHandler(sequence: string) {
 
 	keyboard.pressKey(Key.LeftControl);
 	for (const key of keys) {
-		console.log(key);
 		await delay(50);
 		keyboard.pressKey(key);
 		await delay(50);
@@ -157,5 +161,3 @@ function delay(ms: number) {
 		setTimeout(resolve, ms);
 	});
 }
-
-export {};

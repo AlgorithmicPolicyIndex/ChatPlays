@@ -1,11 +1,12 @@
 import { BrowserWindow } from "electron";
-import { create } from "../JSON/db";
+import { create, getData } from "../JSON/db";
 
 module.exports = {
 	name: "reset",
 	execute: async (_Args: string[], user: any, settings: any, window: BrowserWindow, _channel: string) => {
+		const Voice = await getData("Voice");
 		if (user.toLowerCase() == settings.twitch.toLowerCase() || user == settings.youtube) {
-			await create({ ActiveGame: "", SetGame: "" }, true);
+			await create({ ActiveGame: "", SetGame: "", Voice }, true);
 
 			if (settings.useChat) {
 				window.webContents.executeJavaScript(`(() => {
