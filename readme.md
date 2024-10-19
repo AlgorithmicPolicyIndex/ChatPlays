@@ -12,7 +12,8 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
  - OVERALL
 	- Allow Chat to Interact with Game Voice Chat.
 		- Need to figure out virtual microphone input or hooking. Such as Steel Series Sonar Aux or other channels.
-		- You can add via "export const VoiceKey = Key.V"; inside your game files. Check [Destiny2](./src/games/Destiny2.ts) for an example.
+		- You can add via "export const VoiceKey = Key.V;" inside your game files. Check [Destiny2](./src/games/Destiny2.ts) for an example.
+		- You can't manually start VC via command, if you want to test it or start it yourself, please enter the [Settings.json](./JSON/settings.json) and change `Voice = false` to true.
 	- Need to update Wiki to match current changes.
  	- Github file for game controls
 		- Fix the controls JSON
