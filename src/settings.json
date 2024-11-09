@@ -1,6 +1,6 @@
 {
-	"universalName": "UNIVERSAL NAME",
-	"twitch": "CHANNEL NAME",
+	"universalName": "API",
+	"twitch": "AlgorithmicPolicyIndex",
 	"youtube": "CHANNEL ID",
 	"platform": "twitch",
 	"useChat": true,

@@ -8,6 +8,8 @@ import client from "discord-rich-presence";
 import { create, getData } from "./JSON/db";
 import { LiveChat } from "youtube-chat";
 import { EmojiItem } from "youtube-chat/dist/types/data";
+import path from "path";
+import { readdirSync } from "fs";
 
 if (settings.discordRPC) { // ! If you want to have a discord Presence
 	// ? Yes this had no point, I just wanted to make it. fight me. I'm not sure what to really add atm, other than fixing some things.
@@ -33,7 +35,7 @@ create({ ActiveGame: "", SetGame: "", Voice: false });
 
 // * Electron
 if (settings.useChat) {
-	app.whenReady().then(() => {
+	app.whenReady().then(async () => {
 		const win = new BrowserWindow({
 			title: settings.processTitle,
 			width: settings.width,
@@ -48,9 +50,17 @@ if (settings.useChat) {
 		});
 
 		window = win;
+
+		const pluginPath = path.join(__dirname, "..", "frontend", "plugins");
+		const pluginFiles = readdirSync(pluginPath).filter(file => file.endsWith(".js"));
+		for (const file of pluginFiles) {
+			win.webContents.executeJavaScript(`(() => {
+				if (enabledPlugins.includes("${"./plugins/" + file}")) return;
+				plugins.push("${"./plugins/" + file}");
+			})();`);
+		}
 		win.loadFile("../frontend/index.html");
 	});
-
 }
 
 if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase() == "BOTH") {

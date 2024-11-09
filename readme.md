@@ -15,14 +15,11 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
 		- You can add via "export const VoiceKey = Key.V;" inside your game files. Check [Destiny2](./src/games/Destiny2.ts) for an example.
 		- You can't manually start VC via command, if you want to test it or start it yourself, please enter the [Settings.json](./JSON/settings.json) and change `Voice = false` to true.
 	- Need to update Wiki to match current changes.
- 	- Github file for game controls
-		- Fix the controls JSON
 	- Not a priority
 		- 7TV and FFZ Emotes
  - Electron App
 	- Max WxH: 850x1159 | Min WxH: 450x759 - This is due to it being too large or too small. I dont believe other sizes beyond those will be very readible. These were found out by means of WinXP theme testing for dyanmic sizing. You may want to look into doing general sizing via the app window if you wish to read chat from it, then do overlay sizing on OBS directly.
-	- Plugins
-		- For separate overlay functions that can be run in tandem outside of the Theme Developers or Program Scope
+	- Look into allowing optional login information for extra features
 
 ### Running
 > **!** You'll need to edit any thing to match your package manager, I personally use [Bun](https://bun.sh) **!**

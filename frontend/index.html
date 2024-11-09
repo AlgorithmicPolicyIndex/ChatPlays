@@ -21,22 +21,54 @@
 		let prevAuthor = "";
 		let count = 0;
 		let brb = false;
+		
+		const plugins = [];
+		const enabledPlugins = ["./plugins/rainbowMessages.js"];
+		const loadedPlugins = window.loadedPlugins || {};
+
+		for (const plugin of enabledPlugins) {
+			if (!loadedPlugins[plugin]) {
+				const script = document.createElement("script");
+				script.setAttribute("src", plugin);
+				document.body.appendChild(script);
+
+				loadedPlugins[plugin] = true;
+			}
+		}
+
+		window.loadedPlugins = loadedPlugins;
+
+		function onThemeChangeComplete() {
+			const themeChangeEvent = new CustomEvent('themeChanged');
+			document.dispatchEvent(themeChangeEvent);
+		}
+
+		document.addEventListener('themeChanged', function() {
+			for (const plugin of enabledPlugins) {
+				if (window.loadedPlugins[plugin]) {
+					if (typeof window[plugin].init === 'function') {
+						window[plugin].init();
+					}
+				}
+			}
+		});
 
 		async function changeCSS(theme, channel, title) {
-			brb = false;
 			const scripts = document.getElementsByTagName("script");
 			for (let script of scripts) {
-				if (script.src != '') {
-					script.remove();
-				}
+				script.remove();
 			}
 			
 			// ! gross way to do it, but does what I want it to.
-			document.getElementsByTagName("body") [0].remove();
+			document.getElementsByTagName("body")[0].remove();
 			document.getElementsByTagName("html")[0].appendChild(document.createElement("body"));
+			const newScripts = document.getElementsByTagName("script");
+			for (let script of newScripts) {
+				document.body.appendChild(script);
+			}
 
 			let themejs = document.createElement("script");
-			themejs.onload = async () => {
+			themejs.onload = () => {
 				this.initTheme(channel, title);
 			}
 			themejs.src = `theme/${theme}/${theme}.js`;
@@ -49,7 +81,9 @@
 			newCSS.setAttribute("id", "css");
 			newCSS.setAttribute("href", `theme/${theme}/${theme}.css`);
 
-			document.getElementsByTagName("head")[0].replaceChild(newCSS, oldCSS);
+			document.head.replaceChild(newCSS, oldCSS);
+
+			onThemeChangeComplete();
 		}
 
 		function brbHandler() {

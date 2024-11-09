@@ -5,10 +5,20 @@ import { getGames } from "../functions";
 import { keyboard } from "@nut-tree-fork/nut-js";
 
 export const name = "voice";
-export async function execute(Args: string[], user: any, _settings: any, _window: BrowserWindow, _channel: string) {
+export async function execute(Args: string[], user: any, settings: any, _window: BrowserWindow, _channel: string) {
 	const voiceEnabled = await getData("Voice");
 	const activegame = await getData("ActiveGame");
 	const setgame = await getData("SetGame");
+
+	if (user.toLowerCase() == settings.twitch.toLowerCase() || user == settings.youtube) {
+		if (!voiceEnabled) {
+			say.speak("Voice Chat Enabled.");
+			return await create({ ActiveGame: activegame, SetGame: setgame, Voice: true });
+		}
+		say.speak("Voice Chat Disabled.");
+		return await create({ ActiveGame: activegame, SetGame: setgame, Voice: false });
+	}
+
 	if (!voiceEnabled) {
 		if (Math.floor(Math.random() * 100)+1 == 5) {
 			say.speak("Voice Chat Enabled.");
