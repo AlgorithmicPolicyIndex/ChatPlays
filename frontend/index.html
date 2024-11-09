@@ -22,8 +22,8 @@
 		let count = 0;
 		let brb = false;
 		
-		const plugins = [];
-		const enabledPlugins = ["./plugins/rainbowMessages.js"];
+		let plugins = [];
+		let enabledPlugins = [];
 		const loadedPlugins = window.loadedPlugins || {};
 
 		function loadPlugins() {
@@ -32,16 +32,19 @@
 					const script = document.createElement("script");
 					script.setAttribute("src", plugin);
 					document.body.appendChild(script);
-					window[plugin].init();
-
-					loadedPlugins[plugin] = true;
+					script.onload = () => {
+						if (window[plugin] && typeof window[plugin].init === 'function') {
+							window[plugin].init();
+							loadedPlugins[plugin] = true;
+						} else {
+							console.error(`Plugin ${plugin} does not have an init method.`);
+						}
+					};
 				}
 			}
 
-			window.loadedPlugins = loadedPlugins;
+			window["loadedPlugins"] = loadedPlugins;
 		}
-
-		loadPlugins();
 
 		function unloadPlugin(plugin) {
 			if (window[plugin] && window[plugin].observer) {
@@ -57,7 +60,7 @@
 			}
 
 			delete loadPlugins[plugin];
-			window.loadedPlugins = loadedPlugins;
+			window["loadedPlugins"] = loadedPlugins;
 			console.log("Disabled " + plugin);
 		}
 

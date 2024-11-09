@@ -53,11 +53,15 @@ if (settings.useChat) {
 
 		const pluginPath = path.join(__dirname, "..", "frontend", "plugins");
 		const pluginFiles = readdirSync(pluginPath).filter(file => file.endsWith(".js"));
+		win.webContents.executeJavaScript(`
+			enabledPlugins = "${settings.enabledPlugins}".split(",");
+			plugins = "${settings.disabledPlugins}".split(",");
+		`);
 		for (const file of pluginFiles) {
 			win.webContents.executeJavaScript(`(() => {
-				if (enabledPlugins.includes("${"./plugins/" + file}")) return;
-				plugins.push("${"./plugins/" + file}");
-			})();`);
+				if (enabledPlugins.includes("./plugins/${file}")) return;
+				plugins.push("./plugins/${file}");
+			})(); loadPlugins();`);
 		}
 		win.loadFile("../frontend/index.html");
 	});

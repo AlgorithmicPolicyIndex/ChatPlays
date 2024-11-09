@@ -5,7 +5,7 @@
 	"platform": "twitch",
 	"useChat": true,
 	"useOtherEmotes": true,
-	
+
 	"processTitle" : "ChatPlaysOverlay",
 	"width": 650,
 	"height": 959,
@@ -23,6 +23,8 @@
 	"LargeImage": "",
 	"LargeText": "",
 	"SmallImage": "",
-	"SmallText": ""
+	"SmallText": "",
 
+	"enabledPlugins": ["./plugins/rainbowMessages.js"],
+	"disabledPlugins": []
 }

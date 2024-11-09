@@ -41,5 +41,5 @@ function init() {
 const scriptUrl = document.currentScript.src;
 const pluginName = scriptUrl.substring(scriptUrl.lastIndexOf('/') + 1);
 
-window[`./plugins/${pluginName}`] = { init, observer: init() };
+window[`./plugins/${pluginName}`] = { init: init, observer: init() };
 console.log(`${pluginName} has been started.`);
