@@ -22,6 +22,9 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
  - Electron App
 	- Max WxH: 850x1159 | Min WxH: 450x759 - This is due to it being too large or too small. I dont believe other sizes beyond those will be very readible. These were found out by means of WinXP theme testing for dyanmic sizing. You may want to look into doing general sizing via the app window if you wish to read chat from it, then do overlay sizing on OBS directly.
 	- Look into allowing optional login information for extra features
+	- Plugins
+		- Persistent plugin information, to prevent having to reenable or disable plugins each time the app is ran
+		- Make enabler "plugin" command work on plugin names instead of match to the relative path in the plugin arrays
 
 ### Running
 > **!** You'll need to edit any thing to match your package manager, I personally use [Bun](https://bun.sh) **!**

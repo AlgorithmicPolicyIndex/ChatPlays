@@ -15,7 +15,7 @@ async function execute(_Args: string[], _user: any, settings: any, window: Brows
 	const { disabledPlugins, enabledPlugins } = plugins;
 	const message = `Enabled Plugins:<br>${enabledPlugins.join(", ")}<br><br>Disabled Plugins:<br>${disabledPlugins.join(", ")}`
 	console.log(message.replace(/<br>/g, "\n"));
-	await Chat("TWITCH", {"display-name": "ChatPlays"}, message, settings, window);
+	await Chat("Application", {"display-name": "ChatPlays", "badges": {"broadcaster": 1}}, message, settings, window);
 }
 
 export {

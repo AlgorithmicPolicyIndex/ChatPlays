@@ -26,17 +26,40 @@
 		const enabledPlugins = ["./plugins/rainbowMessages.js"];
 		const loadedPlugins = window.loadedPlugins || {};
 
-		for (const plugin of enabledPlugins) {
-			if (!loadedPlugins[plugin]) {
-				const script = document.createElement("script");
-				script.setAttribute("src", plugin);
-				document.body.appendChild(script);
+		function loadPlugins() {
+			for (const plugin of enabledPlugins) {
+				if (!loadedPlugins[plugin]) {
+					const script = document.createElement("script");
+					script.setAttribute("src", plugin);
+					document.body.appendChild(script);
+					window[plugin].init();
 
-				loadedPlugins[plugin] = true;
+					loadedPlugins[plugin] = true;
+				}
 			}
+
+			window.loadedPlugins = loadedPlugins;
 		}
 
-		window.loadedPlugins = loadedPlugins;
+		loadPlugins();
+
+		function unloadPlugin(plugin) {
+			if (window[plugin] && window[plugin].observer) {
+				window[plugin].observer.disconnect();
+				delete window[plugin]
+			}
+
+			const scripts = document.getElementsByTagName("script");
+			for (const script of scripts) {
+				if (script.src == new URL(plugin, window.location.href).href) {
+					script.remove();
+				}
+			}
+
+			delete loadPlugins[plugin];
+			window.loadedPlugins = loadedPlugins;
+			console.log("Disabled " + plugin);
+		}
 
 		function onThemeChangeComplete() {
 			const themeChangeEvent = new CustomEvent('themeChanged');

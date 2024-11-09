@@ -33,12 +33,13 @@ function init() {
 	});
 
 	observer.observe(document.body, { childList: true, subtree: true });
+	
+	return observer;
 }
 
 // Automatically gets file name
 const scriptUrl = document.currentScript.src;
 const pluginName = scriptUrl.substring(scriptUrl.lastIndexOf('/') + 1);
 
-window[`./plugins/${pluginName}`] = { init };
-init();
+window[`./plugins/${pluginName}`] = { init, observer: init() };
 console.log(`${pluginName} has been started.`);
