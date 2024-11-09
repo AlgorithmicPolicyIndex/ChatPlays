@@ -1,3 +1,5 @@
+# Alright. I forgot to make the Enabler command. So rainbow messages are active by default, no matter what. I will work on this tomorrow.
+
 # ChatPlays
 Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki) to read more and specific things about Controls and Settings!  
 **Have fix the Wiki to be up-to-date**
