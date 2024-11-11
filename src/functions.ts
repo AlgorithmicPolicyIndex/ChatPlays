@@ -177,7 +177,6 @@ export async function filterWithoutEmojis(message: string) {
 	
 	sanitizedMessage = filter.clean(sanitizedMessage);
 	
-	console.log(sanitizedMessage, emojisAndSpecialChars);
 	emojisAndSpecialChars.forEach((item, i) => {
 		const specialCharPlaceholder = `{specialChar${i}}`;
 		sanitizedMessage = sanitizedMessage.replace(specialCharPlaceholder, item.char);
