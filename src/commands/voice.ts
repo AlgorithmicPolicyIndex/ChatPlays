@@ -19,17 +19,19 @@ export async function execute(Args: string[], user: any, settings: any, _window:
 		return await create({ ActiveGame: activegame, SetGame: setgame, Voice: false });
 	}
 
+	const VoiceKey = (await getGames(activegame)).VoiceKey;
 	if (!voiceEnabled) {
-		if (Math.floor(Math.random() * 100)+1 == 5) {
+		if (Math.floor(Math.random() * 100)+1 == 5 && VoiceKey) {
 			say.speak("Voice Chat Enabled.");
 			await create({ ActiveGame: activegame, SetGame: setgame, Voice: true });
 			return setTimeout(async () => {
 				await create({ ActiveGame: activegame, SetGame: setgame, Voice: false });
 			}, 30_000);
+		} else if (!VoiceKey) {
+			return say.speak("There is no Voice Key for this game.")
 		}
 	};
 
-	const VoiceKey = (await getGames(activegame)).VoiceKey;
 	const message = `User: ${user} says: ${Args.join(",")}`;
 
 	keyboard.pressKey(VoiceKey);

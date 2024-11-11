@@ -1,9 +1,7 @@
 # Alright. I forgot to make the Enabler command. So rainbow messages are active by default, no matter what. I will work on this tomorrow.
 
 # ChatPlays
-Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki) to read more and specific things about Controls and Settings!  
-**Have fix the Wiki to be up-to-date**
-
+Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki) to read more and specific things about Controls and Settings!
 
 # Work Load / Plans
  - TWITCH
@@ -16,7 +14,6 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
 		- Need to figure out virtual microphone input or hooking. Such as Steel Series Sonar Aux or other channels.
 		- You can add via "export const VoiceKey = Key.V;" inside your game files. Check [Destiny2](./src/games/Destiny2.ts) for an example.
 		- You can't manually start VC via command, if you want to test it or start it yourself, please enter the [Settings.json](./JSON/settings.json) and change `Voice = false` to true.
-	- Need to update Wiki to match current changes.
 	- Not a priority
 		- 7TV and FFZ Emotes
  - Electron App
