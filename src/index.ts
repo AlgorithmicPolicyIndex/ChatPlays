@@ -32,11 +32,26 @@ create({ ActiveGame: "", SetGame: "", Voice: false });
 
 // * Electron
 if (settings.useChat) {
+	const aspectRatio = 650 / 959;
+
+	function adjustAspectRatio(width: number, height: number): { newWidth: number, newHeight: number } {
+		if (width / height > aspectRatio) {
+			const newHeight = Math.round(width / aspectRatio);
+			return { newWidth: width, newHeight };
+		} else {
+			const newWidth = Math.round(height * aspectRatio);
+			return { newWidth, newHeight: height };
+		}
+	}
+
+
+	const { newWidth, newHeight } = adjustAspectRatio(settings.width, settings.height);
+
 	app.whenReady().then(async () => {
 		const win = new BrowserWindow({
 			title: settings.processTitle,
-			width: settings.width,
-			height: settings.height,
+			width: newWidth,
+			height: newHeight,
 			frame: false,
 			roundedCorners: false,
 			transparent: true, // ! this is for rounded top corner but square bottom corners (WindowsOS | FOR WINXP THEME AND ANY OTHERS WITH SPECIFIC CORNERS!)
