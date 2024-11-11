@@ -1,6 +1,7 @@
 {
 	"universalName": "NAME",
 	"twitch": "CHANNEL NAME",
+	"userId": "undefined",
 	"youtube": "CHANNEL ID",
 	"platform": "twitch",
 	"useChat": true,

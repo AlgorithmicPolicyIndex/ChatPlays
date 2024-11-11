@@ -3,6 +3,7 @@ import * as fs from "fs";
 import { BrowserWindow } from "electron";
 import Filter from "bad-words";
 import extractUrls from "extract-urls";
+import { writeFileSync } from "fs";
 const extensions = [".ts", ".js"];
 const filter = new Filter();
 
@@ -51,17 +52,20 @@ export function defineCommands() {
 	return commands;
 };
 
-let emoteWarn = false;
-let user_id: string | undefined = undefined;
 export async function Chat(platform: string, user: any, message: string, settings: any, window: BrowserWindow) {
 	if (
 		// ! This is gross
 		// TODO: Figure out how to get the ID without the streamer typing in chat for their userID
 		settings.useOtherEmotes
 		&& user["display-name"]?.toLowerCase() == settings.twitch.toLowerCase()
-		&& user_id == undefined
+		&& user["user-id"] != settings.userId
 	) {
-		user_id = user["user-id"];
+		settings.userId = user["user-id"];
+		
+		// updates the default settings.json
+		writeFileSync(path.join(__dirname, "..", "src", "settings.json"), JSON.stringify(settings, null, 8));
+		// updates the Build version of the settings.json
+		writeFileSync(path.join(__dirname, "settings.json"), JSON.stringify(settings, null, 8));
 	}
 
 	// ! Get Emote and replace with img tag
@@ -86,7 +90,7 @@ export async function Chat(platform: string, user: any, message: string, setting
 			});
 		}
 	
-		if (settings.useOtherEmotes && user_id != undefined) {
+		if (settings.useOtherEmotes && settings.userId != undefined) {
 			// * BTTV
 			// ? Global BTTV Emotes
 			await fetch(`https://api.betterttv.net/3/cached/emotes/global`).then(async (res) => {
@@ -97,7 +101,7 @@ export async function Chat(platform: string, user: any, message: string, setting
 				}
 			});
 			// ? Channel BTTV Emotes
-			await fetch(`https://api.betterttv.net/3/cached/users/${platform.toLowerCase()}/${user_id}`).then(async (res) => {
+			await fetch(`https://api.betterttv.net/3/cached/users/${platform.toLowerCase()}/${settings.userId}`).then(async (res) => {
 				let data = await res.json();
 				
 				for (let emote of data["sharedEmotes"]) {
@@ -108,10 +112,7 @@ export async function Chat(platform: string, user: any, message: string, setting
 				}
 			});
 		} else {
-			if (!emoteWarn)  {
-				console.info("Please make sure to type into your own chat.\nI need your user-id to be able to search the BTTV channel emotes");
-				emoteWarn = true;
-			}
+			console.info("Please make sure to type into your own chat.\nI need your user-id to be able to search the BTTV channel emotes.\n\n");
 		}
 		
 		message = replacements.reduce(
