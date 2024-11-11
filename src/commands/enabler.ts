@@ -16,7 +16,7 @@ async function execute(Args: string[], _user: any, settings: any, window: Browse
 
 	const { disabledPlugins, enabledPlugins } = plugins;
 
-	const findplugin = (pluginArray: string[]) => { return pluginArray.filter((plugin) => new RegExp(plugin, "i").test(Args[0])) };
+	const findplugin = (pluginArray: string[]) => { return pluginArray.filter((plugin) => new RegExp(Args[0], "i").test(plugin.replace(/^.*[\\/]/, '').replace(/\.js$/, ''))); };
 	const disabled = findplugin(disabledPlugins);
 	const enabled = findplugin(enabledPlugins);
 
