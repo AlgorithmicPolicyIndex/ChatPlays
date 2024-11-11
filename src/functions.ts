@@ -1,7 +1,10 @@
 import * as path from "path";
 import * as fs from "fs";
 import { BrowserWindow } from "electron";
+import Filter from "bad-words";
+import extractUrls from "extract-urls";
 const extensions = [".ts", ".js"];
+const filter = new Filter();
 
 export async function getGames(name: string) {
 	const cmdPath = path.join(__dirname, "games");
@@ -154,4 +157,31 @@ function strToEmote(message: string, emote: any, replacements: { strToReplace: s
 			replacement: `<img src="https://cdn.betterttv.net/emote/${emote.id}/1x">`
 		});
 	}
+}
+
+export async function filterWithoutEmojis(message: string) {
+	interface CharDetails {
+		char: string;
+		index: number;
+		type: 'emoji' | 'specialChar';
+	}
+
+	// const emojiRegex = /[\p{Emoji}\p{Emoji_Presentation}\p{Extended_Pictographic}(?![0-9]\)\]/gu;
+	const specialCharRegex = /[^\p{L}\s]/gu;
+	
+	let emojisAndSpecialChars: CharDetails[] = [];
+	let sanitizedMessage = message.replace(specialCharRegex, (match, index) => {
+		emojisAndSpecialChars.push({ char: match, index, type: 'specialChar' });
+		return `{specialChar${emojisAndSpecialChars.length - 1}}`;
+	});
+	
+	sanitizedMessage = filter.clean(sanitizedMessage);
+	
+	console.log(sanitizedMessage, emojisAndSpecialChars);
+	emojisAndSpecialChars.forEach((item, i) => {
+		const specialCharPlaceholder = `{specialChar${i}}`;
+		sanitizedMessage = sanitizedMessage.replace(specialCharPlaceholder, item.char);
+	});
+	
+	return sanitizedMessage.replace(await extractUrls(sanitizedMessage), "[LINK]");
 }

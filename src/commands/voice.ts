@@ -31,13 +31,12 @@ export async function execute(Args: string[], user: any, settings: any, _window:
 
 	const VoiceKey = (await getGames(activegame)).VoiceKey;
 	const message = `User: ${user} says: ${Args.join(",")}`;
-	const dur = estimateDuration(message);
 
 	keyboard.pressKey(VoiceKey);
 	say.speak(message);
 	setTimeout(() => {
 		keyboard.releaseKey(VoiceKey);
-	}, dur);
+	}, estimateDuration(message));
 };
 
 function estimateDuration(message: string, WPM: number = 150) {

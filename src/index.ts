@@ -1,7 +1,5 @@
 import * as tmi from "tmi.js";
-import { defineCommands, getGames, Chat } from "./functions";
-import Filter from "bad-words";
-import extractUrls from "extract-urls";
+import { defineCommands, getGames, Chat, filterWithoutEmojis } from "./functions";
 import settings from "./settings.json";
 import { app, BrowserWindow } from "electron";
 import client from "discord-rich-presence";
@@ -29,7 +27,6 @@ if (settings.discordRPC) { // ! If you want to have a discord Presence
 }
 
 export const commands = defineCommands();
-const filter = new Filter();
 let window: BrowserWindow;
 create({ ActiveGame: "", SetGame: "", Voice: false });
 
@@ -85,7 +82,7 @@ if (settings.platform.toUpperCase() == "TWITCH" || settings.platform.toUpperCase
 	
 	tmiclient.on("message", async (_channel, user, message, self) => {
 		if (self) return;
-		message = filter.clean(message).replace(extractUrls(message), "[LINK]");
+		message = await filterWithoutEmojis(message);
 
 		const ActiveGame = await getData("ActiveGame");
 		try {
