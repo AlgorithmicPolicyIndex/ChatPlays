@@ -82,7 +82,7 @@ textarea,
 }
 
 #message {
-	color: #232630 !important;
+	color: #232630;
 	margin-top: 5px;
 	margin-bottom: 5px;
 	font-size: 2vh;

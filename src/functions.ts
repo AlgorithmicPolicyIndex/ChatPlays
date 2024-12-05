@@ -90,7 +90,7 @@ export async function Chat(platform: string, user: any, message: string, setting
 			});
 		}
 	
-		if (settings.useOtherEmotes && settings.userId != undefined) {
+		if (settings.useOtherEmotes && settings.userId != "undefined") {
 			// * BTTV
 			// ? Global BTTV Emotes
 			await fetch(`https://api.betterttv.net/3/cached/emotes/global`).then(async (res) => {
