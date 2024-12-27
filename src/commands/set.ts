@@ -13,12 +13,12 @@ module.exports = {
 				return console.log("Not a game name does not match");
 			}
 
-			await create({ ActiveGame: "", SetGame: Args[0], Voice }, true);
+			await create({ ActiveGame: "", SetGame: Args[0], Voice, Theme: await getData("Theme") }, true);
 			const SetGame = await getData("SetGame");
 			say.speak(`Game has been set to: ${SetGame}`, "voice_kal_diphone");
 
 			if (settings.useChat) {
-				window.webContents.executeJavaScript(`(() => {
+				await window.webContents.executeJavaScript(`(() => {
 					let curgame = document.getElementById("curgame");
 					curgame.setAttribute("class", "active");
 					curgame.innerHTML = "Current Game: ${SetGame} - ChatPlays Offline!";

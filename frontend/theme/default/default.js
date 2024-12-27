@@ -32,7 +32,7 @@ async function initMsg(user, mod, broadcaster, settings, message, platform) {
 	name.setAttribute("id", "name");
 
 	name.innerHTML = `${
-		broadcaster == "1" 
+		broadcaster === "1" 
 		? `<span class='broadcaster'>${user}</span>`
 		: mod
 		? `<span class='moderator'>${user}</span>`

@@ -13,19 +13,19 @@ export async function execute(Args: string[], user: any, settings: any, _window:
 	if (user.toLowerCase() == settings.twitch.toLowerCase() || user == settings.youtube) {
 		if (!voiceEnabled) {
 			say.speak("Voice Chat Enabled.");
-			return await create({ ActiveGame: activegame, SetGame: setgame, Voice: true });
+			return await create({ ActiveGame: activegame, SetGame: setgame, Voice: true, Theme: await getData("Theme") });
 		}
 		say.speak("Voice Chat Disabled.");
-		return await create({ ActiveGame: activegame, SetGame: setgame, Voice: false });
+		return await create({ ActiveGame: activegame, SetGame: setgame, Voice: false, Theme: await getData("Theme") });
 	}
 
 	const VoiceKey = (await getGames(activegame)).VoiceKey;
 	if (!voiceEnabled) {
 		if (Math.floor(Math.random() * 100)+1 == 5 && VoiceKey) {
 			say.speak("Voice Chat Enabled.");
-			await create({ ActiveGame: activegame, SetGame: setgame, Voice: true });
+			await create({ ActiveGame: activegame, SetGame: setgame, Voice: true, Theme: await getData("Theme") });
 			return setTimeout(async () => {
-				await create({ ActiveGame: activegame, SetGame: setgame, Voice: false });
+				await create({ ActiveGame: activegame, SetGame: setgame, Voice: false, Theme: await getData("Theme") });
 			}, 30_000);
 		} else if (!VoiceKey) {
 			return say.speak("There is no Voice Key for this game.")
@@ -34,7 +34,7 @@ export async function execute(Args: string[], user: any, settings: any, _window:
 
 	const message = `User: ${user} says: ${Args.join(",")}`;
 
-	keyboard.pressKey(VoiceKey);
+	await keyboard.pressKey(VoiceKey);
 	say.speak(message);
 	setTimeout(() => {
 		keyboard.releaseKey(VoiceKey);

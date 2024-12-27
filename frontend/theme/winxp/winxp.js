@@ -9,7 +9,7 @@
 	* This file is more showing what the JS file should look like. Mainly function wise, since your code will vary.
 */
 
-async function initTheme(channel, title) { // Make required elements and structure for theme to wor
+async function initTheme(channel, title) { // Make required elements and structure for theme to work
 	// Elements
 	let windowelm = document.createElement("div");
 	windowelm.setAttribute("class", "window");
@@ -185,7 +185,7 @@ async function initMsg(user, mod, broadcaster, settings, message, platform, brb)
 	name.setAttribute("id", "name");
 
 	// ? Username
-	name.innerHTML = `${broadcaster == "1" 
+	name.innerHTML = `${broadcaster === "1" 
 		? `<span class='broadcaster'>${user}</span>`
 		: mod
 		? `<span class='moderator'>${user}</span>`
@@ -213,4 +213,8 @@ async function sub(username, recipent) {
 	setTimeout(() => {
 		return x.setAttribute("class", "");
 	}, 10_000);
+}
+
+async function InitPopup() {
+	
 }

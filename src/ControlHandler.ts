@@ -14,13 +14,13 @@ let aiming = 0;
 async function MouseHandler(control: { Dir: string, Amt: number}) {
 	switch (control.Dir) {
 	case "lclick":
-		nut.mouse.pressButton(nut.Button.LEFT);
+		await nut.mouse.pressButton(nut.Button.LEFT);
 		setTimeout(() => {
 			nut.mouse.releaseButton(nut.Button.LEFT);
 		}, control.Amt);
 		return;
 	case "rclick":
-		nut.mouse.pressButton(nut.Button.RIGHT);
+		await nut.mouse.pressButton(nut.Button.RIGHT);
 		setTimeout(() => {
 			nut.mouse.releaseButton(nut.Button.RIGHT);
 		}, control.Amt);
@@ -28,17 +28,17 @@ async function MouseHandler(control: { Dir: string, Amt: number}) {
 	case "toggleRClick":
 		if (aiming == 0) {
 			aiming = 1;
-			nut.mouse.pressButton(nut.Button.RIGHT);
+			await nut.mouse.pressButton(nut.Button.RIGHT);
 		} else {
 			aiming = 0;
-			nut.mouse.releaseButton(nut.Button.RIGHT);
+			await nut.mouse.releaseButton(nut.Button.RIGHT);
 		}
 		return;
 	case "sup":
-		nut.mouse.scrollUp(control.Amt);
+		await nut.mouse.scrollUp(control.Amt);
 		return;
 	case "sdown":
-		nut.mouse.scrollDown(control.Amt);
+		await nut.mouse.scrollDown(control.Amt);
 		return;
 	default: // ! This is used for the hacky python handler, so I can just have on instance of it
 		// ! This handles the up, down, left, right movements of the mouse

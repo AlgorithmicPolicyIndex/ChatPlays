@@ -1,9 +1,13 @@
 import * as path from "path";
 import * as fs from "fs";
-import { BrowserWindow } from "electron";
+import { BrowserWindow, ipcMain } from "electron";
 import Filter from "bad-words";
 import extractUrls from "extract-urls";
 import { writeFileSync } from "fs";
+import electron from "electron";
+import {getData} from "./JSON/db";
+import settings from "./settings.json";
+import {OBSWebSocket} from "obs-websocket-js";
 const extensions = [".ts", ".js"];
 const filter = new Filter();
 
@@ -38,7 +42,7 @@ export async function getGameName(name: string) {
 	}
 }
 
-export function defineCommands() {
+function defineCommands() {
 	const commands = new Map<string, any>();
 	const cmdPath = path.join(__dirname, "commands");
 	const cmdFiles = fs.readdirSync(cmdPath).filter(file => {
@@ -50,7 +54,7 @@ export function defineCommands() {
 		commands.set(command.name.toLowerCase(), command.execute); 
 	}
 	return commands;
-};
+}
 
 export async function Chat(platform: string, user: any, message: string, settings: any, window: BrowserWindow) {
 	if (
@@ -85,7 +89,7 @@ export async function Chat(platform: string, user: any, message: string, setting
 		
 				replacements.push({
 					strToReplace,
-					replacement: `<img src="https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/dark/1.0">`
+					replacement: `<img src="https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/dark/1.0" alt="">`
 				});
 			});
 		}
@@ -124,7 +128,7 @@ export async function Chat(platform: string, user: any, message: string, setting
 	}
 	
 	// window.show();
-	window.webContents.executeJavaScript(`(() => {
+	await window.webContents.executeJavaScript(`(() => {
 	// ? User blob history
 	blobHistory(${settings.maxblobs});
 
@@ -150,12 +154,37 @@ export async function Chat(platform: string, user: any, message: string, setting
 	})();`);
 }
 
+
+const commands = defineCommands();
+export async function Command(message: string, user: any) {
+	const Args = message.toLowerCase().slice(1).split(" ");
+	const command = commands.get(Args.shift() as string);
+	if (!command) return;
+
+	try {
+		await command(Args, user, settings, window, settings.universalName);
+	} catch (err: any) {
+		throw new Error(err);
+	}
+}
+
+export async function Game(message: string) {
+	const ActiveGame = await getData("ActiveGame");
+	try {
+		if (ActiveGame != "") {
+			(await getGames(ActiveGame)).execute(message);
+		}
+	} catch (err: any) {
+		throw new Error(err);
+	}
+}
+
 function strToEmote(message: string, emote: any, replacements: { strToReplace: string; replacement: string; }[]) {
 	let idx = message.split(" ").indexOf(emote.code);
 	if (idx > -1) {
 		replacements.push({
 			strToReplace: emote.code,
-			replacement: `<img src="https://cdn.betterttv.net/emote/${emote.id}/1x">`
+			replacement: `<img src="https://cdn.betterttv.net/emote/${emote.id}/1x" alt="">`
 		});
 	}
 }
@@ -184,4 +213,123 @@ export async function filterWithoutEmojis(message: string) {
 	});
 	
 	return sanitizedMessage.replace(await extractUrls(sanitizedMessage), "[LINK]");
+}
+
+export function adjustAspectRatio(width: number, height: number): { newWidth: number, newHeight: number } {
+	const aspectRatio = 650 / 959;
+	if (width / height > aspectRatio) {
+		const newHeight = Math.round(width / aspectRatio);
+		return { newWidth: width, newHeight };
+	} else {
+		const newWidth = Math.round(height * aspectRatio);
+		return { newWidth, newHeight: height };
+	}
+}
+
+const popups = new Map<string, BrowserWindow>();
+ipcMain.on("close-window", async (_event, windowId: string) => {
+	const window = popups.get(windowId);
+	if (window) {
+		try {
+			window.close();
+			await deleteSource(window.title);
+			popups.delete(windowId);
+		} catch (e) {
+			console.error(e);
+		}
+	}
+});
+
+let obs: OBSWebSocket
+export async function newPopup(OBS: OBSWebSocket, title: string, user: string, settings: any, gifter?: string) {
+	obs = OBS;
+	let displays = electron.screen.getAllDisplays();
+	const externalDisplay = displays[settings.monitor];
+
+	if (!externalDisplay) return console.error("No external display. Please make sure the monitor index is correct.");
+	
+	const popupW = settings.popupW + 5;
+	const popupH = settings.popupH + 5;
+	const maxX = externalDisplay.bounds.x + externalDisplay.bounds.width;
+	const maxY = externalDisplay.bounds.y + externalDisplay.bounds.height;
+
+	let x: number;
+	let y: number;
+
+	let column = popups.size % Math.floor(externalDisplay.bounds.width / popupW);
+	let row = Math.floor(popups.size / Math.floor(externalDisplay.bounds.width / popupW));
+
+	x = externalDisplay.bounds.x + 5 + column * popupW;
+	y = externalDisplay.bounds.y + 5 + row * popupH;
+
+	if (x + popupW > maxX) {
+		x = externalDisplay.bounds.x + 5;
+		y += popupH;
+	}
+	
+	if (y + popupH > maxY) {
+		x = externalDisplay.bounds.x + 5;
+		y = externalDisplay.bounds.y + 5; 
+	}
+	
+	const win = new BrowserWindow({
+		title,
+		width: settings.popupW,
+		height: settings.popupH,
+		x: x,
+		y: y,
+		frame: false,
+		roundedCorners: false,
+		transparent: true, // ! this is for rounded top corner but square bottom corners (Win11 OS | FOR WINXP THEME AND ANY OTHERS WITH SPECIFIC CORNERS!)
+		webPreferences: {
+			preload: path.join(__dirname, "popupPreload.js"),
+			contextIsolation: true
+		}
+	})
+	const theme = await getData("Theme");
+	await win.loadFile(`../frontend/theme/${theme}/popup.html`);
+	await win.webContents.executeJavaScript(`(() => {
+		document.getElementById("css").href = "./popup.css";
+		document.getElementById("text").textContent = "${ gifter
+			? `${gifter} has given ${user} a Subscription!`
+			: `${user} has Subscribed!` }";
+		windowId = 'Window${popups.size+1}' })();
+	`);
+	popups.set(`Window${popups.size+1}`, win);
+	
+	await createSource(title, "window_capture", {
+		window: `${title}:Chrome_WidgetWin_1:electron.exe`
+	});
+}
+
+async function createSource(inputName: string, inputKind: string, inputSettings: any) {
+	const t = await obs.call("CreateInput", {
+		sceneUuid: (await obs.call("GetCurrentProgramScene")).sceneUuid,
+		inputName,
+		inputSettings,
+		inputKind,
+		sceneItemEnabled: false
+	});
+	await transformSource(t.sceneItemId);
+	await obs.call("SetSceneItemEnabled", {
+		sceneUuid: (await obs.call("GetCurrentProgramScene")).sceneUuid,
+		sceneItemId: t.sceneItemId,
+		sceneItemEnabled: true
+	});
+}
+
+async function deleteSource(inputName: string)  {
+	return await obs.call("RemoveInput", { inputName });
+}
+
+async function transformSource(sceneItemId: number) {
+	const video = await obs.call("GetVideoSettings")
+	return await obs.call("SetSceneItemTransform", {
+		sceneUuid: (await obs.call("GetCurrentProgramScene")).sceneUuid,
+		sceneItemId,
+		sceneItemTransform: {
+			positionX: Math.min(Math.floor(Math.random() * video.outputWidth), video.outputWidth - settings.popupW),
+			positionY: Math.min(Math.floor(Math.random() * video.outputHeight), video.outputHeight - settings.popupH)
+		}
+	})
 }

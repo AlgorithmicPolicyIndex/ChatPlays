@@ -114,11 +114,11 @@ const name = "hd2";
 const execute = async (message: string) => {
 	if (Object.keys(Controls).includes(message.toLowerCase())) {
 		const control = Object.keys(Controls);
-		getControls(Controls[control[control.indexOf(message.toLowerCase())] as keyof typeof Controls]);
+		await getControls(Controls[control[control.indexOf(message.toLowerCase())] as keyof typeof Controls]);
 	}
 	if (Object.keys(Stratagems).includes(message.toLowerCase())) {
 		const stratagem = Object.keys(Stratagems);
-		StratagemHandler(Stratagems[stratagem[stratagem.indexOf(message.toLowerCase())] as keyof typeof Stratagems]);
+		await StratagemHandler(Stratagems[stratagem[stratagem.indexOf(message.toLowerCase())] as keyof typeof Stratagems]);
 	}
 }
 const controls = [ Controls, Stratagems ];
@@ -141,19 +141,18 @@ async function StratagemHandler(sequence: string) {
 			continue;
 		case "l":
 			keys.push(Key.D);
-			continue;
 		}
 	}
 
 	keyboard.pressKey(Key.LeftControl);
 	for (const key of keys) {
 		await delay(50);
-		keyboard.pressKey(key);
+		await keyboard.pressKey(key);
 		await delay(50);
-		keyboard.releaseKey(key);
+		await keyboard.releaseKey(key);
 		await delay(100);
 	}
-	keyboard.releaseKey(Key.LeftControl);
+	await keyboard.releaseKey(Key.LeftControl);
 }
 
 function delay(ms: number) {

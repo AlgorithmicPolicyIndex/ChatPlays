@@ -19,7 +19,8 @@
 		"strictFunctionTypes": true,
 		"strictNullChecks": true,
 		"strictPropertyInitialization": true,
-
+		
+		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"noImplicitAny": true,
 		"noImplicitThis": true,
@@ -32,7 +33,7 @@
 		"downlevelIteration": true,
 		"declaration": false,
 
-		"pretty": true,
+		"pretty": true
 	},
 	"include": [
 		"typings/**/*",

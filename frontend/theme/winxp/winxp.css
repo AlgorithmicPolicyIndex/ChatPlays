@@ -13,7 +13,7 @@ body {
 	height: 100%;
 	width: 100%;
 	overflow: hidden !important;
-	margin: 0px;
+	margin: 0;
 	padding: 0;
 	-user-select: none;
 	-webkit-app-region: drag;
@@ -154,7 +154,7 @@ textarea,
 	padding-left: 1%;
 	margin-top: 5px;
 	width: 99%;
-	left: 0px;
+	left: 0;
 }
 
 .liItem#expand>ul>li {
@@ -203,7 +203,7 @@ ul {
 }
 
 #curgame.active {
-	margin: 0px;
+	margin: 0;
 }
 
 /* NOTIFICATIONS */

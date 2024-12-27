@@ -1,0 +1,50 @@
+﻿:root {
+    --font-family: 'Cascadia Code NF';
+    --list-font-size: 2vh;
+
+    --message-font-size: 2vh;
+    --message-color: #fafafa;
+    --background-color: #282c34;
+    --notifications-color: #e45649;
+    --notifications-bg-1: #383a42;
+    --notifications-bg-2: #535763;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    display: block;
+    align-content: center;
+    text-align: center;
+}
+
+body {
+    min-width: 15vw;
+    color: var(--notifications-color);
+    background-size: 100% 100%;
+    background: linear-gradient(0.45turn, var(--notifications-bg-1) 75%, var(--notifications-bg-2));
+    overflow: hidden !important;
+    font-family: var(--font-family);
+    padding: 0;
+    margin: 0;
+}
+
+:not(input):not(textarea),
+:not(input):not(textarea)::after,
+:not(input):not(textarea)::before {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+button {
+    background: var(--notifications-bg-1);
+    border-bottom-color: var(--notifications-bg-2);
+}
+
+input,
+button,
+textarea,
+:focus {
+    outline: none;
+}

@@ -136,3 +136,4 @@ bun.lockb
 /JSON
 settings.json
 test.ts
+.idea

@@ -22,7 +22,7 @@ async function execute(Args: string[], _user: any, settings: any, window: Browse
 
 
 	if (disabled[0]) {
-		window.webContents.executeJavaScript(`(() => {
+		await window.webContents.executeJavaScript(`(() => {
 			enabledPlugins.push("${disabled[0]}");
 			plugins.splice(plugins.indexof("${disabled[0]}"), 1);
 			loadPlugins();
@@ -30,7 +30,7 @@ async function execute(Args: string[], _user: any, settings: any, window: Browse
 		
 		await Chat("Application", {"display-name": "ChatPlays", "badges": {"broadcaster": 1}}, `Plugin: ${disabled[0]} has been enabled.`, settings, window);
 	} else if (enabled[0]) {
-		window.webContents.executeJavaScript(`(() => {
+		await window.webContents.executeJavaScript(`(() => {
 			plugins.push("${enabled[0]}");
 			enabledPlugins.splice(enabledPlugins.indexOf("${enabled[0]}"), 1);
 			unloadPlugin("${enabled[0]}");

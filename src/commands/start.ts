@@ -21,7 +21,7 @@ module.exports = {
 				let curgame = document.getElementById("curgame");
 				curgame.innerHTML = "Current Game: ${Args[0]} - ChatPlays Active!";	
 			})();`);
-			return create({ ActiveGame: Args[0], SetGame, Voice}, false);
+			return create({ ActiveGame: Args[0], SetGame, Voice, Theme: await getData("Theme")}, false);
 		}
 
 		if (ActiveGame == "" && Math.floor(Math.random() * 100) + 1 == 5) {
@@ -33,10 +33,10 @@ module.exports = {
 				let curgame = document.getElementById("curgame");
 				curgame.innerHTML = "Current Game: ${ActiveGame} - ChatPlays Active!";	
 			})();`);
-			create({ ActiveGame: SetGame, SetGame, Voice}, false);
-			return setTimeout(() => {
+			create({ ActiveGame: SetGame, SetGame, Voice, Theme: await getData("Theme")}, false);
+			return setTimeout(async () => {
 				say.speak("Deactivating Chat Plays.");
-				return create({ ActiveGame: "", SetGame, Voice}, false)
+				return create({ ActiveGame: "", SetGame, Voice, Theme: await getData("Theme")}, false)
 			}, 30_000); // TODO: Set a dedicated timer inside the game controls instead of hard coded value globally
 		}
 	}
