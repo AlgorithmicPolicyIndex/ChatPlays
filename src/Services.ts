@@ -44,6 +44,7 @@ class YouTube extends Service {
 		this.client.start().then(r => console.log(r));
 	
 		this.client.on("start", async liveId => {
+   this.connected = true;
 			return console.log(`Connected To Youtube on: ${liveId}`);
 		})
 	}
@@ -67,6 +68,7 @@ class OBS extends Service {
 		}
 		
 		this.client.on("ConnectionOpened", () => console.log("Connected to OBS WebSocket Server."));
+  this.connected = true;
 	}
 	async disconnect(): Promise<void> {
 		if (!this.connected || !this.client) return;
