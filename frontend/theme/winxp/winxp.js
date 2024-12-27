@@ -27,6 +27,11 @@ async function initTheme(channel, title) { // Make required elements and structu
 	maximize_button.setAttribute("aria-label", "Maximize");
 	let close_button = document.createElement("button")
 	close_button.setAttribute("aria-label", "Close");
+	close_button.setAttribute("id", "close");
+	close_button.setAttribute("onclick", "close");
+	close_button.addEventListener("click", () => {
+		window.electron.close();
+	});
 	
 	let window_body = document.createElement("div")
 	window_body.setAttribute("class", "window-body");
@@ -213,8 +218,4 @@ async function sub(username, recipent) {
 	setTimeout(() => {
 		return x.setAttribute("class", "");
 	}, 10_000);
-}
-
-async function InitPopup() {
-	
 }

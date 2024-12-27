@@ -14,10 +14,9 @@ Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki
        - You can't manually start VC via command, if you want to test it or start it yourself, please enter the [Settings.json](./JSON/settings.json) and change `Voice = false` to true.
    - Not a priority
        - 7TV and FFZ Emotes
-   - Graceful exit of process and disconnect from services.
    - Wiki, acknowledge new settings and instructions.
  - Electron App
-	- Max WxH: 850x1159 | Min WxH: 450x759 - This is due to it being too large or too small. I dont believe other sizes beyond those will be very readible. These were found out by means of WinXP theme testing for dyanmic sizing. You may want to look into doing general sizing via the app window if you wish to read chat from it, then do overlay sizing on OBS directly.
+	- Max WxH: 850x1159 | Min WxH: 450x759 - This is due to it being too large or too small. I don't believe other sizes beyond those will be very readible. These were found out by means of WinXP theme testing for dyanmic sizing. You may want to look into doing general sizing via the app window if you wish to read chat from it, then do overlay sizing on OBS directly.
 	- Look into allowing optional login information for extra features
 
 ### Running

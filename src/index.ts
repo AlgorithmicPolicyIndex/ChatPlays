@@ -4,10 +4,10 @@ import {
 	adjustAspectRatio,
 	newPopup,
 	Command,
-	Game
+	Game, deleteSources
 } from "./functions";
 import settings from "./settings.json";
-import {app, BrowserWindow} from "electron";
+import {app, BrowserWindow, ipcMain} from "electron";
 import client from "discord-rich-presence";
 import { create } from "./JSON/db";
 import { LiveChat } from "youtube-chat";
@@ -56,7 +56,7 @@ if (settings.useChat) {
 			maxWidth: settings.maxWitdh,
 			maxHeight: settings.maxHeight,
 			webPreferences: {
-				nodeIntegration: false,
+				preload: path.join(__dirname, "popupPreload.js"),
 				contextIsolation: true
 			}
 		});
@@ -77,14 +77,31 @@ if (settings.useChat) {
 		}
 		win.loadFile("../frontend/index.html");
 	});
+
+	ipcMain.on("close", async (_event) => {
+		try {
+			deleteSources();
+			for (let service of services.getServices()) {
+				await services.disconnectService(service);
+			}
+			window.close();
+		} catch (e) {
+			console.error(e);
+		}
+	});
+	app.on("window-all-closed", async () => {
+		return app.quit();
+	});
 }
 
 // ! Services
 services.addService("Twitch", new Twitch());
 services.addService("YouTube", new YouTube());
 services.addService("OBS", new OBS());
-services.getServices().forEach(async (service) => {
-	await services.connectService(service);
+Promise.all(
+	services.getServices().map((service)  => services.connectService(service))
+).then(() => {
+	console.log("To exit this program, please refer to the close button on your Main Electron window.\nThis provides a graceful exit where it disconnects from all services.");
 });
 
 // ! Twitch
@@ -101,7 +118,7 @@ if (tmiclient) {
 		if (!message.startsWith("!") && settings.useChat)
 			return await Chat("TWITCH", user, message, settings, window);
 
-		await Command(message, user["display-name"]);
+		await Command(message, user["display-name"], window);
 	});
 
 	tmiclient.on("subscription", async (_channel, username, _methods, _message, _user) => {
@@ -152,7 +169,7 @@ if (ytclient) {
 		if (!message.get("text").startsWith("!") && settings.useChat)
 			return await Chat("YOUTUBE", user, message.get("text"), settings, window);
 
-		await Command(message.get("text"), user.id);
+		await Command(message.get("text"), user.id, window);
 	});
 
 	ytclient.on("error", (err:any) => {

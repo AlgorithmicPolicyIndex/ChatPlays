@@ -7,8 +7,8 @@
 }
 
 .title-bar {
-    font-size: 115%;
-    height: 1%;
+    font-size: 115% !important;
+    height: 1% !important;
 }
 
 .window-body {

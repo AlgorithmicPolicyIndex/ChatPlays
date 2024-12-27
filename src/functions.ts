@@ -156,7 +156,7 @@ export async function Chat(platform: string, user: any, message: string, setting
 
 
 const commands = defineCommands();
-export async function Command(message: string, user: any) {
+export async function Command(message: string, user: any, window: BrowserWindow) {
 	const Args = message.toLowerCase().slice(1).split(" ");
 	const command = commands.get(Args.shift() as string);
 	if (!command) return;
@@ -320,6 +320,14 @@ async function createSource(inputName: string, inputKind: string, inputSettings:
 
 async function deleteSource(inputName: string)  {
 	return await obs.call("RemoveInput", { inputName });
+}
+
+export function deleteSources() {
+	popups.forEach(async (b, n) => {
+		popups.delete(n);
+		await obs.call("RemoveInput", { inputName: b.title });
+		b.close();
+	});
 }
 
 async function transformSource(sceneItemId: number) {

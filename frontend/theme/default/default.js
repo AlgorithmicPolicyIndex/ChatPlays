@@ -10,6 +10,12 @@ async function initTheme(channel) {
 	const brb = document.createElement("div");
 	brb.setAttribute("id", "brb");
 	brb.innerText = "Be right Back!";
+	const button = document.createElement("button");
+	button.setAttribute("id", "close");
+	button.setAttribute("onclick", "close");
+	button.addEventListener("click", () => {
+		window.electron.close();
+	});
 
 	const sub = document.createElement("sub");
 	sub.setAttribute("id", "sub");

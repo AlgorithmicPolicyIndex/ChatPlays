@@ -13,7 +13,7 @@ module.exports = {
 			&& settings.useChat
 		) {
 			if (settings.usePopupEvents) {
-				await newPopup(services.GetClient("OBS") as OBSWebSocket, `${count}`, Args[0], settings, Args[1] ? Args[1] : "");
+				await newPopup(services.GetClient("OBS") as OBSWebSocket, `Popup - ${count}`, Args[0], settings, Args[1] ? Args[1] : "");
 				return count++;
 			}
 

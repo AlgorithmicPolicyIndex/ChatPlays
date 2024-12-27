@@ -30,7 +30,7 @@ class Twitch extends Service {
 	}
 	async disconnect(): Promise<void> {
 		if (!this.connected || !this.client) return;
-		return (this.client as Client).disconnect().then(() => {
+		await (this.client as Client).disconnect().then(() => {
 			this.connected = false;
 			console.log(`${this.constructor.name} Client disconnected`);
 		});
@@ -44,16 +44,16 @@ class YouTube extends Service {
 		this.client.start().then(r => console.log(r));
 	
 		this.client.on("start", async liveId => {
-   this.connected = true;
+                        this.connected = true;
 			return console.log(`Connected To Youtube on: ${liveId}`);
-		})
+		});
 	}
 	async disconnect(): Promise<void> {
 		if (!this.connected || !this.client) return;
 		(this.client as LiveChat).stop();
 		
 		this.connected = false;
-		return console.log(`${this.constructor.name} Client disconnected`);
+		console.log(`${this.constructor.name} Client disconnected`);
 	}
 }
 
@@ -62,20 +62,22 @@ class OBS extends Service {
 		this.client = new OBSWebSocket();
 
 		try {
-			await this.client.connect(settings.OBSURL, settings.OBSPASS);
+			if (!settings.usePopupEvents) return;
+			
+			this.client.connect(settings.OBSURL, settings.OBSPASS).then(()  => {
+				console.log("Connected to OBS WebSocket Server.")
+				this.connected = true;
+			});
 		} catch (err) {
 			console.error("Unable to connect to OBS WebSockets.\nCommon Causes: \nURL, Port, Password or OBS is closed.\nFull Error:\n", err);
 		}
-		
-		this.client.on("ConnectionOpened", () => console.log("Connected to OBS WebSocket Server."));
-  this.connected = true;
 	}
 	async disconnect(): Promise<void> {
 		if (!this.connected || !this.client) return;
-		await (this.client as OBSWebSocket).disconnect();
-		
-		this.connected = false;
-		return console.log(`${this.constructor.name} WebSocket disconnected`);
+		await (this.client as OBSWebSocket).disconnect().then(() => {
+			this.connected = false;
+			console.log(`${this.constructor.name} WebSocket disconnected`);
+		});
 	}
 }
 
@@ -91,18 +93,17 @@ class ServiceManager {
 		const platform = settings.platform.toLowerCase();
 
 		if (service) {
-
 			if (
 				(platform === "twitch" && name.toLowerCase() === "twitch")
 				|| (platform === "youtube" && name.toLowerCase() === "youtube")
 				|| platform === "both"
 			) {
 				if (!service.connected) {
-					await service.connect();
+					return await service.connect();
 				}
 			} else if (name.toLowerCase() !== "twitch" && name.toLowerCase() !== "youtube") {
 				if (!service.connected) {
-					await service.connect();
+					return await service.connect();
 				}
 			}
 		}
@@ -110,7 +111,7 @@ class ServiceManager {
 
 	async disconnectService(name: string) {
 		const service = this.services.get(name);
-		if (service) {
+		if (service && service.connected) {
 			await service.disconnect();
 		}
 	}

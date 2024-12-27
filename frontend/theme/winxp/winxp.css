@@ -35,6 +35,12 @@ textarea,
 	outline: none;
 }
 
+#close {
+	user-select: auto !important;
+	cursor: pointer;
+	-webkit-app-region: no-drag !important;
+}
+
 #chatWindow.window {
 	height: 99vh;
 	/* Default padding is 3px */

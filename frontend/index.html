@@ -7,6 +7,7 @@
 		<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'"> 
 	</head>
 	<body>
+		<button id="close"><u><strong>X</strong></u></button>
 		<ul id="history"></ul>
 		<div id="curgame">
 			Current Game: None - ChatPlays Offline!
@@ -18,7 +19,10 @@
 	</body>
 	<script src="theme/default/default.js"></script>
 	<script>
-		let prevAuthor = "";
+		document.getElementById("close").addEventListener("click", () => {
+			window.electron.close();
+		});
+		
 		let count = 0;
 		let brb = false;
 		
