@@ -101,7 +101,11 @@ services.addService("OBS", new OBS());
 Promise.all(
 	services.getServices().map((service)  => services.connectService(service))
 ).then(() => {
-	console.log("To exit this program, please refer to the close button on your Main Electron window.\nThis provides a graceful exit where it disconnects from all services.");
+	if (settings.useChat) {
+		console.log("To exit this program, please refer to the close button on your Main Electron window.\nThis provides a graceful exit where it disconnects from all services.");
+	} else {
+		console.log("As you do not have the main Electron window running, you can not Gracefully exit the application.\nI might look into make a small window that allows you to still gracefully exit, but the electron command does not let you input in terminal. You will have to terminate the process by killing it in terminal\nCTRL + C is my default to terminate terminal process.");
+	}
 });
 
 // ! Twitch
