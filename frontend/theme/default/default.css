@@ -33,6 +33,10 @@ body {
 	-webkit-app-region: drag;
 }
 
+#ping {
+	color: var(--ping-color);
+}
+
 :not(input):not(textarea),
 :not(input):not(textarea)::after,
 :not(input):not(textarea)::before {
@@ -42,6 +46,7 @@ body {
 }
 
 #close {
+	z-index: 10;
 	position: absolute;
 	right: 0;
 	padding: 10px;

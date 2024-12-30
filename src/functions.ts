@@ -56,6 +56,9 @@ function defineCommands() {
 	return commands;
 }
 
+let checked = false;
+let globalEmotes: any;
+let channelEmotes: any;
 export async function Chat(platform: string, user: any, message: string, settings: any, window: BrowserWindow) {
 	if (
 		// ! This is gross
@@ -94,29 +97,31 @@ export async function Chat(platform: string, user: any, message: string, setting
 			});
 		}
 	
-		if (settings.useOtherEmotes && settings.userId != "undefined") {
+		if (settings.useOtherEmotes && settings.userId != "null" && checked) {
 			// * BTTV
+			if (!globalEmotes || !channelEmotes) {
+				await fetch(`https://api.betterttv.net/3/cached/emotes/global`).then(async (res) => {
+					return globalEmotes = await res.json();
+				});
+				await fetch(`https://api.betterttv.net/3/cached/users/${platform.toLowerCase()}/${settings.userId}`).then(async (res) => {
+					return channelEmotes = await res.json();
+				});
+			}
+
 			// ? Global BTTV Emotes
-			await fetch(`https://api.betterttv.net/3/cached/emotes/global`).then(async (res) => {
-				let data = await res.json();
-				
-				for (let emote of data) {
-					strToEmote(message, emote, replacements);
-				}
-			});
+			for (let emote of globalEmotes) {
+				strToEmote(message, emote, replacements);
+			}
 			// ? Channel BTTV Emotes
-			await fetch(`https://api.betterttv.net/3/cached/users/${platform.toLowerCase()}/${settings.userId}`).then(async (res) => {
-				let data = await res.json();
-				
-				for (let emote of data["sharedEmotes"]) {
-					strToEmote(message, emote, replacements);
-				}
-				for (let emote of data["channelEmotes"]) {
-					strToEmote(message, emote, replacements);
-				}
-			});
-		} else {
-			console.info("Please make sure to type into your own chat.\nI need your user-id to be able to search the BTTV channel emotes.\n\n");
+			for (let emote of channelEmotes["sharedEmotes"]) {
+				strToEmote(message, emote, replacements);
+			}
+			for (let emote of channelEmotes["channelEmotes"]) {
+				strToEmote(message, emote, replacements);
+			}
+		} else if (settings.useOtherEmotes && !checked) {
+			checked = true;
+			console.info("\nPlease make sure to type into your own chat.\nI need your user-id to be able to search the BTTV channel emotes.\n\n");
 		}
 		
 		message = replacements.reduce(
@@ -149,7 +154,6 @@ export async function Chat(platform: string, user: any, message: string, setting
 
 	count++; // ? used for list Element ID / new list counter
 	initializeMessage("${user["display-name"]}", ${user["mod"]}, ${user["badges"]?.broadcaster}, ${JSON.stringify(settings)}, ${JSON.stringify(message)}, "${platform}");
-	// ? color ping
 	prevAuthor = "${user["display-name"]}";
 	})();`);
 }

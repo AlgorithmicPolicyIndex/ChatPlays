@@ -40,29 +40,29 @@ let window: BrowserWindow;
 create({ ActiveGame: "", SetGame: "", Voice: false, Theme: "default" });
 
 // * Electron
-if (settings.useChat) {
-	const { newWidth, newHeight } = adjustAspectRatio(settings.width, settings.height);
+const { newWidth, newHeight } = adjustAspectRatio(settings.width, settings.height);
 
-	app.whenReady().then(async () => {
-		const win = new BrowserWindow({
-			title: settings.processTitle,
-			width: newWidth,
-			height: newHeight,
-			frame: false,
-			roundedCorners: false,
-			transparent: true, // ! this is for rounded top corner but square bottom corners (Win11 OS | FOR WINXP THEME AND ANY OTHERS WITH SPECIFIC CORNERS!)
-			minWidth: settings.minWidth,
-			minHeight: settings.minHeight,
-			maxWidth: settings.maxWitdh,
-			maxHeight: settings.maxHeight,
-			webPreferences: {
-				preload: path.join(__dirname, "popupPreload.js"),
-				contextIsolation: true
-			}
-		});
+app.whenReady().then(async () => {
+	const win = new BrowserWindow({
+		title: settings.processTitle,
+		width: newWidth,
+		height: newHeight,
+		frame: false,
+		roundedCorners: false,
+		transparent: true, // ! this is for rounded top corner but square bottom corners (Win11 OS | FOR WINXP THEME AND ANY OTHERS WITH SPECIFIC CORNERS!)
+		minWidth: settings.minWidth,
+		minHeight: settings.minHeight,
+		maxWidth: settings.maxWitdh,
+		maxHeight: settings.maxHeight,
+		webPreferences: {
+			preload: path.join(__dirname, "popupPreload.js"),
+			contextIsolation: true
+		}
+	});
 
-		window = win;
+	window = win;
 
+	if (settings.useChat) {
 		const pluginPath = path.join(__dirname, "..", "frontend", "plugins");
 		const pluginFiles = readdirSync(pluginPath).filter(file => file.endsWith(".js"));
 		win.webContents.executeJavaScript(`
@@ -76,23 +76,28 @@ if (settings.useChat) {
 			})(); loadPlugins();`);
 		}
 		win.loadFile("../frontend/index.html");
-	});
+	} else {
+		win.setMinimumSize(300, 300);
+		win.setMaximumSize(300, 300);
+		win.setSize(300, 300);
+		win.loadFile("../frontend/noChat.html");
+	}
+});
 
-	ipcMain.on("close", async (_event) => {
-		try {
-			deleteSources();
-			for (let service of services.getServices()) {
-				await services.disconnectService(service);
-			}
-			window.close();
-		} catch (e) {
-			console.error(e);
+ipcMain.on("close", async (_event) => {
+	try {
+		deleteSources();
+		for (let service of services.getServices()) {
+			await services.disconnectService(service);
 		}
-	});
-	app.on("window-all-closed", async () => {
-		return app.quit();
-	});
-}
+		window.close();
+	} catch (e) {
+		console.error(e);
+	}
+});
+app.on("window-all-closed", async () => {
+	return app.quit();
+});
 
 // ! Services
 services.addService("Twitch", new Twitch());
@@ -101,11 +106,7 @@ services.addService("OBS", new OBS());
 Promise.all(
 	services.getServices().map((service)  => services.connectService(service))
 ).then(() => {
-	if (settings.useChat) {
-		console.log("To exit this program, please refer to the close button on your Main Electron window.\nThis provides a graceful exit where it disconnects from all services.");
-	} else {
-		console.log("As you do not have the main Electron window running, you can not Gracefully exit the application.\nI might look into make a small window that allows you to still gracefully exit, but the electron command does not let you input in terminal. You will have to terminate the process by killing it in terminal\nCTRL + C is my default to terminate terminal process.");
-	}
+	console.log("To exit this program, please refer to the close button on your Main Electron window.\nThis provides a graceful exit where it disconnects from all services.");
 });
 
 // ! Twitch
@@ -164,7 +165,7 @@ if (ytclient) {
 		ChatItem.message.map((v: { text: string } | EmojiItem) => {
 			if (v && Object.keys(v).includes("text")) {
 				// yeah, because "text" doesn't exist on EmojiItem because that's what I'm looking for. CHRIST.
-				message.set("text", (v as {text: string}).text.trim() );
+				message.set("text", (v as {text: string}).text.trim());
 			}
 		});
 

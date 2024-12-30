@@ -64,8 +64,8 @@ class OBS extends Service {
 		try {
 			if (!settings.useChat || !settings.usePopupEvents) return;
 			
-			this.client.connect(settings.OBSURL, settings.OBSPASS).then(()  => {
-				console.log("Connected to OBS WebSocket Server.")
+			this.client.connect(`ws://localhost:${settings.OBSPORT}`, settings.OBSPASS).then(()  => {
+				console.log("Connected to OBS WebSocket Server.");
 				this.connected = true;
 			});
 		} catch (err) {
