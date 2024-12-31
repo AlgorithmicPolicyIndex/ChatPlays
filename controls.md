@@ -7,6 +7,8 @@
 [TFD](#TFD)  
 [THCOTW](#THCOTW)
 
+### Okay. I'll fix this alright? this is just a bases for now.
+
 # destiny2
 ```json
 {
@@ -127,7 +129,7 @@
     "Amt": -1
   },
   "walkback": {
-    "Key": "A",
+    "Key": "S",
     "Amt": -1
   },
   "walkleft": {
@@ -135,7 +137,7 @@
     "Amt": -1
   },
   "walkright": {
-    "Key": "A",
+    "Key": "D",
     "Amt": -1
   },
   "crouch": {

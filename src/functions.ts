@@ -77,7 +77,7 @@ export async function Chat(platform: string, user: any, message: string, setting
 
 	// ! Get Emote and replace with img tag
 	// * Twitch Emotes
-	if (platform == "TWITCH" || platform == "BOTH") {
+	if (platform == "TWITCH") {
 		let replacements: { strToReplace: string; replacement: string; }[] = [];
 		const emotes: { string: [ string ] } = user["emotes"];
 	

@@ -43,9 +43,9 @@ const Controls = {
 	stepright: { Key: Key.D, Amt: 500 },
 	// ! Special Definitions for keybinds
 	walk: { Key: Key.W, Amt: -1 },
-	walkback: { Key: Key.A, Amt: -1 },
+	walkback: { Key: Key.S, Amt: -1 },
 	walkleft: { Key: Key.A, Amt: -1 },
-	walkright: { Key: Key.A, Amt: -1 },
+	walkright: { Key: Key.D, Amt: -1 },
 	crouch: { Key: Key.Quote, Amt: -1 },
 	sprint: { Key: Key.Backslash, Amt: -1 },
 	//#endregion
