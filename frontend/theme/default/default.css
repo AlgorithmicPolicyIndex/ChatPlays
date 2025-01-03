@@ -23,6 +23,13 @@
 	--notifications-bg-2: #535763;
 }
 
+@font-face {
+	font-family: 'Cascadia Code NF';
+	src: url(CascadiaCodeNF.ttf) format("truetype");
+	font-weight: normal;
+	font-style: normal;
+}
+
 body {
 	min-width: 15vw;
 	background-color: var(--background-color);

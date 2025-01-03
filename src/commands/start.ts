@@ -37,7 +37,7 @@ module.exports = {
 			return setTimeout(async () => {
 				say.speak("Deactivating Chat Plays.");
 				return create({ ActiveGame: "", SetGame, Voice, Theme: await getData("Theme")}, false)
-			}, 30_000); // TODO: Set a dedicated timer inside the game controls instead of hard coded value globally
+			}, settings.ChatPlaysTime * 1000);
 		}
 	}
 }
