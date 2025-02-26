@@ -1,3 +1,11 @@
+# The Jarring Update
+This is a massive update, the entirety of the Program works relatively the same, outside the use of the control panel. So please bare with me as I update my Wiki to go over everything. Everything should be fairly simple and self-explanatory, so hopefully not too many issues arise from that.  
+Now, Let's get this out of the way. Almost everything was rewritten, I'm trying some new things out with this update. I did this update to remove the need of closing and starting the app again to make changes. You can make them on the fly now.  
+### **THERE WILL BE LOTS OF EDGE CASES** and I know this. So please, if you experience some weird issue, if you know how to replicate it, or take a video of it, I may be able to fix this once I finish field stuff at my unit.  
+### With this update, I fully expect some issues to popup, so feel free to make Github issues here, or even a PR updating some code if you're up to that task of my hellish code.
+
+---
+
 # ChatPlays
 Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki) to read more and specific things about Controls and Settings!  
 
@@ -10,22 +18,26 @@ I hope you all enjoy this project I slowly work on as I think of new interesting
 I hope to see what people come up with for features, themes and plugins for the chat overlay!
 
 # Work Load / Plans
- - TWITCH
- 	- Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
-	- Follower Request (as it's not a part of the API)
- - YOUTUBE
-	- Subscribe / Membership Event (not a part of the chat module I use)
- - OVERALL
-   - Allow Chat to Interact with Game Voice Chat.
-       - Need to figure out virtual microphone input or hooking. Such as Steel Series Sonar Aux or other channels.
-       - You can add via "export const VoiceKey = Key.V;" inside your game files. Check [Destiny2](./src/games/Destiny2.ts) for an example.
-       - You can't manually start VC via command, if you want to test it or start it yourself, please enter the [Settings.json](./JSON/settings.json) and change `Voice = false` to true.
-   - Not a priority
-       - 7TV and FFZ Emotes
- - Electron App
-	- Max WxH: 850x1159 | Min WxH: 450x759 - This is due to it being too large or too small. I don't believe other sizes beyond those will be very readible. These were found out by means of WinXP theme testing for dyanmic sizing. You may want to look into doing general sizing via the app window if you wish to read chat from it, then do overlay sizing on OBS directly.
-	- Look into allowing optional login information for extra features
-    - When not using Chat Overlay, create small window with "close gracefully" button, so you don't have to terminate in terminal.
+  - TWITCH
+      - Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
+      - Follower Request (as it's not a part of the API)
+  - YOUTUBE
+      - Subscribe / Membership Event (not a part of the chat module I use)
+  - OVERALL
+    - Services
+      - Make Error handler for specific cases where, say Twitch, tmi.js returns "no response from Twitch"
+        - This is because it connects to Twitch, but does not join the channel.
+      - Handle Errors from OBS WebSocket, as it will "connect" if values are inputted, but errors when failed to connect and does not send to app.
+    - Plugins
+      - Convert to general services
+        - to allow Service Plugins to other platforms
+        - Custom Features in the Control Panel
+        - Other things I can't think of right now
+    - Voice Chat
+       - Test input in games, to make sure full message is heard in game.
+    - Convert Monitors from index to select menu for which monitor to use.
+    - Not a priority
+         - 7TV and FFZ Emotes
 
 ### Running
 > **!** You'll need to edit anything to match your package manager, I personally use [Bun](https://bun.sh) **!**

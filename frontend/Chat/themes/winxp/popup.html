@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link id="css" rel="stylesheet" href="./popup.css">
+</head>
+<body>
+<div class="window">
+    <div class="title-bar">
+        <div class="title-bar-text">C:\Subscription.exe</div>
+        <div class="title-bar-controls">
+            <button class="close" aria-label="Close"></button>
+        </div>
+    </div>
+    <div class="window-body">
+        <p id="text">
+            {user} has subscribed!
+        </p>
+        <button class="close">Thank You!</button>
+    </div>
+</div>
+</body><script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+    $('.close').on("click", () => {
+	    window.electron.close();
+    });
+    
+    window.electron.update((user, gifter) => {
+	    const text = $('#text');
+	    if (gifter)
+		    text.text(`${gifter} has gifted a Sub to ${user}!`);
+        else
+		    text.text(`${user} has subscribed!`);
+    });
+</script>
+</html>

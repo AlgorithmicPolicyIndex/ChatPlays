@@ -9,7 +9,7 @@
 	* This file is more showing what the JS file should look like. Mainly function wise, since your code will vary.
 */
 
-async function initTheme(channel, title) { // Make required elements and structure for theme to work
+async function initTheme(channel) { // Make required elements and structure for theme to work
 	// Elements
 	let windowelm = document.createElement("div");
 	windowelm.setAttribute("class", "window");
@@ -28,10 +28,6 @@ async function initTheme(channel, title) { // Make required elements and structu
 	let close_button = document.createElement("button")
 	close_button.setAttribute("aria-label", "Close");
 	close_button.setAttribute("id", "close");
-	close_button.setAttribute("onclick", "close");
-	close_button.addEventListener("click", () => {
-		window.electron.close();
-	});
 	
 	let window_body = document.createElement("div")
 	window_body.setAttribute("class", "window-body");
@@ -163,7 +159,7 @@ async function initTheme(channel, title) { // Make required elements and structu
 
 
 	channel.slice(0,1);
-	title_bar_text.innerHTML = title;
+	title_bar_text.innerHTML = channel;
 	recipent.innerHTML = `To: ${channel} &lt;${channel.length >= 15 ? "..."+channel.slice(14) : channel}@stream.tv&gt;`;
 	side_bar_1.innerHTML ="Start Camera";
 	side_bar_2.innerHTML = "Start Talking";
@@ -172,6 +168,7 @@ async function initTheme(channel, title) { // Make required elements and structu
 	status_bar_field.setAttribute("id", "curgame");
 	status_bar_field.innerHTML = "Current Game: None - ChatPlays Offline!";
 
+	// 👌
 	brb_bar.childNodes[0].innerHTML = "C:\\ChatPlays has stopped...";
 	brb_text.innerHTML = "Be right back!";
 	sub_bar.childNodes[0].innerHTML = "Subscription";

@@ -1,0 +1,108 @@
+﻿@font-face {
+    font-family: 'Cascadia Code NF';
+    src: url(Chat/themes/default/CascadiaCodeNF.ttf) format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Cascadia Code NF';
+    font-size: 90%;
+    background-color: #2b2d40;
+    color: #c5c5c5;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: baseline;
+    -webkit-app-region: drag;
+}
+
+:not(input):not(textarea),
+:not(input):not(textarea)::after,
+:not(input):not(textarea)::before {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+.close {
+    z-index: 10;
+    position: absolute;
+    right: 0;
+    padding: 10px;
+    border: none;
+    background: none;
+    font-size: 110%;
+    color: #e45649;
+    user-select: auto !important;
+    cursor: pointer;
+    -webkit-app-region: no-drag !important;
+}
+
+.popup {
+    display: none;
+}
+
+h1 {
+    color: #c1c5da;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+hr {
+    border-color: #191a25;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+h2 {
+    color: #868db5;
+}
+
+.Chat {
+    text-align: left;
+}
+
+label {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    width: 350px;
+    line-height: 26px;
+    margin-bottom: 10px;
+}
+
+button, select, input {
+    -webkit-app-region: no-drag !important;
+}
+.voice {
+    align-items: center;
+    width: 100%;
+}
+.voice>button {
+    width: 48%;
+    margin-bottom: 10px;
+}
+
+.plays {
+    align-items: center;
+    width: 100%;
+}
+.plays>button {
+    width: 48%;
+    margin-bottom: 10px;
+}
+
+select, input {
+    max-width: 200px;
+    width: 200px;
+}
+
+input {
+    height: 20px;
+    flex: 0 0 200px;
+    margin-left: 10px;
+}

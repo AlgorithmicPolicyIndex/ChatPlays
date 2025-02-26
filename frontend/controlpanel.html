@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link id="css" rel="stylesheet" href="./controlpanel.css">
+</head>
+<body>
+<div class="close"><u>X</u></div>
+<div class="Chat">
+	<h1>Chat</h1>
+	<div>
+		<h2>Overlay</h2>
+		<label class="setting">Use Chat <input name="enableChat" value="chat" type=checkbox checked="checked"></label>
+		<Label class="chat setting">Name<input name="name" type="text"></Label>
+		<label class="chat">Spawn Chat <input type=button name="spawnChat" value="Spawn"></label>
+		<label class="chat setting">Be Right Back<input type="checkbox" name="brb"></label>
+		<label class="chat">Open Settings <input type="button" name="chatSettings" value="Open Settings"></label>
+	</div>
+	<hr>
+	<div>
+		<h2>Plays</h2>
+		<div class="plays">
+			<label class="setting">Game <select name="gamePath"></select></label>
+			<p style="color:red; text-align: center;"><b>! This will run until you click stop. !</b></p>
+			<button class="startPlays">Start</button>
+			<button class="stopPlays" disabled>Stop</button>
+		</div>
+		<label class="setting">Chance for Chat in 100 <input type="number" name="playsChance" max="100" min="0" value="1"></label>
+		<label class="setting">Plays time (in Seconds) <input name="playtime" value="30" type="number"></label>
+	</div>
+	<hr>
+	<div>
+		<h2>Plugins</h2>
+		<label class="setting">Enable Plugins <select class="plugins" name="disabledPlugs" disabled>
+			<option value="" disabled selected>None</option>
+		</select></label>
+		<label class="setting">Disable Plugins <select class = "plugins" name="enabledPlugs" disabled>
+			<option value="" disabled selected>None</option>
+		</select></label>
+	</div>
+</div>
+<div class="rightcolumn">
+	<div class="Services">
+		<h1>Services</h1>
+		<div>
+			<h2>Twitch</h2>
+			<label class="setting">Twitch Channel Name <input name="twitchID"
+			                                                  type="text" class="Twitch"></label>
+			<label class="setting">User ID <input type="number" name="userId" disabled></label>
+			<button class="service" data-service="Twitch">Connect</button>
+			<button class="service" data-service="Twitch" disabled>Disconnect</button>
+			<span class="error-message Twitch" data-service="Twitch" style="color: red; display: none;">Unable to connect</span>
+		</div>
+		<hr>
+		<div>
+			<h2>YouTube</h2>
+			<label class="setting">YouTube Channel ID <input name="youtubeID" type="text" class="YouTube"></label>
+			<button class="service" data-service="YouTube">Connect</button>
+			<button class="service" data-service="YouTube" disabled>Disconnect</button>
+			<span class="error-message YouTube" data-service="YouTube" style="color: red; display: none;">Unable to connect</span>
+		</div>
+		<hr>
+		<div>
+			<h2>OBS</h2>
+			<label class="setting">OBS Port <input type="number" name="OBSPort" class="OBS"></label>
+			<label class="setting">OBS Password <input type="text" name="OBSPASS" class="OBS"></label>
+			<button class="service" data-service="OBS">Connect</button>
+			<button class="service" data-service="OBS" disabled>Disconnect</button>
+			<button class="test">Test Subscription</button>
+			<button class="test gift">Test Gift Sub</button>
+			<span class="error-message OBS" data-service="OBS" style="color: red; display: none;">Unable to connect</span>
+		</div>
+	</div>
+	<hr>
+	<div class="Audio">
+		<h1>Audio</h1>
+		<div>
+			<h2>Text to Speech</h2>
+			<label class="setting">Audio Output <select style="max-width: 200px" name="audio">
+				<option value="none" selected="selected">None</option>
+			</select></label>
+			<label class="setting">Voice Key <input type="text" name="voiceKey" value="L"></label>
+			<label class="setting">Voice Chance (in 100) <input name="voiceChance" value="1" max="100" min="0" type="number"></label>
+		</div>
+		
+	</div>
+</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script src="./controlpanel.js"></script>
+</html>

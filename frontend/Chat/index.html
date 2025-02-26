@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link id="css" rel="stylesheet" href="./themes/default/default.css">
+	</head>
+	<body>
+		<ul id="history"></ul>
+		<div id="curgame">
+			Current Game: None - ChatPlays Offline!
+		</div>
+		<div id="notifications">
+			<div id="brb">Be right Back!</div>
+			<div id="sub"></div>
+		</div>
+	</body>
+	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+	<script src="./index.js"></script>
+	<script src="./themes/default/default.js"></script>
+	<script>
+		let Settings = {};
+		const ValidKeys = [
+			"theme",
+			"otherEmotes",
+			"maxblobs",
+			"maxhistory",
+			"brb",
+			"name"
+		];
+		let count = 0;
+		let checkedID = false;
+		let globalEmotes;
+		let channelEmotes;
+
+		const loadedPlugins = window.loadedPlugins || {};
+	</script>
+</html>

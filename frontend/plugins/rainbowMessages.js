@@ -19,7 +19,7 @@ function startEffect(element) {
 }
 
 function applyToMsg() {
-	let messages = document.querySelectorAll("#message");
+	let messages = document.querySelectorAll(".message");
 	messages.forEach(msg => {
 		startEffect(msg);
 	});
@@ -37,9 +37,5 @@ function init() {
 	return observer;
 }
 
-// Automatically gets file name
-const scriptUrl = document.currentScript.src;
-const pluginName = scriptUrl.substring(scriptUrl.lastIndexOf('/') + 1);
-
-window[`./plugins/${pluginName}`] = { init: init, observer: init() };
-console.log(`${pluginName} has been started.`);
+// Name and Extension of file
+window["rainbowMessages.js"] = { init: init, observer: init() };

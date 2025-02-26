@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link id="css" rel="stylesheet" href="controlpanel.css">
+</head>
+<body>
+<div class="close"><u>X</u></div>
+<h1>Chat Settings</h1>
+<label class="chat">Width <input name="chatWidth" value="650" type="number"></label>
+<label class="chat">Height <input name="chatHeight" value="959" type="number"></label>
+<label class="chat">Theme <select name="theme">
+	<option value="default" selected="selected">Default</option>
+	<option value="winxp">Windows XP Messenger</option>
+</select></label>
+<label class="chat">Message Limit (App) <input type="number" value="10" name="maxblobs"></label>
+<label class="chat">Message Limit (User) <input type="number" value="5" name="maxhistory"></label>
+<label class="chat">Use BTTV Emotes <input name="otherEmotes" type="checkbox"></label>
+<label class="chat">Use Separate Windows for Popups <input name="popupEvents" value="popup" type="checkbox"></label>
+<label class="popup chat">Monitor for Popups <input name="monitor" min="0" value="0" type="number"></label>
+<label class="popup chat">Popup Width <input type="number" name="popupW" value="400"></label>
+<label class="popup chat">Popup Height <input type="number" name="popupH" value="112"></label>
+</body>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+	
+	$('.close').on('click', async function() {
+		const settings = {};
+		$('.chat').each(function() {
+			const item = $(this).find('input, select');
+			const name = item.attr('name');
+
+			if (item.is(':checkbox')) {
+				settings[name] = item.prop('checked');
+			} else {
+				settings[name] = item.val();
+			}
+		});
+		await new Promise(resolve => {
+			window.electron.sendSettings(settings);
+			resolve();		
+		});
+		return window.close();
+	});
+	
+	window.electron.getSettingsFromMain(function (settings) {
+		$('.chat').each(function() {
+			const item = $(this).find('input, select');
+			const name = item.attr("name");
+			if (!settings[name]) return;
+			if (item.is(':checkbox')) {
+				item.prop('checked', settings[name]);
+				if (name === "popupEvents") {
+					const popup = $('.popup');
+					item.prop("checked") ? popup.show() : popup.hide();
+				}
+			} else {
+				item.val(settings[name]);
+			}
+		});
+	});
+
+	$('input[type="checkbox"]').on("click", function() {
+		if (!$('input[name="popupEvents"]').is(":checked")) {
+			$(".popup").hide();
+		} else {
+			$(".popup").show();
+		}
+	});
+
+	window.electron.getThemes(themes => {
+		for (let theme of themes) {
+			let option = $(`option[value="${theme}"`);
+			if (option.length > 0) continue;
+			let newOption = document.createElement("option");
+			newOption.value = theme;
+			newOption.text = theme;
+			$('select[name="theme"]').append(newOption);
+		}
+	});
+</script>
+</html>

@@ -1,195 +1,50 @@
-import * as path from "path";
-import * as fs from "fs";
-import { BrowserWindow, ipcMain } from "electron";
+import { BrowserWindow } from "electron";
 import Filter from "bad-words";
 import extractUrls from "extract-urls";
-import { writeFileSync } from "fs";
-import electron from "electron";
-import {getData} from "./JSON/db";
-import settings from "./settings.json";
-import {OBSWebSocket} from "obs-websocket-js";
-const extensions = [".ts", ".js"];
+import childProcess from 'child_process';
+import {getData, updateData} from "./JSON/db";
+import {services} from './index';
+import {OBS} from './Services';
 const filter = new Filter();
 
-export async function getGames(name: string) {
-	const cmdPath = path.join(__dirname, "games");
-	const cmdFiles = fs.readdirSync(cmdPath).filter(file => {
-		return extensions.some(ex => file.endsWith(ex));
-	});
-
-	for (const file of cmdFiles) {
-		const filePath = path.join(cmdPath, file);
-		const command = await import(filePath);
-		if (name.toLowerCase() == command.name.toLowerCase()) {
-			return command;
-		}
-	}
-}
-
-export async function getGameName(name: string) {
-	const cmdPath = path.join(__dirname, "games");
-	const cmdFiles = fs.readdirSync(cmdPath).filter(file => {
-		return extensions.some(ex => file.endsWith(ex));
-	});
-
-	for (const file of cmdFiles) {
-		const filePath = path.join(cmdPath, file);
-		const command = await import(filePath);
-		
-		if (name.toLowerCase() == command.name.toLowerCase()) {
-			return command.name;
-		}
-	}
-}
-
-function defineCommands() {
-	const commands = new Map<string, any>();
-	const cmdPath = path.join(__dirname, "commands");
-	const cmdFiles = fs.readdirSync(cmdPath).filter(file => {
-		return extensions.some(ex => file.endsWith(ex));
-	});
-	for (const file of cmdFiles) {
-		const filePath = path.join(cmdPath, file);
-		const command = require(filePath);
-		commands.set(command.name.toLowerCase(), command.execute); 
-	}
-	return commands;
-}
-
-let checked = false;
-let globalEmotes: any;
-let channelEmotes: any;
-export async function Chat(platform: string, user: any, message: string, settings: any, window: BrowserWindow) {
-	if (
-		// ! This is gross
-		// TODO: Figure out how to get the ID without the streamer typing in chat for their userID
-		settings.useOtherEmotes
-		&& user["display-name"]?.toLowerCase() == settings.twitch.toLowerCase()
-		&& user["user-id"] != settings.userId
-	) {
-		settings.userId = user["user-id"];
-		
-		// updates the default settings.json
-		writeFileSync(path.join(__dirname, "..", "src", "settings.json"), JSON.stringify(settings, null, 8));
-		// updates the Build version of the settings.json
-		writeFileSync(path.join(__dirname, "settings.json"), JSON.stringify(settings, null, 8));
-	}
-
-	// ! Get Emote and replace with img tag
-	// * Twitch Emotes
-	if (platform == "TWITCH") {
-		let replacements: { strToReplace: string; replacement: string; }[] = [];
-		const emotes: { string: [ string ] } = user["emotes"];
-	
-		if (emotes) {
-			Object.entries(emotes).forEach(([id, positions]) => {
-				const position = positions[0];
-				const [start, end] = position.split("-");
-				const strToReplace = message.substring(
-					parseInt(start, 10),
-					parseInt(end, 10) + 1
-				);
-		
-				replacements.push({
-					strToReplace,
-					replacement: `<img src="https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/dark/1.0" alt="">`
-				});
-			});
-		}
-	
-		if (settings.useOtherEmotes && settings.userId != "null" && checked) {
-			// * BTTV
-			if (!globalEmotes || !channelEmotes) {
-				await fetch(`https://api.betterttv.net/3/cached/emotes/global`).then(async (res) => {
-					return globalEmotes = await res.json();
-				});
-				await fetch(`https://api.betterttv.net/3/cached/users/${platform.toLowerCase()}/${settings.userId}`).then(async (res) => {
-					return channelEmotes = await res.json();
-				});
-			}
-
-			// ? Global BTTV Emotes
-			for (let emote of globalEmotes) {
-				strToEmote(message, emote, replacements);
-			}
-			// ? Channel BTTV Emotes
-			for (let emote of channelEmotes["sharedEmotes"]) {
-				strToEmote(message, emote, replacements);
-			}
-			for (let emote of channelEmotes["channelEmotes"]) {
-				strToEmote(message, emote, replacements);
-			}
-		} else if (settings.useOtherEmotes && !checked) {
-			checked = true;
-			console.info("\nPlease make sure to type into your own chat.\nI need your user-id to be able to search the BTTV channel emotes.\n\n");
-		}
-		
-		message = replacements.reduce(
-			(acc, { strToReplace, replacement }) => {
-				return acc.split(strToReplace).join(replacement);
-			},
-			message
-		);
-	}
-	
-	// window.show();
-	await window.webContents.executeJavaScript(`(() => {
-	// ? User blob history
-	blobHistory(${settings.maxblobs});
-
-	// ? The message history inside the blob
-	let msghistory = document.getElementById("${user["display-name"]}" + count);
-	if (msghistory && msghistory.childNodes.length <= ${settings.maxhistory} && prevAuthor == "${user["display-name"]}") {
-		let css = document.getElementById("css");
-		// TODO: Will probably be moving message history into the theme .js file to make this line theme specific
-		if (brb && css.getAttribute("href") == "theme/winxp/winxp.css") {
-			return;
-		}
-		let msg = document.createElement("p");
-		msg.setAttribute("id", "message");
-		msg.innerHTML = pingMessage(${JSON.stringify(message)});
-		msghistory.appendChild(msg);
-		return;
-	}
-
-	count++; // ? used for list Element ID / new list counter
-	initializeMessage("${user["display-name"]}", ${user["mod"]}, ${user["badges"]?.broadcaster}, ${JSON.stringify(settings)}, ${JSON.stringify(message)}, "${platform}");
-	prevAuthor = "${user["display-name"]}";
-	})();`);
-}
-
-
-const commands = defineCommands();
-export async function Command(message: string, user: any, window: BrowserWindow) {
+export async function command(message: string, user: any) {
+	const data = await getData();
 	const Args = message.toLowerCase().slice(1).split(" ");
-	const command = commands.get(Args.shift() as string);
-	if (!command) return;
+	const command = Args.shift();
+	const chatWindow = BrowserWindow.getAllWindows().find((win) => win.title == "ChatPlays - Chat");
 
-	try {
-		await command(Args, user, settings, window, settings.universalName);
-	} catch (err: any) {
-		throw new Error(err);
-	}
-}
+	switch (command) {
+	case "start":
+		if (data.playsChance <= Math.floor(Math.random() * 100) + 1 || data.gamePath == "") return;
+		
+		const name = data.gamePath.split("\\").filter((string: string) => string.includes(".js") )[0].replace(".js", "");
+		if (chatWindow)
+			chatWindow.webContents.send("updateGame", name);
+		data.ChatPlaysActive = true;
+		await updateData(data);
 
-export async function Game(message: string) {
-	const ActiveGame = await getData("ActiveGame");
-	try {
-		if (ActiveGame != "") {
-			(await getGames(ActiveGame)).execute(message);
+		return setTimeout(async () => {
+			if (chatWindow) {
+				chatWindow.webContents.send("updateGame", "");
+			}
+			data.ChatPlaysActive = false;
+			await updateData(data);
+		}, data.playtime * 1_000);
+	case "voice":
+		if (data.voiceChance <= Math.floor(Math.random() * 100) + 1) return;
+		if (data.voiceKey == "") return;
+		if (data.audio == "none") return;
+
+		const tts = new TTS(1);
+		tts.Channel = data.audio;
+		return await tts.speak(`${user['display-name']} says: ${message}`);
+	case "testsub":
+		if (user['username'] !== data.twitchID || !chatWindow) return;
+		if (data.popupEvents) {
+			console.log("Popup Events");
+			await (services.getService("OBS") as OBS).newPopup("Test", "API");
 		}
-	} catch (err: any) {
-		throw new Error(err);
-	}
-}
-
-function strToEmote(message: string, emote: any, replacements: { strToReplace: string; replacement: string; }[]) {
-	let idx = message.split(" ").indexOf(emote.code);
-	if (idx > -1) {
-		replacements.push({
-			strToReplace: emote.code,
-			replacement: `<img src="https://cdn.betterttv.net/emote/${emote.id}/1x" alt="">`
-		});
+		chatWindow.webContents.send("subscription", Args[0], Args[1]);
 	}
 }
 
@@ -197,15 +52,13 @@ export async function filterWithoutEmojis(message: string) {
 	interface CharDetails {
 		char: string;
 		index: number;
-		type: 'emoji' | 'specialChar';
 	}
-
-	// const emojiRegex = /[\p{Emoji}\p{Emoji_Presentation}\p{Extended_Pictographic}(?![0-9]\)\]/gu;
+	
 	const specialCharRegex = /[^\p{L}\s]/gu;
 	
 	let emojisAndSpecialChars: CharDetails[] = [];
 	let sanitizedMessage = message.replace(specialCharRegex, (match, index) => {
-		emojisAndSpecialChars.push({ char: match, index, type: 'specialChar' });
+		emojisAndSpecialChars.push({ char: match, index });
 		return `{specialChar${emojisAndSpecialChars.length - 1}}`;
 	});
 	
@@ -219,129 +72,69 @@ export async function filterWithoutEmojis(message: string) {
 	return sanitizedMessage.replace(await extractUrls(sanitizedMessage), "[LINK]");
 }
 
-export function adjustAspectRatio(width: number, height: number): { newWidth: number, newHeight: number } {
-	const aspectRatio = 650 / 959;
-	if (width / height > aspectRatio) {
-		const newHeight = Math.round(width / aspectRatio);
-		return { newWidth: width, newHeight };
-	} else {
-		const newWidth = Math.round(height * aspectRatio);
-		return { newWidth, newHeight: height };
+export class TTS {
+	readonly baseCommand: string;
+	private child: any;
+	private channel: string = '';
+	constructor(public speed: number) {
+		this.speed = speed;
+		this.baseCommand = "$speak = New-Object -ComObject SAPI.SPVoice;";
 	}
-}
 
-const popups = new Map<string, BrowserWindow>();
-ipcMain.on("close-window", async (_event, windowId: string) => {
-	const window = popups.get(windowId);
-	if (window) {
-		try {
-			window.close();
-			await deleteSource(window.title);
-			popups.delete(windowId);
-		} catch (e) {
-			console.error(e);
-		}
+	get Channel(): string {
+		return this.channel;
 	}
-});
 
-let obs: OBSWebSocket
-export async function newPopup(OBS: OBSWebSocket, title: string, user: string, settings: any, gifter?: string) {
-	obs = OBS;
-	let displays = electron.screen.getAllDisplays();
-	const externalDisplay = displays[settings.monitor];
-
-	if (!externalDisplay) return console.error("No external display. Please make sure the monitor index is correct.");
-	
-	const popupW = settings.popupW + 5;
-	const popupH = settings.popupH + 5;
-	const maxX = externalDisplay.bounds.x + externalDisplay.bounds.width;
-	const maxY = externalDisplay.bounds.y + externalDisplay.bounds.height;
-
-	let x: number;
-	let y: number;
-
-	let column = popups.size % Math.floor(externalDisplay.bounds.width / popupW);
-	let row = Math.floor(popups.size / Math.floor(externalDisplay.bounds.width / popupW));
-
-	x = externalDisplay.bounds.x + 5 + column * popupW;
-	y = externalDisplay.bounds.y + 5 + row * popupH;
-
-	if (x + popupW > maxX) {
-		x = externalDisplay.bounds.x + 5;
-		y += popupH;
+	set Channel(channel: string) {
+		this.channel = channel;
 	}
 	
-	if (y + popupH > maxY) {
-		x = externalDisplay.bounds.x + 5;
-		y = externalDisplay.bounds.y + 5; 
+	listAudioDevices() {
+		return new Promise((resolve, reject) => {
+			let combinedStdout = '';
+
+			const command = this.baseCommand +
+				"$speak.GetAudioOutputs() | ForEach-Object { $_.getDescription() };";
+
+			const process = childProcess.exec('powershell -Command "' + command + '"', (error, stdout, stderr) => {
+				if (error) {
+					reject(`exec error: ${error}`);
+					return;
+				}
+				if (stderr) {
+					reject(`stderr: ${stderr}`);
+					return;
+				}
+				combinedStdout += stdout;
+			});
+
+			process.on('close', () => {
+				try {
+					resolve(combinedStdout.trim().split("\n"));
+				} catch (e) {
+					reject('Error parsing PowerShell output.');
+				}
+			});
+		});
 	}
-	
-	const win = new BrowserWindow({
-		title,
-		width: settings.popupW,
-		height: settings.popupH,
-		x: x,
-		y: y,
-		frame: false,
-		roundedCorners: false,
-		transparent: true, // ! this is for rounded top corner but square bottom corners (Win11 OS | FOR WINXP THEME AND ANY OTHERS WITH SPECIFIC CORNERS!)
-		webPreferences: {
-			preload: path.join(__dirname, "popupPreload.js"),
-			contextIsolation: true
-		}
-	})
-	const theme = await getData("Theme");
-	await win.loadFile(`../frontend/theme/${theme}/popup.html`);
-	await win.webContents.executeJavaScript(`(() => {
-		document.getElementById("css").href = "./popup.css";
-		document.getElementById("text").textContent = "${ gifter
-			? `${gifter} has given ${user} a Subscription!`
-			: `${user} has Subscribed!` }";
-		windowId = 'Window${popups.size+1}' })();
-	`);
-	popups.set(`Window${popups.size+1}`, win);
-	
-	await createSource(title, "window_capture", {
-		window: `${title}:Chrome_WidgetWin_1:electron.exe`
-	});
-}
 
-async function createSource(inputName: string, inputKind: string, inputSettings: any) {
-	const t = await obs.call("CreateInput", {
-		sceneUuid: (await obs.call("GetCurrentProgramScene")).sceneUuid,
-		inputName,
-		inputSettings,
-		inputKind,
-		sceneItemEnabled: false
-	});
-	await transformSource(t.sceneItemId);
-	await obs.call("SetSceneItemEnabled", {
-		sceneUuid: (await obs.call("GetCurrentProgramScene")).sceneUuid,
-		sceneItemId: t.sceneItemId,
-		sceneItemEnabled: true
-	});
-}
+	async speak(text: string) {
+		return new Promise<void>((resolve, reject) => {
+			const command = this.baseCommand +
+				`$speak.AudioOutput = foreach ($o in $speak.GetAudioOutputs()) {if ($o.getDescription() -eq '${this.channel}') {$o; break;}}; ` +
+				"$speak.Speak([Console]::In.ReadToEnd());";
 
-async function deleteSource(inputName: string)  {
-	return await obs.call("RemoveInput", { inputName });
-}
-
-export function deleteSources() {
-	popups.forEach(async (b, n) => {
-		popups.delete(n);
-		await obs.call("RemoveInput", { inputName: b.title });
-		b.close();
-	});
-}
-
-async function transformSource(sceneItemId: number) {
-	const video = await obs.call("GetVideoSettings")
-	return await obs.call("SetSceneItemTransform", {
-		sceneUuid: (await obs.call("GetCurrentProgramScene")).sceneUuid,
-		sceneItemId,
-		sceneItemTransform: {
-			positionX: Math.min(Math.floor(Math.random() * video.outputWidth), video.outputWidth - settings.popupW),
-			positionY: Math.min(Math.floor(Math.random() * video.outputHeight), video.outputHeight - settings.popupH)
-		}
-	})
+			this.child = childProcess.spawn('powershell', [command], { shell: true });
+			this.child.stdin.setEncoding('ascii');
+			this.child.stdin.end(text);
+			this.child.addListener('exit', (code: any, signal: any) => {
+				if (code === null || signal !== null) {
+					console.log(new Error(`error [code: ${code}] [signal: ${signal}]`));
+					reject(new Error(`error [code: ${code}] [signal: ${signal}]`));
+				}
+				this.child = null;
+				resolve();
+			});
+		});
+	}
 }

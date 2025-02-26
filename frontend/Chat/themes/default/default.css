@@ -113,7 +113,7 @@ li {
 	max-width: fit-content;
 }
 
-#message {
+.message {
 	color: var(--message-color);
 	margin: 10px;
 	word-break: break-word;

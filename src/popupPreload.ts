@@ -1,6 +1,11 @@
 ﻿import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('electron', {
-	sendCloseRequest: (windowId: string) => ipcRenderer.send('close-window', windowId),
-	close: () => ipcRenderer.send("close")
+	update: (func: (user: string, gifter?: string) => void) => {
+		console.log("update good in preload");
+		ipcRenderer.on("UpdateText", (_evt, user, gifter?) => {
+			func(user, gifter);
+		});	
+	},
+	close: () => ipcRenderer.send("closepopup")
 });

@@ -42,7 +42,7 @@ textarea,
 }
 
 #chatWindow.window {
-	height: 99vh;
+	height: 99%;
 	/* Default padding is 3px */
 	padding-left: 0px;
 }
@@ -200,7 +200,7 @@ ul {
 	flex-wrap: wrap;
 	align-content: center;
 	font-size: 2vh;
-	width: 99%;
+	width: 98.6%;
 	height: 3%;
 }
 

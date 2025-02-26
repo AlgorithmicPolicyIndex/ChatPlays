@@ -53,7 +53,7 @@ const Controls = {
 	// ? To iterate on last, this assumes that, in the ControlHandler.ts, the mouse button is in the "HeldKeys" array.
 	stop: { Amt: 0 }
 };
-export const VoiceKey = Key.L;
+export const VoiceKey = Key.B;
 
 
 const name = "destiny2";
