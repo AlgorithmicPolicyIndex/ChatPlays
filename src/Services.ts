@@ -144,7 +144,6 @@ class OBS extends Service<OBSWebSocket, "OBS"> {
 		});
 		
 		await win.loadFile(`../frontend/Chat/themes/${settings.theme}/popup.html`);
-		// TODO: Correct closure of window via button.
 		
 		win.on("ready-to-show", () =>
 			win.webContents.send("UpdateText", user, gifter)
