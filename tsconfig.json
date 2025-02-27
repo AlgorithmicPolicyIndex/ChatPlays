@@ -11,9 +11,10 @@
 			"DOM"
 		],
 
-		"rootDir": "src",
-		"outDir": "build",
-
+		"rootDir": "./src",
+		"outDir": "./build",
+		"sourceMap": false,
+		
 		"strict": true,
 		"alwaysStrict": true,
 		"strictFunctionTypes": true,

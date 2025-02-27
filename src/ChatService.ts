@@ -37,17 +37,19 @@ export async function runTwitch(service: servicesTypes["Twitch"]) {
 	});
 
 	client.on("subscription", async function (_channel, user) {
-		if (settings.popupEvents)
-			await services.getService("OBS")?.newPopup("Subscription", user);
-
+		const obs = services.getService("OBS");
+		if (settings.popupEvents && obs && obs.connected)
+			return obs?.newPopup("GiftSub", user);
+		
 		chatWindow = getChatWindow();
 		if (!chatWindow) return;
 		chatWindow.webContents.send("subscription", user);
 	});
 
 	client.on("subgift", async function (_channel, user, _streak, recipient) {
-		if (settings.popupEvents)
-			await services.getService("OBS")?.newPopup("GiftSub", recipient, user);
+		const obs = services.getService("OBS");
+		if (settings.popupEvents && obs && obs.connected)
+			return obs?.newPopup("GiftSub", recipient, user);
 
 		chatWindow = getChatWindow();
 		if (!chatWindow) return;

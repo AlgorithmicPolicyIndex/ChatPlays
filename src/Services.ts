@@ -139,11 +139,11 @@ class OBS extends Service<OBSWebSocket, "OBS"> {
 			transparent: true,
 			webPreferences: {
 				contextIsolation: true,
-				preload: path.join(__dirname, "popupPreload.js")
+				preload: path.join(__dirname, "popup.js")
 			}
 		});
 		
-		win.loadFile(`../frontend/Chat/themes/${settings.theme}/popup.html`);
+		await win.loadFile(`../frontend/Chat/themes/${settings.theme}/popup.html`);
 		// TODO: Correct closure of window via button.
 		
 		win.on("ready-to-show", () =>

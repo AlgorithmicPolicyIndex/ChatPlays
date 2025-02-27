@@ -1,10 +1,12 @@
-import { BrowserWindow } from "electron";
+import {BrowserWindow, ipcMain} from "electron";
 import Filter from "bad-words";
 import extractUrls from "extract-urls";
 import childProcess from 'child_process';
 import {getData, updateData} from "./JSON/db";
 import {services} from './index';
-import {OBS} from './Services';
+import {OBS, serviceData, serviceNames} from './Services';
+import path from "path";
+import {existsSync, readdirSync, watch} from "node:fs";
 const filter = new Filter();
 
 export async function command(message: string, user: any) {
@@ -136,5 +138,193 @@ export class TTS {
 				resolve();
 			});
 		});
+	}
+}
+
+export class ipcManager {
+	private chatWindow: BrowserWindow | null = null;
+	private mainWindow: BrowserWindow;
+	
+	constructor(mainWindow: BrowserWindow) {
+		this.mainWindow = mainWindow;
+		this.registerHandlers();
+	}
+	
+	registerHandlers() {
+		ipcMain.on("createWindow", this.createWindow.bind(this));
+		ipcMain.handle("handleService", this.handleService.bind(this));
+		ipcMain.on("chatSettings", this.updateSettings.bind(this));
+		ipcMain.on("updateSettings", this.updateSettings.bind(this));
+		ipcMain.on("sendId", this.sendID.bind(this));
+		ipcMain.on("startstop", this.startstop.bind(this));
+		ipcMain.on("handlePlugin", this.handlePlugin.bind(this));
+		ipcMain.on("test", this.test.bind(this));
+		ipcMain.on("closepopup", this.closePopup.bind(this));
+		ipcMain.on("close", this.close.bind(this));
+		
+		watch(path.join(__dirname, "../frontend/plugins"), (eventType, filename) => {
+			if (!filename || eventType === "rename") return;
+			this.mainWindow.webContents.send(
+				"pluginsUpdated",
+				readdirSync(
+					path.join(__dirname, "../frontend/plugins")
+				).filter(file => {
+					return [".js", ".ts"].some(ex => file.endsWith(ex));
+				})
+			);
+		});
+	}
+
+	async handleService<T extends serviceNames>(_evt: any, Service: T, Data: string[]) {
+		let data: serviceData[T];
+		switch (Service) {
+			case "OBS":
+				const [Port, Password] = Data;
+				if (isNaN(parseInt(Port))) {
+					console.error(new Error("Port must be a valid number."));
+					return {success: false};
+				}
+				data = {Port, Password} as serviceData[T];
+				break;
+			case "YouTube":
+			case "Twitch":
+				data = {Channel: Data[0]} as serviceData[T];
+				break;
+			default:
+				console.error(new Error("Unknown Service Type."));
+				return {success: false};
+		}
+
+		if (Object.values(data).some(v => !v)) {
+			return {success: false};
+		}
+
+		try {
+			if (services.getService(Service)?.connected) {
+				if ((await services.disconnectService(Service)).success)
+					return {success: true};
+				return {success: false};
+			}
+
+			if ((await services.connectService(Service, data as serviceData[T])).success)
+				return {success: true};
+			return {success: false};
+		} catch (e) {
+			console.error(e);
+			return {success: false};
+		}
+	}
+	async updateSettings(_evt: any, settings: any) {
+		const data = await getData();
+		Object.assign(data, settings);
+		if (this.chatWindow)
+			this.chatWindow.webContents.send("chatSettings", data);
+		this.mainWindow.webContents.send("chatSettings", data);
+		return await updateData(data);
+	}
+	async sendID(_evt: any, id: string, name: string) {
+		if (this.chatWindow)
+			this.chatWindow.webContents.send("sendID", id, name);
+		this.mainWindow.webContents.send("sendId", id, name);
+	}
+	async handlePlugin(_evt: any, method: "load" | "unload", plugin: string) {
+		if (!this.chatWindow) return;
+		if (method == "load")
+			this.chatWindow.webContents.send("loadPlugin", plugin);
+		else
+			this.chatWindow.webContents.send("unloadPlugin", plugin);
+	}
+	async closePopup(event: any) {
+		const win = BrowserWindow.fromWebContents(event.sender);
+		const obs = services.getService("OBS");
+		if (!win || !obs || !obs.connected) return;
+		await obs.deleteSource(win.title);
+		win.close();
+	}
+	async close(_evt: any, settings: any) {
+		try {
+			const data = await getData();
+			Object.assign(data, settings);
+			await updateData(data);
+			
+			const obs = services.getService("OBS");
+			if (obs && obs.connected)
+				await obs.deleteSources();
+			for (let w of BrowserWindow.getAllWindows())
+				w.close();
+			for (let s of services.getServices())
+				await services.disconnectService(s);
+		} catch (e) {
+			console.error(e);
+		}
+	}
+	async test (_evt: any, User: string, Gifter: string) {
+		const obs = services.getService("OBS");
+		if (!obs || !obs.connected) return;
+		await obs.newPopup("TestSub", User, Gifter);
+	}
+	async startstop(_evt: any, p: string | null, name: string) {
+		const settings = await getData();
+		if (!p) {
+			if (this.chatWindow)
+				this.chatWindow.webContents.send("updateGame", "");
+			settings["ChatPlaysActive"] = false;
+		} else if (existsSync(p)) {
+			if (this.chatWindow)
+				this.chatWindow.webContents.send("updateGame", name);
+			settings["gamePath"] = p;
+			settings["ChatPlaysActive"] = true;
+		}
+		await updateData(settings);
+	}
+	async createWindow(_evt: any, type: string, settings: any) {
+		const mainBounds = this.mainWindow.getBounds();
+		const [x, y] = [
+			Math.round(mainBounds.x + (mainBounds.width - 400) / 2),
+			Math.round(mainBounds.y + (mainBounds.height - 575) / 2)
+		];
+		const newWindow = new BrowserWindow({
+			width: 400, height: 575,
+			x, y, show: false, frame: false,
+			resizable: false,
+			roundedCorners: false,
+			transparent: true,
+			maximizable: false,
+			webPreferences: {
+				preload: path.join(__dirname, "controlpanel.js")
+			}
+		});
+		
+		switch (type) {
+		case "chatSettings":
+			const settingsWindow = BrowserWindow.getAllWindows().find((w) => w.title === "ChatPlays - Chat Settings");
+			if (settingsWindow) {
+				newWindow.close();
+				settingsWindow.setPosition(x, y);
+				return settingsWindow.focus();
+			}
+			
+			newWindow.title = "ChatPlays - Chat Settings";
+			await newWindow.loadFile("../frontend/chatSettings.html");
+			newWindow.on("ready-to-show", async function() {
+				newWindow.webContents.send("themes", readdirSync(path.join(__dirname, "../frontend/Chat/themes")));
+				newWindow.webContents.send("chatSettingsFM", settings);
+			});
+			return newWindow.show();
+		case "chatWindow":
+			if (this.chatWindow) {
+				newWindow.close();
+				this.chatWindow.close();
+				return this.chatWindow = null;
+			}
+			newWindow.setSize(parseInt(settings.chatWidth), parseInt(settings.chatHeight));
+			newWindow.title = "ChatPlays - Chat";
+			await newWindow.loadFile("../frontend/Chat/index.html");
+			newWindow.on("ready-to-show", async function() {
+				newWindow.webContents.send("chatSettingsFM", settings);	
+			});
+			newWindow.show();
+			this.chatWindow = newWindow;
+		}
 	}
 }

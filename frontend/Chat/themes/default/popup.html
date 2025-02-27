@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <link id="css" rel="stylesheet" href="./popup.css">
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
-    <script src="../../../src/popupPreload.ts"></script>
 </head>
 <body>
     <div id="text">
@@ -12,11 +10,18 @@
     </div>
     <button id="close">Thank You!</button>
 </body>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script>
-    let windowId = 'Window';
+	$('.close').on("click", () => {
+		window.electron.close();
+	});
 
-    document.getElementById('close').addEventListener('click', () => {
-        window.electron.sendCloseRequest(windowId);
-    });
+	window.electron.update((user, gifter) => {
+		const text = $('#text');
+		if (gifter)
+			text.text(`${gifter} has gifted a Sub to ${user}!`);
+		else
+			text.text(`${user} has subscribed!`);
+	});
 </script>
 </html>

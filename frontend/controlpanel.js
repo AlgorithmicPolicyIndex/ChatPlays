@@ -4,7 +4,7 @@ let ChatSettings = {};
 let Enabled = [];
 let Disabled = [];
 $('.close').on('click', function() {
-	// Make sure Database has all current updated settings on closer
+	// Make sure Database has all current updated settings on closure
 	$('.setting').each(function() {
 		const item = $(this).find("input, select");
 		const name = item.attr('name');
@@ -162,17 +162,14 @@ window.electron.pluginsUpdated(function(plugins) {
 		const existsInEnabled = enabledPlugins.find(`option[value='${plugin}']`).length > 0;
 		const existsInDisabled = disabledPlugins.find(`option[value='${plugin}']`).length > 0;
 
-		if (existsInEnabled && !plugins.includes(plugin)) {
-			console.log(`Disabling ${plugin}`);
+		if (existsInEnabled && !plugins.includes(plugin))
 			window.electron.handlePlugin("unload", plugin);
-		}
 
 		if (!existsInEnabled && !existsInDisabled)
-			if (Settings?.Plugins?.Enabled.includes(plugin)) {
+			if (Settings?.Plugins?.Enabled.includes(plugin))
 				enabledPlugins.append(`<option value='${plugin}'>${plugin}</option>`);
-			} else {
+			else
 				disabledPlugins.append(`<option value="${plugin}">${plugin}</option>`);
-			}
 	}
 
 
@@ -181,10 +178,8 @@ window.electron.pluginsUpdated(function(plugins) {
 
 	$(".plugins option").each(function() {
 		const optionValue = $(this).val();
-		if (optionValue && !plugins.includes(optionValue)) {
-			console.log("Why are we removing this?")
+		if (optionValue && !plugins.includes(optionValue))
 			$(this).remove();
-		}
 	});
 });
 disabledPlugins.on("change", function() {
