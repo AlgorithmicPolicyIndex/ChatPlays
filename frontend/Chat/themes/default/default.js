@@ -48,7 +48,7 @@ async function initMsg(user, mod, broadcaster, settings, message, platform) {
 	// ? First Message in Blob
 	let initMsg = document.createElement("p");
 	initMsg.setAttribute("class", "message");
-	initMsg.innerHTML = pingMessage(message);
+	initMsg.innerHTML = message;
 	
 	historyBlob.appendChild(name);
 	historyBlob.appendChild(initMsg);

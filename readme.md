@@ -24,20 +24,20 @@ I hope to see what people come up with for features, themes and plugins for the 
   - YOUTUBE
       - Subscribe / Membership Event (not a part of the chat module I use)
   - OVERALL
-    - Services
-      - Make Error handler for specific cases where, say Twitch, tmi.js returns "no response from Twitch"
-        - This is because it connects to Twitch, but does not join the channel.
-      - Handle Errors from OBS WebSocket, as it will "connect" if values are inputted, but errors when failed to connect and does not send to app.
-    - Plugins
-      - Convert to general services
-        - to allow Service Plugins to other platforms
-        - Custom Features in the Control Panel
-        - Other things I can't think of right now
-    - Voice Chat
-       - Test input in games, to make sure full message is heard in game.
-    - Convert Monitors from index to select menu for which monitor to use.
-    - Not a priority
-         - 7TV and FFZ Emotes
+      - Services
+        - Make Error handler for specific cases where, say Twitch, tmi.js returns "no response from Twitch"
+          - This is because it connects to Twitch, but does not join the channel.
+        - Handle Errors from OBS WebSocket, as it will "connect" if values are inputted, but errors when failed to connect and does not send to app.
+      - Plugins
+        - Convert to general services
+          - to allow Service Plugins to other platforms
+          - Custom Features in the Control Panel
+          - Other things I can't think of right now
+      - Voice Chat
+         - Test input in games, to make sure full message is heard in game.
+      - Convert Monitors from index to select menu for which monitor to use.
+      - Not a priority
+           - 7TV and FFZ Emotes
 
 ### Running
 > **!** You'll need to edit anything to match your package manager, I personally use [Bun](https://bun.sh) **!**

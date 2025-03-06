@@ -1,4 +1,4 @@
-import {BrowserWindow, ipcMain} from "electron";
+import {screen, BrowserWindow, ipcMain} from "electron";
 import Filter from "bad-words";
 import extractUrls from "extract-urls";
 import childProcess from 'child_process';
@@ -41,7 +41,7 @@ export async function command(message: string, user: any) {
 		tts.Channel = data.audio;
 		return await tts.speak(`${user['display-name']} says: ${message}`);
 	case "testsub":
-		if (user['username'] !== data.twitchID || !chatWindow) return;
+		if (user['username'] !== data.twitchID.toLowerCase() || !chatWindow) return;
 		if (data.popupEvents) {
 			console.log("Popup Events");
 			await (services.getService("OBS") as OBS).newPopup("Test", "API");
@@ -308,6 +308,9 @@ export class ipcManager {
 			await newWindow.loadFile("../frontend/chatSettings.html");
 			newWindow.on("ready-to-show", async function() {
 				newWindow.webContents.send("themes", readdirSync(path.join(__dirname, "../frontend/Chat/themes")));
+				newWindow.webContents.send("monitors", screen.getAllDisplays().map((display) => {
+					return display.label
+				}));
 				newWindow.webContents.send("chatSettingsFM", settings);
 			});
 			return newWindow.show();

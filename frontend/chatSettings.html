@@ -17,7 +17,7 @@
 <label class="chat">Message Limit (User) <input type="number" value="5" name="maxhistory"></label>
 <label class="chat">Use BTTV Emotes <input name="otherEmotes" type="checkbox"></label>
 <label class="chat">Use Separate Windows for Popups <input name="popupEvents" value="popup" type="checkbox"></label>
-<label class="popup chat">Monitor for Popups <input name="monitor" min="0" value="0" type="number"></label>
+<label class="popup chat">Monitor for Popups <select name="monitor"></select></label>
 <label class="popup chat">Popup Width <input type="number" name="popupW" value="400"></label>
 <label class="popup chat">Popup Height <input type="number" name="popupH" value="112"></label>
 </body>
@@ -41,6 +41,13 @@
 			resolve();		
 		});
 		return window.close();
+	});
+	window.electron.monitors(function(Monitors) {
+		Monitors.forEach((name, index) => {
+			$('select[name="monitor"]').append(
+				`<option value=${index}>${name.trim()}</option>`
+			)
+		});
 	});
 	
 	window.electron.getSettingsFromMain(function (settings) {

@@ -5,6 +5,7 @@ import { EventEmitter } from "node:events";
 import {getData} from './JSON/db';
 import electron, {BrowserWindow} from 'electron';
 import path from 'path';
+import {clearTimeout} from 'node:timers';
 
 interface Data {
 	Channel: string;
@@ -87,20 +88,31 @@ class YouTube extends Service<LiveChat, "YouTube"> {
 
 class OBS extends Service<OBSWebSocket, "OBS"> {
 	client = new OBSWebSocket();
-	popups = new Map<string, BrowserWindow>();
+	private queue: (() =>Promise<void>)[] = [];
+	private isProcessing = false;
+	private popups = new Map<string, BrowserWindow>();
 	async connect(data: serviceData["OBS"]): Promise<{ success: boolean }> {
-		try {			
-			await this.client.connect(`ws://localhost:${data.Port}`, data.Password);
-			this.connected = true;
-			return { success: true };
-		} catch (err) {
-			console.error(err);
-			return { success: false };
-		}
+		return new Promise<{ success: boolean }>((resolve) => {
+			let failedToConnect = false;
+			const timeout = setTimeout(() => {
+				if (failedToConnect)
+					return resolve({ success: false });
+				this.connected = true;
+				return resolve({ success: true });
+			}, 1000);
+			
+			this.client.on("ConnectionClosed", () => {
+				failedToConnect = true;
+				clearTimeout(timeout);
+			});
+			
+			this.client.connect(`ws://localhost:${data.Port}`, data.Password);
+		});
 	}
 	async disconnect(): Promise<{ success: boolean }> {
 		if (!this.connected || !this.client) return { success: false };
 		try {
+			await this.deleteSources();
 			await this.client.disconnect().then(() => {
 				this.connected = false;
 			});
@@ -111,49 +123,63 @@ class OBS extends Service<OBSWebSocket, "OBS"> {
 		}
 	}
 	
+	private async HandleQueue(task: () => Promise<void>): Promise<void> {
+		if (this.isProcessing) {
+			this.queue.push(task);
+			return;
+		}
+		
+		this.isProcessing = true;
+		await task();
+		while (this.queue.length > 0) {
+			const nextTask = this.queue.shift();
+			if (!nextTask) return;
+			await nextTask();
+		}
+		this.isProcessing = false;
+	}
+	
 	async newPopup(title: string, user: string, gifter?: string) {
 		const settings = await getData();
 		const display = electron.screen.getAllDisplays()[settings.monitor];
 		if (!display) return console.error("No external display. Please make sure the monitor index is correct.");
-		
-		const [pW, pH] = [parseInt(settings.popupW) + 5, parseInt(settings.popupH) + 5];
-		const [maxX, maxY] = [display.bounds.x + display.bounds.width, display.bounds.y + display.bounds.height];
-		const [column, row] = [this.popups.size % Math.floor(display.bounds.width / pW), Math.floor(this.popups.size / Math.floor(display.bounds.width / pW))];
-	        let [x, y] = [display.bounds.x + 5 + column * pW, display.bounds.y + 5 + row * settings.popupH];
-		
-		if (x + pW > maxX) {
-			x = display.bounds.x + 5;
-			y += settings.popupH;
-		} else if (y + pH > maxY) {
-			x = display.bounds.x + 5;
-			y = display.bounds.y + 5;
-		}
-		
-		const win = new BrowserWindow({
-			title: title + (this.popups.size + 1),
-			width: parseInt(settings.popupW),
-			height: parseInt(settings.popupH),
-			x, y,
-			frame: false,
-			roundedCorners: false,
-			transparent: true,
-			webPreferences: {
-				contextIsolation: true,
-				preload: path.join(__dirname, "popup.js")
-			}
+
+		await this.HandleQueue(async () => {
+			const index = this.popups.size;
+			const [pW, pH] = [parseInt(settings.popupW) + 5, parseInt(settings.popupH) + 5];
+			
+			const columns = Math.floor(display.bounds.width / pW);
+			const maxRows = Math.floor((display.bounds.height / pH)) - 1;
+			// The TaskBar is included, so it will cover the popup. This is to prevent the popup from coming up too low on the screen.
+			const [column, row] = [index % columns, Math.floor(index / columns) % maxRows];
+		        let [x, y] = [display.bounds.x + 5 + column * pW, display.bounds.y + 5 + row * pH];
+			
+			const name = `${title}_${Date.now()}`;
+			const win = new BrowserWindow({
+				title: name,
+				width: parseInt(settings.popupW),
+				height: parseInt(settings.popupH),
+				x, y,
+				frame: false,
+				roundedCorners: false,
+				transparent: true,
+				webPreferences: {
+					contextIsolation: true,
+					preload: path.join(__dirname, "popup.js")
+				}
+			});
+
+			await win.loadFile(`../frontend/Chat/themes/${settings.theme}/popup.html`);
+
+			win.on("ready-to-show", () =>
+				win.webContents.send("UpdateText", user, gifter)
+			);
+			this.popups.set(name, win);
+
+			await this.createSource(name, "window_capture", {
+				window: `${name}:Chrome_WidgetWin_1:electron.exe`
+			});
 		});
-		
-		await win.loadFile(`../frontend/Chat/themes/${settings.theme}/popup.html`);
-		
-		win.on("ready-to-show", () =>
-			win.webContents.send("UpdateText", user, gifter)
-		);
-		this.popups.set(title + (this.popups.size + 1), win);
-		
-		 await this.createSource(title + this.popups.size, "window_capture", {
-		 	window: `${title + this.popups.size}:Chrome_WidgetWin_1:electron.exe`
-		 });
-		 
 	}
 	async createSource(inputName: string, inputKind: string, inputSettings: { window: string }) {
 		const settings = await getData();

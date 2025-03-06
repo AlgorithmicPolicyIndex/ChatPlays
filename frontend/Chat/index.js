@@ -150,6 +150,7 @@ window.electron.unloadPlugin(function(plugin) {
 function onThemeChangeComplete() { document.dispatchEvent(new CustomEvent('themeChanged')); }
 
 document.addEventListener('themeChanged', function() {
+	if (!Settings.Plugins.Enabled) return;
 	for (const plugin of Settings.Plugins.Enabled) {
 		if (!window.loadedPlugins[plugin] && typeof window[plugin].init !== 'function') return;
 		window[plugin].init();

@@ -33,7 +33,7 @@ app.whenReady().then(async () => {
 		const pluginPath = path.join(__dirname, "..", "frontend", "plugins");
 		const pluginFiles = fs.readdirSync(pluginPath).filter(file => {
 			return extensions.some(ex => file.endsWith(ex));
-		})
+		});
 		
 		win.webContents.send("inputs", await new TTS(1).listAudioDevices());
 		win.webContents.send("gameList", cmdFiles.map((v) => {
@@ -61,9 +61,7 @@ const handlers: {
 } = {
 	Twitch: runTwitch,
 	YouTube: runYouTube,
-	OBS: async () => {
-		console.log("OBS Connected");
-	}
+	OBS: async () => {}
 }
 services.on("ServiceConnected", async function<T extends serviceNames>(name: T, service: servicesTypes[T])  {
 	return await handlers[name](service);	

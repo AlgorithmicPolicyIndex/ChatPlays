@@ -175,31 +175,28 @@ async function initTheme(channel) { // Make required elements and structure for 
 	console.log("finished!");
 }
 
-async function initMsg(user, mod, broadcaster, settings, message, platform, brb) {
-	if (brb) {
-		return;
-	}
-
+async function initMsg(user, mod, broadcaster, settings, message, platform) {
 	// ? The whole message blob creation shit
 	let historyBlob = document.createElement('li');
-	historyBlob.setAttribute("id", user + count);
+	historyBlob.setAttribute("class", user);
+	historyBlob.setAttribute("id", `${count}`);
+	console.log(historyBlob)
 	let name = document.createElement("h2");
 	name.setAttribute("id", "name");
 
-	// ? Username
-	name.innerHTML = `${broadcaster === "1" 
+	name.innerHTML = `${broadcaster === "1"
 		? `<span class='broadcaster'>${user}</span>`
 		: mod
-		? `<span class='moderator'>${user}</span>`
-		: `<span class='chatter'>${user}</span>`} says:`;
+			? `<span class='moderator'>${user}</span>`
+			: `<span class='chatter'>${user}</span>`} says:`;
 	// ? First Message in Blob
 	let initMsg = document.createElement("p");
-	initMsg.setAttribute("id", "message");
-	initMsg.innerHTML = pingMessage(message);
-	
+	initMsg.setAttribute("class", "message");
+	initMsg.innerHTML = message;
+
 	historyBlob.appendChild(name);
 	historyBlob.appendChild(initMsg);
-	
+
 	// ? we have a message! append to list!
 	document.getElementById("history").appendChild(historyBlob);
 }

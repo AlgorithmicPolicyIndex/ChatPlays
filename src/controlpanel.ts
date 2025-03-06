@@ -62,6 +62,9 @@ contextBridge.exposeInMainWorld("electron", {
 	test: (User: string, Gifter?: string) => {
 		ipcRenderer.send("test", User, Gifter);
 	},
+	monitors: (func: (Monitors: string[]) => void) => {
+		ipcRenderer.on("monitors", (_evt, monitors) => func(monitors));
+	},
 	close: (settings: any) => ipcRenderer.send("close", settings),
 	error: (func: (msg: string) => void) => ipcRenderer.on("error", (_ent, msg: string) => func(msg))
 });
