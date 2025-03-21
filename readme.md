@@ -40,7 +40,7 @@ I hope to see what people come up with for features, themes and plugins for the 
            - 7TV and FFZ Emotes
 
 ### Running
-### From Release
+### From Release (WIP, BUG FIXING BUILD CODE)
 Download the [latest release](https://github.com/AlgorithmicPolicyIndex/ChatPlays/releases/latest) then extract the folder.
 > **!** Note: While this is a Windows specific build, it may work on other Platforms, if it does not, feel free to run from Source, or make a pull request with Forge configurations. **!**
 
