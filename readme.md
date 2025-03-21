@@ -40,6 +40,13 @@ I hope to see what people come up with for features, themes and plugins for the 
            - 7TV and FFZ Emotes
 
 ### Running
+### From Release
+Download the [latest release](https://github.com/AlgorithmicPolicyIndex/ChatPlays/releases/latest) then extract the folder.
+> **!** Note: While this is a Windows specific build, it may work on other Platforms, if it does not, feel free to run from Source, or make a pull request with Forge configurations. **!**
+
+Once the folder is extracted, just run the `ChatPlays.exe` and it will run.
+If you are missing Python 3.13.X, it will error and quit. If you are missing PyDirectInput, it will [attempt to automatically install](https://github.com/AlgorithmicPolicyIndex/ChatPlays/blob/main/src/index.ts#L50-L72).
+### From Source
 > **!** You'll need to edit anything to match your package manager, I personally use [Bun](https://bun.sh) **!**
 
 Install packages via `bun i` AND install `python` and run `pip install pydirectinput`  

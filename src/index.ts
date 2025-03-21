@@ -16,6 +16,7 @@ function getPythonVersion(pythonCmd: string) {
 		return {
 			major: parseInt(versionMatch[1], 10),
 			minor: parseInt(versionMatch[2], 10),
+			patch: parseInt(versionMatch[3], 10),
 		};
 	} catch (error) {
 		console.error("Error getting Python version:", error);
@@ -34,26 +35,38 @@ app.whenReady().then(async () => {
 	const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
 	const pythonVersion = getPythonVersion(pythonCmd);
 	if (!pythonVersion) {
-		dialog.showErrorBox("Missing Python", "Unable to get a Python version. Python may not be installed. You need version 3.13.2 or higher.");
+		dialog.showErrorBox("Missing Python", "Unable to get a Python version. Python may not be installed. You need version 3.13.X or higher.");
 		app.quit();
 		return;
 	}
 
-	console.log(`Installed Python Version: ${pythonVersion.major}.${pythonVersion.minor}.X`);
-
 	const targetVersion = { major: 3, minor: 13 };
 	if (isVersionLessThan(pythonVersion, targetVersion)) {
-		dialog.showErrorBox("Python Version Too Low", `Python 3.13.X or higher is required. Your version is ${pythonVersion.major}.${pythonVersion.minor}.X. Please update Python.`);
+		dialog.showErrorBox("Python Version Too Low", `Python 3.13.X or higher is required. Your version is ${pythonVersion.major}.${pythonVersion.minor}.${pythonVersion.patch}. Please update Python.`);
 		app.quit();
 		return;
 	}
 
 	try {
 		const pyPack = execSync(`python -c "import importlib.util; print(True if importlib.util.find_spec('pydirectinput') else False)"`, { encoding: "utf8" }).trim();
-		if (pyPack === "False")
-			return new Error();
+		if (pyPack === "False") {
+			await dialog.showMessageBox({
+				title: "Pip install",
+				type: "info",
+				message: "Installing `pydirectinput` via pip"
+			});
+			try {
+				execSync("pip install pydirectinput");
+				await dialog.showMessageBox({
+					title: "Pip install",
+					type: "info",
+					message: "`pydirectinput` installed!"
+				});
+			} catch (error) {
+				console.error("Error installing pydirectinput... Please try doing it manually.");
+			}
+		}
 	} catch (e) {
-		dialog.showErrorBox("pydirectinput", "Please verify you have 'pydirectinput' installed via pip.");
 		app.quit();
 		return;
 	}
