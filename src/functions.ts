@@ -131,7 +131,6 @@ export class TTS {
 			this.child.stdin.end(text);
 			this.child.addListener('exit', (code: any, signal: any) => {
 				if (code === null || signal !== null) {
-					console.log(new Error(`error [code: ${code}] [signal: ${signal}]`));
 					reject(new Error(`error [code: ${code}] [signal: ${signal}]`));
 				}
 				this.child = null;
@@ -305,9 +304,9 @@ export class ipcManager {
 			}
 			
 			newWindow.title = "ChatPlays - Chat Settings";
-			await newWindow.loadFile("../frontend/chatSettings.html");
+			await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "chatSettings.html"));
 			newWindow.on("ready-to-show", async function() {
-				newWindow.webContents.send("themes", readdirSync(path.join(__dirname, "../frontend/Chat/themes")));
+				newWindow.webContents.send("themes", readdirSync(path.join(__dirname, "..", "frontend", "Chat", "themes")));
 				newWindow.webContents.send("monitors", screen.getAllDisplays().map((display) => {
 					return display.label
 				}));
@@ -322,7 +321,7 @@ export class ipcManager {
 			}
 			newWindow.setSize(parseInt(settings.chatWidth), parseInt(settings.chatHeight));
 			newWindow.title = "ChatPlays - Chat";
-			await newWindow.loadFile("../frontend/Chat/index.html");
+			await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "Chat", "index.html"));
 			newWindow.on("ready-to-show", async function() {
 				newWindow.webContents.send("chatSettingsFM", settings);	
 			});
