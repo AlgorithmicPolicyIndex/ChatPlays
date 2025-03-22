@@ -39,8 +39,6 @@ I hope to see what people come up with for features, themes and plugins for the 
            - 7TV and FFZ Emotes
 
 ### Running
-
-[If you develop, but don't know the differences](https://www.youtube.com/watch?app=desktop&v=5LZOk9dt-ko)
 Package Managers for people who do not have development environments:
 - [NPM](https://nodejs.org/en)
 - Yarn: `npm install -g yarn`
@@ -50,7 +48,6 @@ Package Managers for people who do not have development environments:
 Install packages via: `npm install`, `pnpm install`, `bun install`  
 AND install [Python](https://www.python.org/downloads/) 
 
-Edit settings mainly stated inside the [wiki settings](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki/Settings#main-settings), such as your Channel Name.  
 Run `bun run electron`  
 The application will check your Python version, if it's above 3.13.X it will [attempt to install `pydirectinput`, if not already installed](https://github.com/AlgorithmicPolicyIndex/ChatPlays/blob/main/src/index.ts#L52-L74).
 Those are the only requirements to running the application!
