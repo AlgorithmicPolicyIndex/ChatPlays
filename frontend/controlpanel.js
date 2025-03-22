@@ -1,5 +1,33 @@
-﻿const Settings = {};
-let ChatSettings = {};
+﻿const Settings = {
+	"chatWidth": "650",
+	"chatHeight": "959",
+	"theme": "default",
+	"maxblobs": "10",
+	"maxhistory": "5",
+	"otherEmotes": false,
+	"popupEvents": false,
+	"monitor": "0",
+	"popupW": "400",
+	"popupH": "112",
+	"enableChat": true,
+	"name": "",
+	"brb": false,
+	"gamePath": "D:\\Coding_Projects\\ChatPlays\\out\\ChatPlays-win32-x64\\resources\\app.asar\\build\\games\\Destiny2.js",
+	"playsChance": "1",
+	"playtime": "30",
+	"Plugins": {
+		"Enabled": [],
+		"Disabled": []
+	},
+	"twitchID": "",
+	"userId": "",
+	"youtubeID": "",
+	"OBSPort": "",
+	"OBSPASS": "",
+	"audio": "none",
+	"voiceKey": "L",
+	"voiceChance": "1"
+};
 
 let Enabled = [];
 let Disabled = [];
@@ -28,20 +56,19 @@ $('.close').on('click', function() {
 		}
 	});
 	
-	return window.electron.close(Object.assign(Settings, ChatSettings));
+	return window.electron.close(Settings);
 });
 
 // Live Update Database
 $('.setting').on("change", function() {
 	const item = $(this).find("input, select");
 	const name = item.attr('name');
-	let Enabled = [...Settings.Plugins.Enabled];
-	let Disabled = [...Settings.Plugins.Disabled];
+	let Enabled = Settings.Plugins.Enabled ? [...Settings.Plugins.Enabled] : [];
+	let Disabled = Settings.Plugins.Disabled ? [...Settings.Plugins.Disabled] : [];
 
 	if (item.is(':checkbox')) {
 		Settings[name] = item.prop('checked');
 	} else if (name.includes("Plugs")) {
-
 		$(item).find("option").each(function() {
 			if (this.value === "") return true;
 			if (name === "enabledPlugs" && !Enabled.includes(this.value)) {
@@ -58,32 +85,14 @@ $('.setting').on("change", function() {
 	return window.electron.UpdateSettings(Settings);
 });
 
-window.electron.getSettingsFromMain(function(settings) {
+window.electron.getSettings(function(settings) {
+	console.log(settings);
 	if (Object.keys(settings).length === 0) {
 		return;
 	}
-	
-	const ePlugs = $('select[name="enabledPlugs"]');
-	const dPlugs = $('select[name="disabledPlugs"]');
-	const chatKeys = [
-		"chatWidth",
-		"chatHeight",
-		"theme",
-		"maxblobs",
-		"maxhistory",
-		"otherEmotes",
-		"popupEvents",
-		"monitor",
-		"popupW",
-		"popupH"
-	];
 
 	for (const key of Object.keys(settings)) {
 		if (key === "brb") continue;
-		if (chatKeys.includes(key)) {
-			ChatSettings[key] = settings[key];
-			continue;
-		}
 		
 		Settings[key] = settings[key];
 		const setting = settings[key];
@@ -98,12 +107,10 @@ window.electron.getSettingsFromMain(function(settings) {
 			item.val(setting);
 		}
 	}
-	if (ePlugs.find("option").length > 1) ePlugs.prop("disabled", false);
-	if (dPlugs.find("option").length > 1) dPlugs.prop("disabled", false);
 });
 
 $('input[name="chatSettings"]').on("click", function() {
-	window.electron.createWindow("chatSettings", Object.assign({}, Settings, ChatSettings));
+	window.electron.createWindow("chatSettings");
 });
 
 const userId = Settings.userId;
@@ -125,7 +132,6 @@ $('.plays').each(function() {
 				window.electron.startstop(game.val(), game[0].options[game[0].selectedIndex].text);
 				$(this).prop("disabled", true);
 				buttons.filter('.stopPlays').prop("disabled", false);
-				
 			} else {
 				window.electron.startstop(null, "");
 				$(this).prop("disabled", true);
@@ -144,7 +150,7 @@ $('input[name="spawnChat"]').on("click", function() {
 		isOpened = true;
 		$(this).val("Close");
 	}
-	window.electron.createWindow("chatWindow", Object.assign({}, Settings, ChatSettings))
+	window.electron.createWindow("chatWindow")
 });
 
 $('input[type="checkbox"]').on("click", function() {
@@ -162,25 +168,24 @@ window.electron.pluginsUpdated(function(plugins) {
 		const existsInEnabled = enabledPlugins.find(`option[value='${plugin}']`).length > 0;
 		const existsInDisabled = disabledPlugins.find(`option[value='${plugin}']`).length > 0;
 
-		if (existsInEnabled && !plugins.includes(plugin))
+		if (existsInEnabled)
 			window.electron.handlePlugin("unload", plugin);
 
 		if (!existsInEnabled && !existsInDisabled)
-			if (Settings?.Plugins?.Enabled.includes(plugin))
+			if (Settings.Plugins.Enabled.includes(plugin))
 				enabledPlugins.append(`<option value='${plugin}'>${plugin}</option>`);
 			else
 				disabledPlugins.append(`<option value="${plugin}">${plugin}</option>`);
 	}
-
-
-	if (enabledPlugins.find("option").length > 1) enabledPlugins.prop("disabled", false);
-	if (disabledPlugins.find("option").length > 1) disabledPlugins.prop("disabled", false);
-
+	
 	$(".plugins option").each(function() {
 		const optionValue = $(this).val();
 		if (optionValue && !plugins.includes(optionValue))
 			$(this).remove();
 	});
+	
+	enabledPlugins.find("option").length > 1 ? enabledPlugins.prop("disabled", false) : enabledPlugins.prop("disabled", true);
+	disabledPlugins.find("option").length > 1 ? disabledPlugins.prop("disabled", false) : disabledPlugins.prop("disabled", true);
 });
 disabledPlugins.on("change", function() {
 	handlePlugins(disabledPlugins, this);
@@ -212,10 +217,6 @@ function handlePlugins(menu, obj) {
 	$(other).val("");
 	return $(menu).val("");
 }
-
-window.electron.getSettings(function(settings) {
-	ChatSettings = settings;
-});
 
 window.electron.getAudioInputs((i) => {
 	for (const input of i) {

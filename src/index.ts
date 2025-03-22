@@ -29,9 +29,11 @@ function isVersionLessThan(version: {major: number, minor: number}, target: { ma
 }
 
 // * Electron
-app.setAppUserModelId("ChatPlays");
 app.whenReady().then(async () => {
 	if (!await import("electron-squirrel-startup")) app.quit();
+	const lock = app.requestSingleInstanceLock();
+	if (!lock) return app.quit();
+	
 	const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
 	const pythonVersion = getPythonVersion(pythonCmd);
 	if (!pythonVersion) {
@@ -97,15 +99,22 @@ app.whenReady().then(async () => {
 			return extensions.some(ex => file.endsWith(ex));
 		});
 		
+		win.webContents.send("chatSettings", await getData());
 		win.webContents.send("inputs", await new TTS(1).listAudioDevices());
 		win.webContents.send("gameList", cmdFiles.map((v) => {
 			return {Path: path.join(cmdPath, v), Name: v};
 		}));
 		win.webContents.send("pluginsUpdated", pluginFiles);
-		win.webContents.send("chatSettingsFM", await getData());
 		win.show();
 	});
 
+	app.on("second-instance", () => {
+		if (win) {
+			if (win.isMinimized()) win.restore();
+			win.focus();
+		}
+	});
+	
 	return new ipcManager(win);
 });
 

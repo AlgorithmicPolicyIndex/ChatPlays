@@ -161,12 +161,12 @@ export class ipcManager {
 		ipcMain.on("closepopup", this.closePopup.bind(this));
 		ipcMain.on("close", this.close.bind(this));
 		
-		watch(path.join(__dirname, "../frontend/plugins"), (eventType, filename) => {
-			if (!filename || eventType === "rename") return;
+		watch(path.resolve(__dirname, "..", "frontend", "plugins"), (_eventType, filename) => {
+			if (!filename) return;
 			this.mainWindow.webContents.send(
 				"pluginsUpdated",
 				readdirSync(
-					path.join(__dirname, "../frontend/plugins")
+					path.resolve(__dirname, "..", "frontend", "plugins")
 				).filter(file => {
 					return [".js", ".ts"].some(ex => file.endsWith(ex));
 				})
@@ -276,7 +276,8 @@ export class ipcManager {
 		}
 		await updateData(settings);
 	}
-	async createWindow(_evt: any, type: string, settings: any) {
+	async createWindow(_evt: any, type: string) {
+		const settings = await getData();
 		const mainBounds = this.mainWindow.getBounds();
 		const [x, y] = [
 			Math.round(mainBounds.x + (mainBounds.width - 400) / 2),
@@ -306,11 +307,11 @@ export class ipcManager {
 			newWindow.title = "ChatPlays - Chat Settings";
 			await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "chatSettings.html"));
 			newWindow.on("ready-to-show", async function() {
+				newWindow.webContents.send("chatSettings", settings);
 				newWindow.webContents.send("themes", readdirSync(path.join(__dirname, "..", "frontend", "Chat", "themes")));
 				newWindow.webContents.send("monitors", screen.getAllDisplays().map((display) => {
 					return display.label
 				}));
-				newWindow.webContents.send("chatSettingsFM", settings);
 			});
 			return newWindow.show();
 		case "chatWindow":
@@ -323,7 +324,7 @@ export class ipcManager {
 			newWindow.title = "ChatPlays - Chat";
 			await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "Chat", "index.html"));
 			newWindow.on("ready-to-show", async function() {
-				newWindow.webContents.send("chatSettingsFM", settings);	
+				newWindow.webContents.send("chatSettings", settings);	
 			});
 			newWindow.show();
 			this.chatWindow = newWindow;

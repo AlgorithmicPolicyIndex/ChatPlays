@@ -1,4 +1,4 @@
-﻿window.electron.getSettingsFromMain(async settings => {
+﻿window.electron.settingsOnLoad(async settings => {
 	if (settings.theme !== "default") await changeCSS(settings.theme, settings.name);
 	if (settings.Plugins.Enabled.length > 0) {
 		for (const plugin of settings.Plugins.Enabled) {
@@ -14,7 +14,7 @@ window.electron.getSettings(async function (settings) {
 		
 		Settings[key] = settings[key];
 		switch (key) {
-	case "theme":
+		case "theme":
 			await changeCSS(settings[key], settings["name"]);
 			continue;
 		case "brb":

@@ -23,7 +23,7 @@ contextBridge.exposeInMainWorld("electron", {
 	getSettings: (func: (chatSettings: any) => void) => {
 		ipcRenderer.on("chatSettings", (_evt, chatSettings: any) => func(chatSettings));
 	},
-	getSettingsFromMain: (func: (chatSettings: any) => void) => {
+	settingsOnLoad: (func: (chatSettings: any) => void) => {
 		ipcRenderer.on("chatSettingsFM", (_evt, chatSettings: any) => func(chatSettings));
 	},
 	getThemes: (func: (themes: string[]) => void) => {

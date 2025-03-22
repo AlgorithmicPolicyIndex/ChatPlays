@@ -10,19 +10,24 @@ module.exports = {
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      platforms: ['win32'],
+      config: {
+        authors: "AlgorithmicPolicyIndex"
+      }
     },
     {
       name: '@electron-forge/maker-zip',
-      platforms: ['darwin', 'linux'],
+      platforms: ['darwin'],
+      config: {
+        authors: "AlgorithmicPolicyIndex"
+      }
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
-    },
-    {
-      name: '@electron-forge/maker-rpm',
-      config: {},
+      platforms: ['linux'],
+      config: {
+        authors: "AlgorithmicPolicyIndex"
+      }
     },
   ],
   plugins: [

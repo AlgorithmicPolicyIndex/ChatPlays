@@ -50,7 +50,7 @@
 		});
 	});
 	
-	window.electron.getSettingsFromMain(function (settings) {
+	window.electron.getSettings(function (settings) {
 		$('.chat').each(function() {
 			const item = $(this).find('input, select');
 			const name = item.attr("name");
