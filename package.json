@@ -3,7 +3,7 @@
   "name": "chatplays",
   "productName": "ChatPlays",
   "description": "A simple frontend application that can connect to Twitch or Youtube to be a Chat Overlay, or active the ChatPlays function to let your chat take control of your games!",
-  "version": "1.0.0",
+  "version": "1.1.0-Alpha",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc",

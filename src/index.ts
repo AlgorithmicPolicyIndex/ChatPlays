@@ -49,23 +49,26 @@ app.whenReady().then(async () => {
 		return;
 	}
 
+	const pyDep = ["pydirectinput", "winsdk", "asyncio", "tempfile", "pillow"]
 	try {
-		const pyPack = execSync(`python -c "import importlib.util; print(True if importlib.util.find_spec('pydirectinput') else False)"`, { encoding: "utf8" }).trim();
-		if (pyPack === "False") {
-			await dialog.showMessageBox({
-				title: "Pip install",
-				type: "info",
-				message: "Installing `pydirectinput` via pip"
-			});
-			try {
-				execSync("pip install pydirectinput");
+		for (const dep of pyDep) {
+			const pyPack = execSync(`python -c "import importlib.util; print(True if importlib.util.find_spec('${dep}') else False)"`, { encoding: "utf8" }).trim();
+			if (pyPack === "False") {
 				await dialog.showMessageBox({
 					title: "Pip install",
 					type: "info",
-					message: "`pydirectinput` installed!"
+					message: `Installing "${dep}" via pip`
 				});
-			} catch (error) {
-				console.error("Error installing pydirectinput... Please try doing it manually.");
+				try {
+					execSync(`python -m pip install ${dep}`);
+					await dialog.showMessageBox({
+						title: "Pip install",
+						type: "info",
+						message: `"${dep}" installed!`
+					});
+				} catch (error) {
+					console.error(`Error installing ${dep}... Please try doing it manually.`);
+				}
 			}
 		}
 	} catch (e) {

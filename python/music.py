@@ -1,16 +1,10 @@
-﻿import json
-import re
-
-from winsdk.windows.media.control import \
+﻿from winsdk.windows.media.control import \
     GlobalSystemMediaTransportControlsSessionManager as MediaManager
 from winsdk.windows.storage.streams import DataReader
 from PIL import Image
 from datetime import timedelta
-import time, os, sys, io
+import os, sys, io, re, asyncio, tempfile
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-
-import asyncio
-import tempfile
 
 async def getMedia():
     sessions = await MediaManager.request_async()
