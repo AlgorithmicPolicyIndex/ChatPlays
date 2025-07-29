@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link id="css" rel="stylesheet" href="./default.css">
+</head>
+<body>
+<img src="" class="image" alt="Thumbnail" width="100" height="100">
+<div class="info">
+	<h1 class="Title">Title</h1>
+	<h2 class="Author">Author</h2>
+</div>
+<div class="Time">
+	<p class="pos">00:00</p> <p class="sep">/</p> <p class="end">00:00</p>
+</div>
+</body>
+<style>
+    body {
+        color: white;
+        font-family: var(--font-family), serif;
+    }
+    .image {
+        position: absolute;
+        background-color: gray;
+        height: 150px;
+        width: 150px;
+        top: 15%;
+        left: 4%;
+        -webkit-app-region: drag;
+    }
+    .info {
+        top: -24px;
+        position: absolute;
+        left: 184px;
+        width: 50%;
+        -webkit-app-region: drag;
+    }
+    .Author {
+        position: relative;
+        bottom: -10px;
+        text-wrap: auto;
+        width: 85%;
+        -webkit-app-region: drag;
+    }
+    .Title {
+        bottom: -25px;
+        position: relative;
+        -webkit-app-region: drag;
+    }
+    .Time {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 29px;
+        text-align: right;
+        font-size: 22px;
+        -webkit-app-region: drag;
+    }
+    .pos {
+        position: relative;
+        right: 66px;
+        bottom: -72px;
+        -webkit-app-region: drag;
+    }
+    .sep {
+        position: relative;
+        right: 50px;
+        bottom: -33px;
+        -webkit-app-region: drag;
+    }
+</style>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+	function addPythonTimedeltaMs(originalMs, addedSeconds = 0, addedMicroseconds = 0) {
+		return originalMs + (addedSeconds * 1000) + (addedMicroseconds / 1000);
+	}
+	function msToTimeString(ms) {
+		const totalSeconds = Math.floor(ms / 1000);
+		const minutes = Math.floor(totalSeconds / 60);
+		const seconds = totalSeconds % 60;
+
+		return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+	}
+
+	setInterval(() => {
+		window.electron.requestMusic();
+	}, 1500);
+
+	let displayedTime, lastReport;
+
+	window.electron.getMusic((parsed) => {
+		const Title = $('.Title');
+		const Author = $('.Author')
+		const End = $('.end')
+		const time = $('.Time');
+		const img = $(".image");
+
+		if (parsed === "np") { Author.hide(); time.hide(); Title.text("Not Playing"); return; }
+		if (Author.is(':hidden') || time.is(':hidden')) { Author.show(); time.show(); }
+
+		if (!displayedTime) displayedTime = parsed.Position[0];
+		if (lastReport === parsed.Position[0]) {
+			displayedTime = addPythonTimedeltaMs(displayedTime, 1.5, 0);
+		} else {
+			lastReport = parsed.Position[0];
+			displayedTime = parsed.Position[0];
+		}
+
+		if (Title.text() !== parsed.Title)
+			Title.text(parsed.Title.length > 28 ? parsed.Title.slice(0, 28)+"..." : parsed.Title);
+		if (Author.text() !== parsed.Author) {
+			const Note = "- ";
+			Author.text(parsed.Author.length > 28 ? Note + parsed.Author.slice(0, 28) + "..." : Note + parsed.Author);
+		}
+		if (End.text() !== msToTimeString(parsed.Position[1]))
+			End.text(msToTimeString(parsed.Position[1]));
+		if (img.prop("src") !== parsed.Thumbnail)
+			img.prop("src", parsed.Thumbnail);
+
+		$('.pos').text(msToTimeString(displayedTime));
+	});
+</script>
+</html>

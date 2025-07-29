@@ -141,16 +141,26 @@ $('.plays').each(function() {
 	});
 });
 
-let isOpened = false;
+let windows = []
 $('input[name="spawnChat"]').on("click", function() {
-	if (isOpened) {
-		isOpened = false;
+	if (windows.includes("chat")) {
+		windows.splice(windows.indexOf("chat"), 1);
 		$(this).val("Spawn");
 	} else { 
-		isOpened = true;
+		windows.push("chat");
 		$(this).val("Close");
 	}
 	window.electron.createWindow("chatWindow")
+});
+$(`input[name="spawnMusic"]`).on("click", function() {
+	if (windows.includes("music")) {
+		windows.splice(windows.indexOf("music"), 1);
+		$(this).val("Spawn");
+	} else {
+		windows.push("music");
+		$(this).val("Close");
+	}
+	window.electron.createWindow("musicWindow");
 });
 
 $('input[type="checkbox"]').on("click", function() {

@@ -7,6 +7,8 @@ import {services} from './index';
 import {OBS, serviceData, serviceNames} from './Services';
 import path from "path";
 import {existsSync, readdirSync, watch} from "node:fs";
+import {PythonShell} from 'python-shell';
+import * as fs from 'node:fs';
 const filter = new Filter();
 
 export async function command(message: string, user: any) {
@@ -141,7 +143,8 @@ export class TTS {
 }
 
 export class ipcManager {
-	private chatWindow: BrowserWindow | null = null;
+	private windows: { [key: string]: BrowserWindow } = {};
+	private Thumbnail: string | null = null;
 	private mainWindow: BrowserWindow;
 	
 	constructor(mainWindow: BrowserWindow) {
@@ -154,6 +157,7 @@ export class ipcManager {
 		ipcMain.handle("handleService", this.handleService.bind(this));
 		ipcMain.on("chatSettings", this.updateSettings.bind(this));
 		ipcMain.on("updateSettings", this.updateSettings.bind(this));
+		ipcMain.on("requestMusic", this.MusicRequest.bind(this));
 		ipcMain.on("sendId", this.sendID.bind(this));
 		ipcMain.on("startstop", this.startstop.bind(this));
 		ipcMain.on("handlePlugin", this.handlePlugin.bind(this));
@@ -216,22 +220,24 @@ export class ipcManager {
 	async updateSettings(_evt: any, settings: any) {
 		const data = await getData();
 		Object.assign(data, settings);
-		if (this.chatWindow)
-			this.chatWindow.webContents.send("chatSettings", data);
+		Object.values(this.windows).forEach((win) => {
+			win.webContents.send("chatSettings", data);	
+		});
 		this.mainWindow.webContents.send("chatSettings", data);
 		return await updateData(data);
 	}
 	async sendID(_evt: any, id: string, name: string) {
-		if (this.chatWindow)
-			this.chatWindow.webContents.send("sendID", id, name);
-		this.mainWindow.webContents.send("sendId", id, name);
+		if (this.windows["ChatWindow"])
+			this.windows["ChatWindow"].webContents.send("sendID", id, name);
+		this.mainWindow.webContents.send("sendID", id, name);
 	}
 	async handlePlugin(_evt: any, method: "load" | "unload", plugin: string) {
-		if (!this.chatWindow) return;
+		const win = this.windows["ChatWindow"];
+		if (!win) return;
 		if (method == "load")
-			this.chatWindow.webContents.send("loadPlugin", plugin);
+			win.webContents.send("loadPlugin", plugin);
 		else
-			this.chatWindow.webContents.send("unloadPlugin", plugin);
+			win.webContents.send("unloadPlugin", plugin);
 	}
 	async closePopup(event: any) {
 		const win = BrowserWindow.fromWebContents(event.sender);
@@ -264,17 +270,57 @@ export class ipcManager {
 	}
 	async startstop(_evt: any, p: string | null, name: string) {
 		const settings = await getData();
+		const win = this.windows["ChatWindow"];
 		if (!p) {
-			if (this.chatWindow)
-				this.chatWindow.webContents.send("updateGame", "");
+			if (win)
+				win.webContents.send("updateGame", "");
 			settings["ChatPlaysActive"] = false;
 		} else if (existsSync(p)) {
-			if (this.chatWindow)
-				this.chatWindow.webContents.send("updateGame", name);
+			if (win)
+				win.webContents.send("updateGame", name);
 			settings["gamePath"] = p;
 			settings["ChatPlaysActive"] = true;
 		}
 		await updateData(settings);
+	}
+	async MusicRequest() {
+		const musicWindow = BrowserWindow.getAllWindows().find((w) => w.title === "ChatPlays - Music");
+		await PythonShell.run(path.join(__dirname, "..", "python", "music.py"), {
+			pythonPath: "python",
+			pythonOptions: ["-u"],
+			encoding: "utf-8",
+		}).then((data: string[]) => {
+			function parsePythonTimedeltaString(pythonStr: string) {
+				return pythonStr.replace(/datetime\.timedelta\(([^)]+)\)/g, (_match, args: string): string => {
+					const parts = args.split(',').map(s => s.trim());
+					let days = 0, seconds = 0, microseconds = 0;
+
+					for (const part of parts) {
+						const [key, value] = part.split('=').map(s => s.trim());
+						if (key === 'days') days = parseFloat(value);
+						else if (key === 'seconds') seconds = parseFloat(value);
+						else if (key === 'microseconds') microseconds = parseFloat(value);
+					}
+
+					const totalMs = ((days * 86400 + seconds) * 1000) + (microseconds / 1000);
+					return totalMs.toString();
+				}).replace(/(?<!\w)'|'(?!\w)/g, '"');
+			}
+
+			if (data[0] === "np")
+				return musicWindow?.webContents.send("getMusic", "np");
+
+			const parsed = JSON.parse(parsePythonTimedeltaString(data[0]));
+			if (parsed.Thumbnail) {
+				if (this.Thumbnail === null) this.Thumbnail = parsed.Thumbnail;
+				if (this.Thumbnail !== parsed.Thumbnail) {
+					fs.rm(this.Thumbnail as string, () => {return;});
+					this.Thumbnail = parsed.Thumbnail;
+				}
+			}
+
+			musicWindow?.webContents.send("getMusic", parsed);
+		});
 	}
 	async createWindow(_evt: any, type: string) {
 		const settings = await getData();
@@ -286,7 +332,6 @@ export class ipcManager {
 		const newWindow = new BrowserWindow({
 			width: 400, height: 575,
 			x, y, show: false, frame: false,
-			resizable: false,
 			roundedCorners: false,
 			transparent: true,
 			maximizable: false,
@@ -305,6 +350,7 @@ export class ipcManager {
 			}
 			
 			newWindow.title = "ChatPlays - Chat Settings";
+			newWindow.setResizable(false);
 			await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "chatSettings.html"));
 			newWindow.on("ready-to-show", async function() {
 				newWindow.webContents.send("chatSettings", settings);
@@ -315,19 +361,35 @@ export class ipcManager {
 			});
 			return newWindow.show();
 		case "chatWindow":
-			if (this.chatWindow) {
+			let chat = this.windows["ChatWindow"];
+			if (chat) {
 				newWindow.close();
-				this.chatWindow.close();
-				return this.chatWindow = null;
+				chat.close();
+				return delete this.windows["ChatWindow"];
 			}
 			newWindow.setSize(parseInt(settings.chatWidth), parseInt(settings.chatHeight));
+			newWindow.setResizable(false);
 			newWindow.title = "ChatPlays - Chat";
 			await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "Chat", "index.html"));
 			newWindow.on("ready-to-show", async function() {
 				newWindow.webContents.send("chatSettings", settings);	
 			});
-			newWindow.show();
-			this.chatWindow = newWindow;
+			this.windows["ChatWindow"] = newWindow;
+			return newWindow.show();
+		case "musicWindow":
+			let music = this.windows["MusicWindow"]
+			if (music) {
+				newWindow.close();
+				music.close();
+				return delete this.windows["MusicWindow"];
+			}
+			newWindow.setSize(600, 200);
+			newWindow.setResizable(false);
+			newWindow.title = "ChatPlays - Music";
+			// await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", settings.theme, "music.html"));
+			await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "Chat", "themes", "default", "music.html"));
+			this.windows["MusicWindow"] = newWindow;
+			return newWindow.show();
 		}
 	}
 }

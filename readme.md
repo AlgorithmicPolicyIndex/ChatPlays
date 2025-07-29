@@ -1,8 +1,7 @@
-# The Jarring Update
-This is a massive update, the entirety of the Program works relatively the same, outside the use of the control panel. So please bare with me as I update my Wiki to go over everything. Everything should be fairly simple and self-explanatory, so hopefully not too many issues arise from that.  
-Now, Let's get this out of the way. Almost everything was rewritten, I'm trying some new things out with this update. I did this update to remove the need of closing and starting the app again to make changes. You can make them on the fly now.  
-### **THERE WILL BE LOTS OF EDGE CASES** and I know this. So please, if you experience some weird issue, if you know how to replicate it, or take a video of it, I may be able to fix this once I finish field stuff at my unit.  
-### With this update, I fully expect some issues to popup, so feel free to make Github issues here, or even a PR updating some code if you're up to that task of my hellish code.
+# Current
+**NOTE: THIS IS NOT THE FIRST TIME I MADE THIS UPDATE. I GOT SERIOUSLY LUCKY FOR HAVING SENT A FRIEND ALL MY CODE FOR THIS.**  
+This current update is just the base default theme. Please feel free to send any bugs or errors to the Issues page. I expect some song names to cause some problems and will need to be fixed.  
+I'm working on the WinXP theme right now. For now though, it will be the default theme.
 
 ---
 
@@ -24,21 +23,17 @@ I hope to see what people come up with for features, themes and plugins for the 
   - YOUTUBE
       - Subscribe / Membership Event (not a part of the chat module I use)
   - OVERALL
-      - Services
-        - Make Error handler for specific cases where, say Twitch, tmi.js returns "no response from Twitch"
-          - This is because it connects to Twitch, but does not join the channel.
-        - Handle Errors from OBS WebSocket, as it will "connect" if values are inputted, but errors when failed to connect and does not send to app.
-      - Plugins
-        - Convert to general services
-          - to allow Service Plugins to other platforms
-          - Custom Features in the Control Panel
-          - Other things I can't think of right now
-      - Voice Chat
-         - Test input in games, to make sure full message is heard in game.
-      - Not a priority
-           - 7TV and FFZ Emotes
+    - Music
+      - Auto switch theme
+      - Make WinXP Theme
+    - Services
+      - Handle Errors from OBS WebSocket, as it will "connect" if values are inputted, but errors when failed to connect and does not send to app.
+    - Voice Chat
+       - Test input in games, to make sure full message is heard in game.
 
 ### Running
+
+[If you develop but don't know the differences](https://www.youtube.com/watch?app=desktop&v=5LZOk9dt-ko)
 Package Managers for people who do not have development environments:
 - [NPM](https://nodejs.org/en)
 - Yarn: `npm install -g yarn`
@@ -48,6 +43,7 @@ Package Managers for people who do not have development environments:
 Install packages via: `npm install`, `pnpm install`, `bun install`  
 AND install [Python](https://www.python.org/downloads/) 
 
+Edit settings mainly stated inside the [wiki settings](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki/Settings#main-settings), such as your Channel Name.  
 Run `bun run electron`  
 The application will check your Python version, if it's above 3.13.X it will [attempt to install `pydirectinput`, if not already installed](https://github.com/AlgorithmicPolicyIndex/ChatPlays/blob/main/src/index.ts#L52-L74).
 Those are the only requirements to running the application!

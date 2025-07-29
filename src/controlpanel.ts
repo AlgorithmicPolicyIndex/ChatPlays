@@ -65,6 +65,12 @@ contextBridge.exposeInMainWorld("electron", {
 	monitors: (func: (Monitors: string[]) => void) => {
 		ipcRenderer.on("monitors", (_evt, monitors) => func(monitors));
 	},
+	getMusic: (func: (music: any) => void) => {
+		ipcRenderer.on("getMusic", (_evt, music) => func(music));
+	},
+	requestMusic: () => {
+		ipcRenderer.send("requestMusic");
+	},
 	close: (settings: any) => ipcRenderer.send("close", settings),
 	error: (func: (msg: string) => void) => ipcRenderer.on("error", (_ent, msg: string) => func(msg))
 });
