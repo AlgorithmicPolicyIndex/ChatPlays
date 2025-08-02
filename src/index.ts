@@ -49,7 +49,7 @@ app.whenReady().then(async () => {
 		return;
 	}
 
-	const pyDep = ["pydirectinput", "winsdk", "asyncio", "tempfile", "pillow"]
+	const pyDep = ["pydirectinput", "winsdk", "asyncio", "tempfile", "PIL"]
 	try {
 		for (const dep of pyDep) {
 			const pyPack = execSync(`python -c "import importlib.util; print(True if importlib.util.find_spec('${dep}') else False)"`, { encoding: "utf8" }).trim();

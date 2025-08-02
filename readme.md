@@ -23,6 +23,8 @@ I hope to see what people come up with for features, themes and plugins for the 
   - YOUTUBE
       - Subscribe / Membership Event (not a part of the chat module I use)
   - OVERALL
+    - Chat
+      - More comprehensive filters for links and phrases
     - Music
       - Auto switch theme
       - Make WinXP Theme

@@ -52,6 +52,9 @@ export async function command(message: string, user: any) {
 	}
 }
 
+const PhraseFilters = ["(remove the space)"];
+const TLDFilters = ["com"];
+
 export async function filterWithoutEmojis(message: string) {
 	interface CharDetails {
 		char: string;
@@ -73,7 +76,12 @@ export async function filterWithoutEmojis(message: string) {
 		sanitizedMessage = sanitizedMessage.replace(specialCharPlaceholder, item.char);
 	});
 	
-	return sanitizedMessage.replace(await extractUrls(sanitizedMessage), "[LINK]");
+	const TLDRegex = new RegExp(`\\b([a-zA-Z0-9.-]+)\\s*\\.(${TLDFilters.join('|')})\\b`);
+	sanitizedMessage = PhraseFilters.some(phrase => {
+		return sanitizedMessage.toLowerCase().includes(phrase.toLowerCase())
+	}) ? "[FILTERED]" : sanitizedMessage;
+	
+	return sanitizedMessage.replace(await extractUrls(sanitizedMessage), "[LINK]").replace(TLDRegex, "[LINK]");
 }
 
 export class TTS {
