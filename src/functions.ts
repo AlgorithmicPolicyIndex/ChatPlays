@@ -52,8 +52,22 @@ export async function command(message: string, user: any) {
 	}
 }
 
-const PhraseFilters = ["(remove the space)"];
-const TLDFilters = ["com"];
+const PhraseFilters = [
+	"buy followers",
+	"get followers",
+	"get viewers",
+	"boost twitch",
+	"viewers now",
+	"increase views",
+	"twitch promotion",
+	"free followers",
+	"remove the space"
+];
+
+const domainPattern = new RegExp(
+	"\\b[a-zA-Z0-9_-]+\\s*(\\.|\\[\\.]|\\(dot\\)|\\{dot}|\\(\\.\\)|\\[dot]|\\s*dot\\s*|\\s*\\.\\s*)\\s*(com|net|org|xyz|site|io|app|live|store|info|biz)\\b",
+	"i"
+);
 
 export async function filterWithoutEmojis(message: string) {
 	interface CharDetails {
@@ -76,12 +90,11 @@ export async function filterWithoutEmojis(message: string) {
 		sanitizedMessage = sanitizedMessage.replace(specialCharPlaceholder, item.char);
 	});
 	
-	const TLDRegex = new RegExp(`\\b([a-zA-Z0-9.-]+)\\s*\\.(${TLDFilters.join('|')})\\b`);
 	sanitizedMessage = PhraseFilters.some(phrase => {
 		return sanitizedMessage.toLowerCase().includes(phrase.toLowerCase())
 	}) ? "[FILTERED]" : sanitizedMessage;
 	
-	return sanitizedMessage.replace(await extractUrls(sanitizedMessage), "[LINK]").replace(TLDRegex, "[LINK]");
+	return sanitizedMessage.replace(await extractUrls(sanitizedMessage), "[LINK]").replace(domainPattern, "[LINK]");
 }
 
 export class TTS {
