@@ -61,7 +61,8 @@ const PhraseFilters = [
 	"increase views",
 	"twitch promotion",
 	"free followers",
-	"remove the space"
+	"remove the space",
+	"404: hype not found"
 ];
 
 const domainPattern = new RegExp(
@@ -104,10 +105,6 @@ export class TTS {
 	constructor(public speed: number) {
 		this.speed = speed;
 		this.baseCommand = "$speak = New-Object -ComObject SAPI.SPVoice;";
-	}
-
-	get Channel(): string {
-		return this.channel;
 	}
 
 	set Channel(channel: string) {
@@ -311,27 +308,10 @@ export class ipcManager {
 			pythonOptions: ["-u"],
 			encoding: "utf-8",
 		}).then((data: string[]) => {
-			function parsePythonTimedeltaString(pythonStr: string) {
-				return pythonStr.replace(/datetime\.timedelta\(([^)]+)\)/g, (_match, args: string): string => {
-					const parts = args.split(',').map(s => s.trim());
-					let days = 0, seconds = 0, microseconds = 0;
-
-					for (const part of parts) {
-						const [key, value] = part.split('=').map(s => s.trim());
-						if (key === 'days') days = parseFloat(value);
-						else if (key === 'seconds') seconds = parseFloat(value);
-						else if (key === 'microseconds') microseconds = parseFloat(value);
-					}
-
-					const totalMs = ((days * 86400 + seconds) * 1000) + (microseconds / 1000);
-					return totalMs.toString();
-				}).replace(/(?<!\w)'|'(?!\w)/g, '"');
-			}
-
 			if (data[0] === "np")
 				return musicWindow?.webContents.send("getMusic", "np");
 
-			const parsed = JSON.parse(parsePythonTimedeltaString(data[0]));
+			const parsed = JSON.parse(data[0]);
 			if (parsed.Thumbnail) {
 				if (this.Thumbnail === null) this.Thumbnail = parsed.Thumbnail;
 				if (this.Thumbnail !== parsed.Thumbnail) {

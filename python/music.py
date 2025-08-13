@@ -1,4 +1,6 @@
-﻿from winsdk.windows.media.control import \
+﻿import json
+
+from winsdk.windows.media.control import \
     GlobalSystemMediaTransportControlsSessionManager as MediaManager
 from winsdk.windows.storage.streams import DataReader
 from PIL import Image
@@ -46,6 +48,8 @@ async def save_thumbnail_to_temp(thumbnail_stream_ref, filename='thumbnail.png')
     image.save(output_path)
     return output_path
 
+def td_to_ms(td):
+    return int((td.days * 86400 + td.seconds) * 1000 + td.microseconds / 1000)
 
 def main():
     currentMedia = asyncio.run(getMedia())
@@ -60,7 +64,7 @@ def main():
     if currentMedia.get("pos") is None:
         dataStruct["Position"] = ["LIVE"]
     else:
-        dataStruct["Position"] = [currentMedia["pos"], currentMedia["end"]]
+        dataStruct["Position"] = [td_to_ms(currentMedia["pos"]), td_to_ms(currentMedia["end"])]
 
     title = re.sub(r'[<>:"/\\|?*]', '', f"{currentMedia["title"]}.png")
     tempPath = os.path.join(tempfile.gettempdir(), title)
@@ -70,6 +74,6 @@ def main():
         temp = asyncio.run(save_thumbnail_to_temp(currentMedia["thumbnail"], title))
         dataStruct["Thumbnail"] = temp
 
-    return print(dataStruct)
+    return print(json.dumps(dataStruct))
 
 main()
