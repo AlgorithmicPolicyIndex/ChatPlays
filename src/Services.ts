@@ -101,7 +101,7 @@ class OBS extends Service<OBSWebSocket, "OBS"> {
 				return resolve({ success: true });
 			}, 1000);
 			
-			this.client.on("ConnectionClosed", () => {
+			this.client.on("ConnectionError", () => {
 				failedToConnect = true;
 				clearTimeout(timeout);
 			});

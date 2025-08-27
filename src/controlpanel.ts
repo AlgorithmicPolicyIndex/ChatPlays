@@ -8,18 +8,12 @@ contextBridge.exposeInMainWorld("electron", {
 	getMessage: (func: (messageData: any) => void) => {
 		ipcRenderer.on("message", (_evt, messageData: any) => func(messageData));
 	},
-	sendID: async (id: string, name: string) => {
-		ipcRenderer.send("sendID", id, name);
-	},
-	getID: (func: (id: any, name: string) => void) => {
+	sendID: async (id: string, name: string) => ipcRenderer.send("sendID", id, name),
+	getID: (func: (id: string, name: string) => void) => {
 		ipcRenderer.on("sendID", (_evt, id: string, name: string) => func(id, name));
 	},
-	UpdateSettings: (settings: any) => {
-		ipcRenderer.send("updateSettings", settings);
-	},
-	sendSettings: (chatSettings: any) => {
-		ipcRenderer.send("chatSettings", chatSettings);
-	},
+	UpdateSettings: (settings: any) => ipcRenderer.send("updateSettings", settings),
+	sendSettings: (chatSettings: any) => ipcRenderer.send("chatSettings", chatSettings),
 	getSettings: (func: (chatSettings: any) => void) => {
 		ipcRenderer.on("chatSettings", (_evt, chatSettings: any) => func(chatSettings));
 	},
@@ -35,9 +29,7 @@ contextBridge.exposeInMainWorld("electron", {
 	getGameList: (func: (gameList: {Path: string, Name: string}) => void) => {
 		ipcRenderer.on("gameList", (_evt, gameList) => {func(gameList)});
 	},
-	startstop: (path: string | null, name: string) => {
-		ipcRenderer.send("startstop", path, name);
-	},
+	startstop: (path: string | null, name: string) => ipcRenderer.send("startstop", path, name),
 	updateGame: (func: (name: string) => void) => {
 		ipcRenderer.on("updateGame", (_evt, name: string) => func(name));
 	},
@@ -56,21 +48,17 @@ contextBridge.exposeInMainWorld("electron", {
 	pluginsUpdated: (func: (plugins: string[]) => void) => {
 		ipcRenderer.on("pluginsUpdated", (_evt, plugins) => func(plugins));
 	},
-	subscription: (func: (User: any, Gifter?: any) => void) => {
+	subscription: (func: (User: string, Gifter?: string) => void) => {
 		ipcRenderer.on("subscription", (_evt, User, Gifter) => func(User, Gifter));
 	},
-	test: (User: string, Gifter?: string) => {
-		ipcRenderer.send("test", User, Gifter);
-	},
+	test: (User: string, Gifter?: string) => ipcRenderer.send("test", User, Gifter),
 	monitors: (func: (Monitors: string[]) => void) => {
 		ipcRenderer.on("monitors", (_evt, monitors) => func(monitors));
 	},
-	getMusic: (func: (music: any) => void) => {
+	getMusic: (func: (music: {Position: number[], Title: string, Author: string, Thumbnail: string} | "np") => void) => {
 		ipcRenderer.on("getMusic", (_evt, music) => func(music));
 	},
-	requestMusic: () => {
-		ipcRenderer.send("requestMusic");
-	},
+	requestMusic: () => ipcRenderer.send("requestMusic"),
 	close: (settings: any) => ipcRenderer.send("close", settings),
 	error: (func: (msg: string) => void) => ipcRenderer.on("error", (_ent, msg: string) => func(msg))
 });

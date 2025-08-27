@@ -71,7 +71,7 @@
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script>
-	function addPythonTimedeltaMs(originalMs, addedSeconds = 0, addedMicroseconds = 0) {
+	function addtime(originalMs, addedSeconds = 0, addedMicroseconds = 0) {
 		return originalMs + (addedSeconds * 1000) + (addedMicroseconds / 1000);
 	}
 	function msToTimeString(ms) {
@@ -94,13 +94,17 @@
 		const End = $('.end')
 		const time = $('.Time');
 		const img = $(".image");
+		const position = $('.pos');
 
-		if (parsed === "np") { Author.hide(); time.hide(); Title.text("Not Playing"); return; }
+		if (parsed === "np") { 
+			position.text(`Paused: ${msToTimeString(displayedTime)}`);
+			return;
+		}
 		if (Author.is(':hidden') || time.is(':hidden')) { Author.show(); time.show(); }
 
 		if (!displayedTime) displayedTime = parsed.Position[0];
 		if (lastReport === parsed.Position[0]) {
-			displayedTime = addPythonTimedeltaMs(displayedTime, 1.5, 0);
+			displayedTime = addtime(displayedTime, 1.5, 0);
 		} else {
 			lastReport = parsed.Position[0];
 			displayedTime = parsed.Position[0];
@@ -112,12 +116,12 @@
 			const Note = "- ";
 			Author.text(parsed.Author.length > 28 ? Note + parsed.Author.slice(0, 28) + "..." : Note + parsed.Author);
 		}
-		if (End.text() !== msToTimeString(parsed.Position[1]))
-			End.text(msToTimeString(parsed.Position[1]));
+		if (End.text() !== addtime(parsed.Position[1]))
+			End.text(addtime(parsed.Position[1]));
 		if (img.prop("src") !== parsed.Thumbnail)
 			img.prop("src", parsed.Thumbnail);
 
-		$('.pos').text(msToTimeString(displayedTime));
+		position.text(msToTimeString(displayedTime));
 	});
 </script>
 </html>

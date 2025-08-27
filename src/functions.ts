@@ -273,10 +273,10 @@ export class ipcManager {
 			const obs = services.getService("OBS");
 			if (obs && obs.connected)
 				await obs.deleteSources();
-			for (let w of BrowserWindow.getAllWindows())
-				w.close();
-			for (let s of services.getServices())
-				await services.disconnectService(s);
+			for (let window of BrowserWindow.getAllWindows())
+				window.close();
+			for (let service of services.getServices())
+				await services.disconnectService(service);
 		} catch (e) {
 			console.error(e);
 		}
@@ -286,17 +286,17 @@ export class ipcManager {
 		if (!obs || !obs.connected) return;
 		await obs.newPopup("TestSub", User, Gifter);
 	}
-	async startstop(_evt: any, p: string | null, name: string) {
+	async startstop(_evt: any, path: string | null, name: string) {
 		const settings = await getData();
 		const win = this.windows["ChatWindow"];
-		if (!p) {
+		if (!path) {
 			if (win)
 				win.webContents.send("updateGame", "");
 			settings["ChatPlaysActive"] = false;
-		} else if (existsSync(p)) {
+		} else if (existsSync(path)) {
 			if (win)
 				win.webContents.send("updateGame", name);
-			settings["gamePath"] = p;
+			settings["gamePath"] = path;
 			settings["ChatPlaysActive"] = true;
 		}
 		await updateData(settings);
@@ -340,57 +340,58 @@ export class ipcManager {
 				preload: path.join(__dirname, "controlpanel.js")
 			}
 		});
+		const window = this.windows[type];
 		
 		switch (type) {
 		case "chatSettings":
-			const settingsWindow = BrowserWindow.getAllWindows().find((w) => w.title === "ChatPlays - Chat Settings");
-			if (settingsWindow) {
+			if (window) {
 				newWindow.close();
-				settingsWindow.setPosition(x, y);
-				return settingsWindow.focus();
+				window.setPosition(x, y);
+				window.focus();
+				return;
 			}
 			
 			newWindow.title = "ChatPlays - Chat Settings";
 			newWindow.setResizable(false);
 			await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "chatSettings.html"));
-			newWindow.on("ready-to-show", async function() {
+			newWindow.on("ready-to-show", function() {
 				newWindow.webContents.send("chatSettings", settings);
 				newWindow.webContents.send("themes", readdirSync(path.join(__dirname, "..", "frontend", "Chat", "themes")));
-				newWindow.webContents.send("monitors", screen.getAllDisplays().map((display) => {
-					return display.label
-				}));
+				newWindow.webContents.send("monitors", screen.getAllDisplays().map((display) => display.label));
 			});
-			return newWindow.show();
+			newWindow.show();
+			break;
 		case "chatWindow":
-			let chat = this.windows["ChatWindow"];
-			if (chat) {
+			if (window) {
 				newWindow.close();
-				chat.close();
-				return delete this.windows["ChatWindow"];
+				window.close();
+				delete this.windows["ChatWindow"];
+				return;
 			}
 			newWindow.setSize(parseInt(settings.chatWidth), parseInt(settings.chatHeight));
 			newWindow.setResizable(false);
 			newWindow.title = "ChatPlays - Chat";
 			await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "Chat", "index.html"));
-			newWindow.on("ready-to-show", async function() {
-				newWindow.webContents.send("chatSettings", settings);	
-			});
-			this.windows["ChatWindow"] = newWindow;
-			return newWindow.show();
+			newWindow.on("ready-to-show", function() { newWindow.webContents.send("chatSettings", settings); });
+			newWindow.show();
+			break;
 		case "musicWindow":
-			let music = this.windows["MusicWindow"]
-			if (music) {
+			if (window) {
 				newWindow.close();
-				music.close();
-				return delete this.windows["MusicWindow"];
+				window.close();
+				delete this.windows["MusicWindow"];
+				return;
 			}
 			newWindow.setSize(600, 200);
 			newWindow.setResizable(false);
 			newWindow.title = "ChatPlays - Music";
-			// await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", settings.theme, "music.html"));
+			// await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "Chat", settings.theme, "music.html"));
 			await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "Chat", "themes", "default", "music.html"));
-			this.windows["MusicWindow"] = newWindow;
-			return newWindow.show();
+			newWindow.show();
+			break;
 		}
+
+		this.windows[type] = newWindow;
+		return;
 	}
 }

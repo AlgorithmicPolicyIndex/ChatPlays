@@ -1,7 +1,8 @@
 ﻿import json
 
 from winsdk.windows.media.control import \
-    GlobalSystemMediaTransportControlsSessionManager as MediaManager
+    GlobalSystemMediaTransportControlsSessionManager as MediaManager, \
+    GlobalSystemMediaTransportControlsSessionPlaybackStatus
 from winsdk.windows.storage.streams import DataReader
 from PIL import Image
 from datetime import timedelta
@@ -54,7 +55,8 @@ def td_to_ms(td):
 def main():
     currentMedia = asyncio.run(getMedia())
 
-    if currentMedia is None:
+    if (currentMedia is None or 
+            GlobalSystemMediaTransportControlsSessionPlaybackStatus.PAUSED == currentMedia["status"]):
         return print("np")
 
     dataStruct = {
