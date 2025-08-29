@@ -6,6 +6,7 @@ import * as fs from "node:fs";
 import {ipcManager, TTS} from "./functions";
 import {runTwitch, runYouTube} from './ChatService';
 import {execSync} from "node:child_process";
+import chalk from 'chalk';
 function getPythonVersion(pythonCmd: string) {
 	try {
 		const versionOutput = execSync(`${pythonCmd} --version`, { encoding: 'utf-8' }).trim();
@@ -109,6 +110,7 @@ app.whenReady().then(async () => {
 		}));
 		win.webContents.send("pluginsUpdated", pluginFiles);
 		win.show();
+		console.log(chalk.green("ChatPlays is ready!"));
 	});
 
 	app.on("second-instance", () => {

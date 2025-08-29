@@ -25,7 +25,7 @@ export async function runTwitch(service: servicesTypes["Twitch"]) {
 			return await command(message, user);
 
 		if (settings.ChatPlaysActive && fs.existsSync(settings.gamePath))
-			(await import(settings.gamePath)).execute(message);
+			return (await import(settings.gamePath)).execute(message.toLowerCase());
 
 		chatWindow = getChatWindow();
 		if (!chatWindow) return;
@@ -89,7 +89,7 @@ export async function runYouTube(service: servicesTypes["YouTube"]) {
 			return await command(message.get("text"), user);
 		
 		if (settings.ChatPlaysActive && fs.existsSync(settings.gamePath))
-			(await import(settings.gamePath)).execute(message);
+			(await import(settings.gamePath)).execute(message.get("text").toLowerCase());
 		
 		chatWindow = getChatWindow();
 		if (!chatWindow) return;

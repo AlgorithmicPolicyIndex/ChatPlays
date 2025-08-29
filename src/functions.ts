@@ -9,9 +9,11 @@ import path from "path";
 import {existsSync, readdirSync, watch} from "node:fs";
 import {PythonShell} from 'python-shell';
 import * as fs from 'node:fs';
+import * as nut from "@nut-tree-fork/nut-js";
 const filter = new Filter();
 
 export async function command(message: string, user: any) {
+	if (!message.startsWith("!")) return;
 	const data = await getData();
 	const Args = message.toLowerCase().slice(1).split(" ");
 	const command = Args.shift();
@@ -35,13 +37,19 @@ export async function command(message: string, user: any) {
 			await updateData(data);
 		}, data.playtime * 1_000);
 	case "voice":
-		if (data.voiceChance <= Math.floor(Math.random() * 100) + 1) return;
+		if (data.voiceChance < Math.floor(Math.random() * 100) + 1) return;
 		if (data.voiceKey == "") return;
 		if (data.audio == "none") return;
 
 		const tts = new TTS(1);
 		tts.Channel = data.audio;
-		return await tts.speak(`${user['display-name']} says: ${message}`);
+		
+		const key = nut.Key[data.voiceKey as keyof typeof nut.Key];
+		await nut.keyboard.pressKey(key);
+		tts.speak(`${user['display-name']} says: ${Args.join(" ")}`).then(() => {
+			nut.keyboard.releaseKey(key);
+		});
+		return;
 	case "testsub":
 		if (user['username'] !== data.twitchID.toLowerCase() || !chatWindow) return;
 		if (data.popupEvents) {

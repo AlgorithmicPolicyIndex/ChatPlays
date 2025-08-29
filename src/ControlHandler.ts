@@ -3,9 +3,11 @@ import { PythonShell } from "python-shell";
 
 export function getControls(control: { Dir?: string, Key?: nut.Key, Amt: number }) {
 	if (Object.keys(control).includes("Dir")) {
+		console.log(`Moving Mouse: ${control.Dir} for ${control.Amt} pixels`);
 		return MouseHandler(control as { Dir: string, Amt: number });
 	}
 
+	console.log(`Pressing Key: ${control.Key} for ${control.Amt} milliseconds`);
 	return KeyboardHandler(control as { Key: nut.Key, Amt: number });
 }
 
