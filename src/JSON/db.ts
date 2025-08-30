@@ -18,7 +18,7 @@ export async function updateData(data: any) {
 			"enableChat": true,
 			"name": "",
 			"brb": false,
-			"gamePath": "D:\\Coding_Projects\\ChatPlays\\out\\ChatPlays-win32-x64\\resources\\app.asar\\build\\games\\Destiny2.js",
+			"gamePath": "",
 			"playsChance": "1",
 			"playtime": "30",
 			"Plugins": {
@@ -41,5 +41,8 @@ export async function updateData(data: any) {
 
 
 export async function getData() {
-	return db.getData(`/`);
+	const data = await db.getData("/");
+	if (data.ChatPlaysActive) data.ChatPlaysActive = false;
+	await updateData(data);
+	return data;
 }

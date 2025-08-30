@@ -1,3 +1,6 @@
+# Ackknowledgement
+I will be leaving for a large scale training even in the coming 2 weeks. I will not be able to fix this for a while come that time.  
+However, I will be going back to figuring out Electron Packaging to make an executable for this project, where everything is pre-bundled together, to make it super streamlined. 
 
 # ChatPlays
 Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki) to read more and specific things about Controls and Settings!  

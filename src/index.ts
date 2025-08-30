@@ -112,8 +112,8 @@ app.whenReady().then(async () => {
 			return extensions.some(ex => file.endsWith(ex));
 		});
 		
-		win.webContents.send("chatSettings", await getData());
 		win.webContents.send("inputs", await new TTS(1).listAudioDevices());
+		win.webContents.send("chatSettings", await getData());
 		win.webContents.send("gameList", cmdFiles.map((v) => {
 			return {Path: path.join(cmdPath, v), Name: v};
 		}));
