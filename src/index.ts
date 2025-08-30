@@ -6,7 +6,6 @@ import * as fs from "node:fs";
 import {ipcManager, TTS} from "./functions";
 import {runTwitch, runYouTube} from './ChatService';
 import {execSync} from "node:child_process";
-import chalk from 'chalk';
 function getPythonVersion(pythonCmd: string) {
 	try {
 		const versionOutput = execSync(`${pythonCmd} --version`, { encoding: 'utf-8' }).trim();
@@ -50,31 +49,41 @@ app.whenReady().then(async () => {
 		return;
 	}
 
-	const pyDep = ["pydirectinput", "winsdk", "asyncio", "tempfile", "PIL"]
-	try {
-		for (const dep of pyDep) {
-			const pyPack = execSync(`python -c "import importlib.util; print(True if importlib.util.find_spec('${dep}') else False)"`, { encoding: "utf8" }).trim();
-			if (pyPack === "False") {
-				await dialog.showMessageBox({
-					title: "Pip install",
-					type: "info",
-					message: `Installing "${dep}" via pip`
-				});
-				try {
-					execSync(`python -m pip install ${dep}`);
-					await dialog.showMessageBox({
-						title: "Pip install",
-						type: "info",
-						message: `"${dep}" installed!`
-					});
-				} catch (error) {
-					console.error(`Error installing ${dep}... Please try doing it manually.`);
-				}
-			}
-		}
-	} catch (e) {
-		app.quit();
-		return;
+	const pyDep = ["pydirectinput", "winsdk", "asyncio", "PIL"];
+	const missingDeps = pyDep.filter(dep => {
+		const pyPack = execSync(`python -c "import importlib.util; print(True if importlib.util.find_spec('${dep}') else False)"`, { encoding: "utf8" }).trim();
+		return pyPack !== "True";
+	});
+	
+	if (missingDeps.length > 0) {
+		await dialog.showMessageBox({
+			title: "Pip install",
+			type: "info",
+			message: `Installing package(s):\n\n${missingDeps.join(",\n")}`
+		});
+		
+		let error = false;
+		const installs = missingDeps.map(dep => {
+			const out = execSync(`pip install ${dep == "PIL" ? "pillow" : dep}`, { encoding: "utf8" }).trim();
+			if (out.includes("satisfied"))
+				return `${dep}: Already Satisfied`;
+			else if (out.includes("No Matching Distribution")) {
+				error = true;
+				return `${dep}: No Matching Distribution`;
+			} else if (out.includes("ERROR")) {
+				error = true;
+				return `${dep}: Error installing Package`;
+			} else
+				return `${dep}: Installed`;
+		});
+		
+		await dialog.showMessageBox({
+			title: "Pip install",
+			type: "info",
+			message: `${installs.join("\n")}\n\nPlease manually install any failed packages.`
+		});
+		
+		if (error) return app.quit();
 	}
 	
 	const win = new BrowserWindow({
@@ -110,7 +119,7 @@ app.whenReady().then(async () => {
 		}));
 		win.webContents.send("pluginsUpdated", pluginFiles);
 		win.show();
-		console.log(chalk.green("ChatPlays is ready!"));
+		console.log("ChatPlays is ready!");
 	});
 
 	app.on("second-instance", () => {

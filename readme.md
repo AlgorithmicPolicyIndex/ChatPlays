@@ -41,7 +41,7 @@ AND install [Python](https://www.python.org/downloads/)
 
 Edit settings mainly stated inside the [wiki settings](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki/Settings#main-settings), such as your Channel Name.  
 Run `bun run electron`  
-The application will check your Python version, if it's above 3.13.X it will [attempt to install `pydirectinput`, if not already installed](https://github.com/AlgorithmicPolicyIndex/ChatPlays/blob/main/src/index.ts#L52-L74).
+The application will check your Python version, if it's above 3.13.X it will [attempt to install `pydirectinput`, if not already installed](https://github.com/AlgorithmicPolicyIndex/ChatPlays/blob/main/src/index.ts#L37-L87).
 Those are the only requirements to running the application!
 
 I'm looking into make an .exe file to make running this easier and less of a hassle, but for right now, it's working, make a small change and breaking entirely.  

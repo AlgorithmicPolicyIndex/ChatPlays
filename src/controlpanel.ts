@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld("electron", {
 	getSettings: (func: (chatSettings: any) => void) => {
 		ipcRenderer.on("chatSettings", (_evt, chatSettings: any) => func(chatSettings));
 	},
+	getSettingsAsync: async () => await ipcRenderer.invoke("getSettings"),
 	settingsOnLoad: (func: (chatSettings: any) => void) => {
 		ipcRenderer.on("chatSettingsFM", (_evt, chatSettings: any) => func(chatSettings));
 	},

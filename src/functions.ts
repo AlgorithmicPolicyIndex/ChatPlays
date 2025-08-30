@@ -190,6 +190,7 @@ export class ipcManager {
 		ipcMain.on("test", this.test.bind(this));
 		ipcMain.on("closepopup", this.closePopup.bind(this));
 		ipcMain.on("close", this.close.bind(this));
+		ipcMain.handle("getSettings", async () => await getData());
 		
 		watch(path.resolve(__dirname, "..", "frontend", "plugins"), (_eventType, filename) => {
 			if (!filename) return;

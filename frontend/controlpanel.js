@@ -86,7 +86,6 @@ $('.setting').on("change", function() {
 });
 
 window.electron.getSettings(function(settings) {
-	console.log(settings);
 	if (Object.keys(settings).length === 0) {
 		return;
 	}
@@ -108,6 +107,32 @@ window.electron.getSettings(function(settings) {
 		}
 	}
 });
+
+// Fallback: actively fetch settings on load in case the initial IPC event was missed
+(async function() {
+	try {
+		if (!window.electron.getSettingsAsync) return;
+		const settings = await window.electron.getSettingsAsync();
+		if (!settings || Object.keys(settings).length === 0) return;
+		for (const key of Object.keys(settings)) {
+			if (key === "brb") continue;
+			Settings[key] = settings[key];
+			const setting = settings[key];
+			const item = $(`input[name="${key}"], select[name="${key}"]`);
+			if (item.is(':checkbox')) {
+				item.prop('checked', setting);
+				if (key === "enableChat") {
+					const chat = $('.chat');
+					item.prop("checked") ? chat.show() : chat.hide();
+				}
+			} else {
+				item.val(setting);
+			}
+		}
+	} catch (e) {
+		console.error(e);
+	}
+})();
 
 $('input[name="chatSettings"]').on("click", function() {
 	window.electron.createWindow("chatSettings");

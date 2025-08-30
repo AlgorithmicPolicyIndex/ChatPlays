@@ -116,8 +116,8 @@
 			const Note = "- ";
 			Author.text(parsed.Author.length > 28 ? Note + parsed.Author.slice(0, 28) + "..." : Note + parsed.Author);
 		}
-		if (End.text() !== addtime(parsed.Position[1]))
-			End.text(addtime(parsed.Position[1]));
+		if (End.text() !== msToTimeString(parsed.Position[1]))
+			End.text(msToTimeString(parsed.Position[1]));
 		if (img.prop("src") !== parsed.Thumbnail)
 			img.prop("src", parsed.Thumbnail);
 
