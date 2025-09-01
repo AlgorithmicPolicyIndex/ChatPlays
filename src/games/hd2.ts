@@ -121,9 +121,8 @@ const execute = async (message: string) => {
 		await StratagemHandler(Stratagems[stratagem[stratagem.indexOf(message.toLowerCase())] as keyof typeof Stratagems]);
 	}
 }
-const controls = [ Controls, Stratagems ];
-
-export {name, execute, controls}
+export const controls = [ Controls, Stratagems ];
+export {name, execute}
 
 async function StratagemHandler(sequence: string) {
 	const sseq = sequence.split("");
@@ -144,7 +143,7 @@ async function StratagemHandler(sequence: string) {
 		}
 	}
 
-	keyboard.pressKey(Key.LeftControl);
+	await keyboard.pressKey(Key.LeftControl);
 	for (const key of keys) {
 		await delay(50);
 		await keyboard.pressKey(key);

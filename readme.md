@@ -28,6 +28,9 @@ I hope to see what people come up with for features, themes and plugins for the 
       - Look into Twitch and Youtube failure to connect to channel / login (ie: Twitch Connects to the API, but doesn't enter channel)
     - Voice Chat
        - Test input in games, to make sure full message is heard in game.
+  - Linux
+    - TTS (Windows only)
+    - Mouse Movement (ChatPlays)
 
 ### Running
 <sup>Note: The best way to get the most up-to-date code is through the normal download of this Repo. The Releases page is not always update as I'm too busy IRL to be working too much on my projects anymore.</sup>

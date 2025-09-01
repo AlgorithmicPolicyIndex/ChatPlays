@@ -1,45 +1,76 @@
-import { Glob } from "bun";
-import path from "path";
-import * as fs from "fs";
-import { Key } from "@nut-tree-fork/nut-js";  // Import nut.js
+import path from 'path';
+import * as fs from 'fs';
+import {Key} from '@nut-tree-fork/nut-js'; // Import nut.js
 
-const glob = new Glob("**/games/*.ts");
-let text = "# Games";
-const controls = {};
+const dir = path.join(__dirname, "src", "games");
+const files = fs.readdirSync(dir).filter(file => file.endsWith(".ts"));
+type standard = {
+	[key: string]: {
+		Key?: Key;
+		Dir?: string;
+		Amt: number;
+	}
+};
+type stratagem = {
+	[key: string]: { [key: string]: string }
+}
+type Game = {
+	name: string;
+	execute: (message: string) => Promise<void>;
+	controls: [standard | stratagem][];
+};
 
-for await (const cmdPath of glob.scan("src")) {
-  const command = await import(path.join(__dirname, "src/" + cmdPath));
-  
-  controls[command.name] = command.controls;
+class ControlGenerator {
+	private text: { Games: string[], [key: string]: any } = { Games: [] };
+	private games: Game[] = this.getGames();
+	constructor() {
+		this.games.forEach(game => {
+			this.handleControls(game);
+		});
+		this.convertToMarkDown();
+	}
+	
+	convertToMarkDown() {
+		let text = `# Game Shortcuts\n${this.text.Games.join("  \n")}\n\n`;
+		for (const key in this.text) {
+			if (key == "Games") continue;
+
+			text += `# ${key == "hd2" ? `${key}\nNote: Stratagem Codes are: I->Up, K->Down, J->Left, L->Right` : key}\n${this.text[key]}\n`;
+		}
+		fs.writeFileSync("controls.md", text);
+	}
+
+	handleControls(game: Game) {
+		let text: string = "\n";
+		game.controls.forEach((set) => {
+			Object.keys(set).forEach(key => {
+				const setkey = set[key];
+				text += `- ${key}:\n  - ${
+					// Handle Keyboard
+					typeof setkey == "string" ? `Code: \`${setkey}\`` :
+					setkey.Key ? `Key: ${Key[setkey.Key]}, ${
+						setkey.Amt == -1 ? "Hold" :
+						setkey.Amt == 0 ? "Release" :
+						`\`${setkey.Amt}\` Milliseconds`}`
+					: // Handle Mouse
+					setkey.Dir == "left" || setkey.Dir == "right" ? `\`${setkey.Dir}\` click` :
+					setkey.Dir == "toggleRClick" ? "Hold Right Click" :
+					setkey.Dir == "sup" ? "Scroll Up" : setkey.Dir == "sdown" ? "Scroll Down" :
+					!setkey.Dir || !setkey.Key || setkey.Amt ? "Release All Held Keys" :
+					`Move Mouse \`${setkey.Dir} ${setkey.Amt}\` pixels`
+				}  \n`;
+			});
+		});
+		this.text[game.name] = text;
+	}
+	
+	getGames(): Game[] {
+		return files.map((v) => {
+			const module = require(path.join(dir, v));
+			this.text["Games"].push(`[${module.name}](#${module.name})`);
+			return module;
+		});
+	}
 }
 
-for (const key of Object.keys(controls)) {
-  text += `  \n[${key}](#${key})`;
-}
-text += "\n\n### Okay. I'll fix this alright? this is just a bases for now.";
-
-for (const game in controls) {
-  for (const scheme of controls[game]) {
-    // Check if the scheme has a "Key" property and its value is a number
-    const formattedScheme = Object.fromEntries(
-      Object.entries(scheme).map(([key, value]) => {
-        // Check if value has a `Key` property and it is a number
-        if (value && typeof value === 'object' && 'Key' in value && typeof value.Key === 'number') {
-          try {
-            // Map the key code to the corresponding key name using nut.js
-            value.Key = Key[value.Key];
-          } catch (error) {
-            console.error(`Error mapping key code: ${value.Key}`, error);
-          }
-        }
-        return [key, value];
-      })
-    );
-
-    // Use JSON.stringify with indentation
-    const formattedJSON = JSON.stringify(formattedScheme, null, 2);
-    text += `\n\n# ${game}\n\`\`\`json\n${formattedJSON}\n\`\`\``;
-  }
-}
-
-fs.writeFileSync("controls.md", text);
+new ControlGenerator();

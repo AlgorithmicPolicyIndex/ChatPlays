@@ -10,6 +10,7 @@ import {existsSync, readdirSync, watch} from "node:fs";
 import {PythonShell} from 'python-shell';
 import * as fs from 'node:fs';
 import * as nut from "@nut-tree-fork/nut-js";
+import { musicRequest } from "./LinuxMusic";
 const filter = new Filter();
 
 export async function command(message: string, user: any) {
@@ -37,6 +38,7 @@ export async function command(message: string, user: any) {
 			await updateData(data);
 		}, data.playtime * 1_000);
 	case "voice":
+                if (process.platform != "win32") return;
 		if (data.voiceChance < Math.floor(Math.random() * 100) + 1) return;
 		if (data.voiceKey == "") return;
 		if (data.audio == "none") return;
@@ -50,13 +52,6 @@ export async function command(message: string, user: any) {
 			nut.keyboard.releaseKey(key);
 		});
 		return;
-	case "testsub":
-		if (user['username'] !== data.twitchID.toLowerCase() || !chatWindow) return;
-		if (data.popupEvents) {
-			console.log("Popup Events");
-			await (services.getService("OBS") as OBS).newPopup("Test", "API");
-		}
-		chatWindow.webContents.send("subscription", Args[0], Args[1]);
 	}
 }
 
@@ -120,6 +115,7 @@ export class TTS {
 	}
 	
 	listAudioDevices() {
+                if (process.platform != "win32") return;
 		return new Promise((resolve, reject) => {
 			let combinedStdout = '';
 
@@ -149,6 +145,7 @@ export class TTS {
 	}
 
 	async speak(text: string) {
+                if (process.platform != "win32") return;
 		return new Promise<void>((resolve, reject) => {
 			const command = this.baseCommand +
 				`$speak.AudioOutput = foreach ($o in $speak.GetAudioOutputs()) {if ($o.getDescription() -eq '${this.channel}') {$o; break;}}; ` +
@@ -169,7 +166,11 @@ export class TTS {
 }
 
 export class ipcManager {
-	private windows: { [key: string]: BrowserWindow } = {};
+	private windows: {
+		"chatWindow"?: BrowserWindow,
+		"musicWindow"?: BrowserWindow,
+		"chatSettings"?: BrowserWindow
+	} = {};
 	private Thumbnail: string | null = null;
 	private mainWindow: BrowserWindow;
 	
@@ -248,18 +249,19 @@ export class ipcManager {
 		const data = await getData();
 		Object.assign(data, settings);
 		Object.values(this.windows).forEach((win) => {
+			if (win.isDestroyed()) return;
 			win.webContents.send("chatSettings", data);	
 		});
 		this.mainWindow.webContents.send("chatSettings", data);
 		return await updateData(data);
 	}
 	async sendID(_evt: any, id: string, name: string) {
-		if (this.windows["ChatWindow"])
-			this.windows["ChatWindow"].webContents.send("sendID", id, name);
+		if (this.windows["chatWindow"])
+			this.windows["chatWindow"].webContents.send("sendID", id, name);
 		this.mainWindow.webContents.send("sendID", id, name);
 	}
 	async handlePlugin(_evt: any, method: "load" | "unload", plugin: string) {
-		const win = this.windows["ChatWindow"];
+		const win = this.windows["chatWindow"];
 		if (!win) return;
 		if (method == "load")
 			win.webContents.send("loadPlugin", plugin);
@@ -297,7 +299,7 @@ export class ipcManager {
 	}
 	async startstop(_evt: any, path: string | null, name: string) {
 		const settings = await getData();
-		const win = this.windows["ChatWindow"];
+		const win = this.windows["chatWindow"];
 		if (!path) {
 			if (win)
 				win.webContents.send("updateGame", "");
@@ -312,27 +314,33 @@ export class ipcManager {
 	}
 	async MusicRequest() {
 		const musicWindow = BrowserWindow.getAllWindows().find((w) => w.title === "ChatPlays - Music");
-		await PythonShell.run(path.join(__dirname, "..", "python", "music.py"), {
-			pythonPath: "python",
-			pythonOptions: ["-u"],
-			encoding: "utf-8",
-		}).then((data: string[]) => {
-			if (data[0] === "np")
-				return musicWindow?.webContents.send("getMusic", "np");
-
-			const parsed = JSON.parse(data[0]);
-			if (parsed.Thumbnail) {
-				if (this.Thumbnail === null) this.Thumbnail = parsed.Thumbnail;
-				if (this.Thumbnail !== parsed.Thumbnail) {
-					fs.rm(this.Thumbnail as string, () => {return;});
-					this.Thumbnail = parsed.Thumbnail;
+		if (process.platform === "linux") {
+			const data = await musicRequest();
+			if (data == "np") return musicWindow?.webContents.send("getMusic", "np");
+			musicWindow?.webContents.send("getMusic", data);
+		} else {
+			await PythonShell.run(path.join(__dirname, "..", "python", "music.py"), {
+				pythonPath: "python",
+				pythonOptions: ["-u"],
+				encoding: "utf-8",
+			}).then((data: string[]) => {
+				if (data[0] === "np")
+					return musicWindow?.webContents.send("getMusic", "np");
+	
+				const parsed = JSON.parse(data[0]);
+				if (parsed.Thumbnail) {
+					if (this.Thumbnail === null) this.Thumbnail = parsed.Thumbnail;
+					if (this.Thumbnail !== parsed.Thumbnail) {
+						fs.rm(this.Thumbnail as string, () => {return;});
+						this.Thumbnail = parsed.Thumbnail;
+					}
 				}
-			}
-
-			musicWindow?.webContents.send("getMusic", parsed);
-		});
+	
+				musicWindow?.webContents.send("getMusic", parsed);
+			});
+		}
 	}
-	async createWindow(_evt: any, type: string) {
+	async createWindow(_evt: any, type: "chatWindow" | "chatSettings" | "musicWindow") {
 		const settings = await getData();
 		const mainBounds = this.mainWindow.getBounds();
 		const [x, y] = [
@@ -350,10 +358,14 @@ export class ipcManager {
 			}
 		});
 		const window = this.windows[type];
+
 		
 		switch (type) {
-		case "chatSettings":
-			if (window) {
+			case "chatSettings":
+			// Precaution for chatSettings
+			if (window?.isDestroyed()) {
+				delete this.windows[type];
+			} else if (window) {
 				newWindow.close();
 				window.setPosition(x, y);
 				window.focus();
@@ -374,7 +386,7 @@ export class ipcManager {
 			if (window) {
 				newWindow.close();
 				window.close();
-				delete this.windows["ChatWindow"];
+				delete this.windows[type];
 				return;
 			}
 			newWindow.setSize(parseInt(settings.chatWidth), parseInt(settings.chatHeight));
@@ -388,7 +400,7 @@ export class ipcManager {
 			if (window) {
 				newWindow.close();
 				window.close();
-				delete this.windows["MusicWindow"];
+				delete this.windows[type];
 				return;
 			}
 			newWindow.setSize(600, 200);

@@ -113,7 +113,7 @@ class OBS extends Service<OBSWebSocket, "OBS"> {
 		if (!this.connected || !this.client) return { success: false };
 		try {
 			await this.deleteSources();
-			await this.client.disconnect().then(() => {
+			this.client.disconnect().then(() => {
 				this.connected = false;
 			});
 			return { success: true };
@@ -169,19 +169,25 @@ class OBS extends Service<OBSWebSocket, "OBS"> {
 				}
 			});
 
-			await win.loadFile(`../frontend/Chat/themes/${settings.theme}/popup.html`);
+			await win.loadFile(path.join(__dirname, "..", "frontend", "Chat", "themes", settings.theme, "popup.html"));
 
 			win.on("ready-to-show", () =>
 				win.webContents.send("UpdateText", user, gifter)
 			);
 			this.popups.set(name, win);
 
-			await this.createSource(name, "window_capture", {
-				window: `${name}:Chrome_WidgetWin_1:electron.exe`
-			});
+			if (process.platform == "linux") {
+				await this.createSource(name, "xcomposite_input", {
+					capture_window: `${win.getNativeWindowHandle().readUInt32LE().toString()}\r\n${name}\r\nchatplays`
+				});
+			} else {
+				await this.createSource(name, "window_capture", {
+					window: `${name}:Chrome_WidgetWin_1:electron.exe`
+				});
+			}
 		});
 	}
-	async createSource(inputName: string, inputKind: string, inputSettings: { window: string }) {
+	async createSource(inputName: string, inputKind: string, inputSettings: { window?: string, capture_window?: string }) {
 		const settings = await getData();
 		const t = await this.client.call("CreateInput", {
 			sceneUuid: (await this.client.call("GetCurrentProgramScene")).sceneUuid,
@@ -217,6 +223,7 @@ class OBS extends Service<OBSWebSocket, "OBS"> {
 	
 	async deleteSources() {
 		for (const [K, W] of this.popups) {
+			W.close();
 			this.popups.delete(K);
 			await this.client.call("RemoveInput", { inputName: W.title });
 		}

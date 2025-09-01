@@ -6,6 +6,7 @@ import * as fs from "node:fs";
 import {ipcManager, TTS} from "./functions";
 import {runTwitch, runYouTube} from './ChatService';
 import {execSync} from "node:child_process";
+
 function getPythonVersion(pythonCmd: string) {
 	try {
 		const versionOutput = execSync(`${pythonCmd} --version`, { encoding: 'utf-8' }).trim();
@@ -42,16 +43,18 @@ app.whenReady().then(async () => {
 		return;
 	}
 
-	const targetVersion = { major: 3, minor: 13 };
+	const targetVersion = { major: 3, minor: 12 };
 	if (isVersionLessThan(pythonVersion, targetVersion)) {
-		dialog.showErrorBox("Python Version Too Low", `Python 3.13.X or higher is required. Your version is ${pythonVersion.major}.${pythonVersion.minor}.${pythonVersion.patch}. Please update Python.`);
+		dialog.showErrorBox("Python Version Too Low", `Python 3.12.X or higher is required. Your version is ${pythonVersion.major}.${pythonVersion.minor}.${pythonVersion.patch}. Please update Python.`);
 		app.quit();
 		return;
 	}
 
-	const pyDep = ["pydirectinput", "winsdk", "asyncio", "PIL"];
+	
+	const pyDep = ["pydirectinput", "asyncio", "PIL"];
+	if (process.platform == "win32") pyDep.push("winsdk");
 	const missingDeps = pyDep.filter(dep => {
-		const pyPack = execSync(`python -c "import importlib.util; print(True if importlib.util.find_spec('${dep}') else False)"`, { encoding: "utf8" }).trim();
+		const pyPack = execSync(`${pythonCmd} -c "import importlib.util; print(True if importlib.util.find_spec('${dep}') else False)"`, { encoding: "utf8" }).trim();
 		return pyPack !== "True";
 	});
 	

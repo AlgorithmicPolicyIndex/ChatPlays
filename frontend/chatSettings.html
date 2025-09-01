@@ -36,12 +36,10 @@
 				settings[name] = item.val();
 			}
 		});
-		await new Promise(resolve => {
-			window.electron.sendSettings(settings);
-			resolve();		
-		});
+		window.electron.sendSettings(settings);
 		return window.close();
 	});
+
 	window.electron.monitors(function(Monitors) {
 		Monitors.forEach((name, index) => {
 			$('select[name="monitor"]').append(
