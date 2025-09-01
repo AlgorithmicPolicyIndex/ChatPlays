@@ -33,7 +33,7 @@ const Controls = {
 	interact: { Key: Key.E, Amt: 2000 },
 	zoomin: { Dir: "sup", Amt: 20 },
 	zoomout: { Dir: "sdown", Amt: 20 },
-	// ! I do not like this nomenclature.
+	
 	slot1: { Key: Key.Num1, Amt: 500 },
 	slot2: { Key: Key.Num2, Amt: 500 },
 	slot3: { Key: Key.Num3, Amt: 500 },

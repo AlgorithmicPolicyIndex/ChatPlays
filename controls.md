@@ -8,31 +8,31 @@
 # destiny2
 
 - lightleft:
-  - `left` click  
+  - Move Mouse `left 100` pixels  
 - mediumleft:
-  - `left` click  
+  - Move Mouse `left 500` pixels  
 - largeleft:
-  - `left` click  
+  - Move Mouse `left 1000` pixels  
 - lightright:
-  - `right` click  
+  - Move Mouse `right 100` pixels  
 - mediumright:
-  - `right` click  
+  - Move Mouse `right 500` pixels  
 - largeright:
-  - `right` click  
+  - Move Mouse `right 1000` pixels  
 - lightup:
-  - Release All Held Keys  
+  - Move Mouse `up 100` pixels  
 - mediumup:
-  - Release All Held Keys  
+  - Move Mouse `up 350` pixels  
 - largeup:
-  - Release All Held Keys  
+  - Move Mouse `up 625` pixels  
 - lightdown:
-  - Release All Held Keys  
+  - Move Mouse `down 100` pixels  
 - mediumdown:
-  - Release All Held Keys  
+  - Move Mouse `down 350` pixels  
 - largedown:
-  - Release All Held Keys  
+  - Move Mouse `down 625` pixels  
 - shoot:
-  - Release All Held Keys  
+  - Left click  
 - aim:
   - Hold Right Click  
 - grenade:
@@ -114,11 +114,11 @@ Note: Stratagem Codes are: I->Up, K->Down, J->Left, L->Right
 - power:
   - Key: Num3, `100` Milliseconds  
 - fire:
-  - Release All Held Keys  
+  - Left click  
 - burst:
-  - Release All Held Keys  
+  - Left click  
 - quafire:
-  - Release All Held Keys  
+  - Left click  
 - reload:
   - Key: R, `50` Milliseconds  
 - grenade:
@@ -126,21 +126,21 @@ Note: Stratagem Codes are: I->Up, K->Down, J->Left, L->Right
 - stim:
   - Key: V, `100` Milliseconds  
 - lookup:
-  - Release All Held Keys  
+  - Move Mouse `up 500` pixels  
 - lookdown:
-  - Release All Held Keys  
+  - Move Mouse `down 500` pixels  
 - lookright:
-  - `right` click  
+  - Move Mouse `right 500` pixels  
 - lookleft:
-  - `left` click  
+  - Move Mouse `left 500` pixels  
 - lightlookup:
-  - Release All Held Keys  
+  - Move Mouse `up 100` pixels  
 - lightlookdown:
-  - Release All Held Keys  
+  - Move Mouse `down 100` pixels  
 - lightlookright:
-  - `right` click  
+  - Move Mouse `right 100` pixels  
 - lightlookleft:
-  - `left` click  
+  - Move Mouse `left 100` pixels  
 - mg:
   - Code: `kjkil`  
 - amrifle:
@@ -259,31 +259,31 @@ Note: Stratagem Codes are: I->Up, K->Down, J->Left, L->Right
 # squad
 
 - lightleft:
-  - `left` click  
+  - Move Mouse `left 100` pixels  
 - mediumleft:
-  - `left` click  
+  - Move Mouse `left 500` pixels  
 - largeleft:
-  - `left` click  
+  - Move Mouse `left 1000` pixels  
 - lightright:
-  - `right` click  
+  - Move Mouse `right 100` pixels  
 - mediumright:
-  - `right` click  
+  - Move Mouse `right 500` pixels  
 - largeright:
-  - `right` click  
+  - Move Mouse `right 1000` pixels  
 - lightup:
-  - Release All Held Keys  
+  - Move Mouse `up 100` pixels  
 - mediumup:
-  - Release All Held Keys  
+  - Move Mouse `up 350` pixels  
 - largeup:
-  - Release All Held Keys  
+  - Move Mouse `up 625` pixels  
 - lightdown:
-  - Release All Held Keys  
+  - Move Mouse `down 100` pixels  
 - mediumdown:
-  - Release All Held Keys  
+  - Move Mouse `down 350` pixels  
 - largedown:
-  - Release All Held Keys  
+  - Move Mouse `down 625` pixels  
 - shoot:
-  - Release All Held Keys  
+  - Left click  
 - aim:
   - Hold Right Click  
 - step:
@@ -312,31 +312,31 @@ Note: Stratagem Codes are: I->Up, K->Down, J->Left, L->Right
 # TFD
 
 - lightleft:
-  - `left` click  
+  - Move Mouse `left 100` pixels  
 - mediumleft:
-  - `left` click  
+  - Move Mouse `left 500` pixels  
 - largeleft:
-  - `left` click  
+  - Move Mouse `left 1000` pixels  
 - lightright:
-  - `right` click  
+  - Move Mouse `right 100` pixels  
 - mediumright:
-  - `right` click  
+  - Move Mouse `right 500` pixels  
 - largeright:
-  - `right` click  
+  - Move Mouse `right 1000` pixels  
 - lightup:
-  - Release All Held Keys  
+  - Move Mouse `up 100` pixels  
 - mediumup:
-  - Release All Held Keys  
+  - Move Mouse `up 350` pixels  
 - largeup:
-  - Release All Held Keys  
+  - Move Mouse `up 625` pixels  
 - lightdown:
-  - Release All Held Keys  
+  - Move Mouse `down 100` pixels  
 - mediumdown:
-  - Release All Held Keys  
+  - Move Mouse `down 350` pixels  
 - largedown:
-  - Release All Held Keys  
+  - Move Mouse `down 625` pixels  
 - shoot:
-  - Release All Held Keys  
+  - Left click  
 - aim:
   - Hold Right Click  
 - reload:
@@ -389,31 +389,31 @@ Note: Stratagem Codes are: I->Up, K->Down, J->Left, L->Right
 # THCOTW
 
 - lightleft:
-  - `left` click  
+  - Move Mouse `left 100` pixels  
 - mediumleft:
-  - `left` click  
+  - Move Mouse `left 500` pixels  
 - largeleft:
-  - `left` click  
+  - Move Mouse `left 1000` pixels  
 - lightright:
-  - `right` click  
+  - Move Mouse `right 100` pixels  
 - mediumright:
-  - `right` click  
+  - Move Mouse `right 500` pixels  
 - largeright:
-  - `right` click  
+  - Move Mouse `right 1000` pixels  
 - lightup:
-  - Release All Held Keys  
+  - Move Mouse `up 100` pixels  
 - mediumup:
-  - Release All Held Keys  
+  - Move Mouse `up 350` pixels  
 - largeup:
-  - Release All Held Keys  
+  - Move Mouse `up 625` pixels  
 - lightdown:
-  - Release All Held Keys  
+  - Move Mouse `down 100` pixels  
 - mediumdown:
-  - Release All Held Keys  
+  - Move Mouse `down 350` pixels  
 - largedown:
-  - Release All Held Keys  
+  - Move Mouse `down 625` pixels  
 - shoot:
-  - Release All Held Keys  
+  - Left click  
 - aim:
   - Hold Right Click  
 - phone:
@@ -479,4 +479,5 @@ Note: Stratagem Codes are: I->Up, K->Down, J->Left, L->Right
 - sprint:
   - Key: CapsLock, Hold  
 - stop:
-  - Release All Held Keys
+  - Release All Held Keys  
+

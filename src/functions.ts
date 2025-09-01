@@ -4,7 +4,7 @@ import extractUrls from "extract-urls";
 import childProcess from 'child_process';
 import {getData, updateData} from "./JSON/db";
 import {services} from './index';
-import {OBS, serviceData, serviceNames} from './Services';
+import {serviceData, serviceNames} from './Services';
 import path from "path";
 import {existsSync, readdirSync, watch} from "node:fs";
 import {PythonShell} from 'python-shell';

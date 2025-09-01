@@ -45,6 +45,7 @@ class ControlGenerator {
 		game.controls.forEach((set) => {
 			Object.keys(set).forEach(key => {
 				const setkey = set[key];
+				if (!setkey.Dir || !setkey.Key)
 				text += `- ${key}:\n  - ${
 					// Handle Keyboard
 					typeof setkey == "string" ? `Code: \`${setkey}\`` :
@@ -53,10 +54,10 @@ class ControlGenerator {
 						setkey.Amt == 0 ? "Release" :
 						`\`${setkey.Amt}\` Milliseconds`}`
 					: // Handle Mouse
-					setkey.Dir == "left" || setkey.Dir == "right" ? `\`${setkey.Dir}\` click` :
+					setkey.Dir == "lclick" ? "Left click" : setkey.Dir == "rclick" ? `Right click` :
 					setkey.Dir == "toggleRClick" ? "Hold Right Click" :
 					setkey.Dir == "sup" ? "Scroll Up" : setkey.Dir == "sdown" ? "Scroll Down" :
-					!setkey.Dir || !setkey.Key || setkey.Amt ? "Release All Held Keys" :
+					setkey.Amt !== undefined && !setkey.Dir && !setkey.Key ? "Release All Held Keys" :
 					`Move Mouse \`${setkey.Dir} ${setkey.Amt}\` pixels`
 				}  \n`;
 			});
