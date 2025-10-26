@@ -1,13 +1,15 @@
 import dbus, {ProxyObject, sessionBus, Variant } from "dbus-next";
 
-interface NowPlaying {
+export interface NowPlaying {
 	Author: string;
 	Title: string,
 	Position: ["LIVE"] | [number, number],
 	Thumbnail?: string;
-};
+	audioURL?: string;
+}
 type PlaybackStatus = "Playing" | "Paused" | "Stopped";
 
+// Linux Music
 async function listNames(bus: dbus.MessageBus): Promise<string[]> {
 	const obj = await bus.getProxyObject("org.freedesktop.DBus", "/org/freedesktop/DBus");
 	const iface = obj.getInterface("org.freedesktop.DBus") as any;

@@ -21,13 +21,8 @@ I hope to see what people come up with for features, themes and plugins for the 
       - Subscribe / Membership Event (not a part of the chat module I use)
   - OVERALL
     - Music
-      - Auto switch theme
-      - Make WinXP Theme
-    - Services
-      - Handle incorrect login information for OBS
-      - Look into Twitch and Youtube failure to connect to channel / login (ie: Twitch Connects to the API, but doesn't enter channel)
-    - Voice Chat
-       - Test input in games, to make sure full message is heard in game.
+      - Auto Switch theme | currently requires Music panel to be restarted.
+      - Make the WebAmp actually "play" | Only useful for song name for now.
   - Linux
     - TTS (Windows only)
     - Mouse Movement (ChatPlays)

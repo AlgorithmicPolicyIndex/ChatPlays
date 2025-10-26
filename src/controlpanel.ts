@@ -1,4 +1,5 @@
 ﻿import {contextBridge, ipcRenderer} from "electron";
+import {NowPlaying} from "./Music";
 
 contextBridge.exposeInMainWorld("electron", {
 	handleService: async (service: "YouTube" | "Twitch" | "OBS", data: any) => {
@@ -56,7 +57,7 @@ contextBridge.exposeInMainWorld("electron", {
 	monitors: (func: (Monitors: string[]) => void) => {
 		ipcRenderer.on("monitors", (_evt, monitors) => func(monitors));
 	},
-	getMusic: (func: (music: {Position: number[], Title: string, Author: string, Thumbnail: string} | "np") => void) => {
+	getMusic: (func: (music: NowPlaying | "np") => void) => {
 		ipcRenderer.on("getMusic", (_evt, music) => func(music));
 	},
 	requestMusic: () => ipcRenderer.send("requestMusic"),

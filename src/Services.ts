@@ -29,6 +29,7 @@ export abstract class Service<service, Data extends serviceNames> {
 
 class Twitch extends Service<Client, "Twitch"> {
 	async connect(data: Data): Promise<{ success: boolean }> {
+		if (!data.Channel) return { success: false };
 		this.client = new Client({
 			connection: {
 				reconnect: true,
@@ -36,16 +37,23 @@ class Twitch extends Service<Client, "Twitch"> {
 			},
 			channels: [ data.Channel ]
 		});
-		if (!data.Channel) return { success: false };
 		
-		try {
-			await this.client.connect();
-			this.connected = true;
-			return { success: true };
-		} catch (err) {
-			console.error(err);
-			return { success: false };
-		}
+		return new Promise(resolve => {
+			this.client?.connect();
+			this.client?.on("join", (_c, _u, self) => {
+				if (self) {
+					this.connected = true;
+					resolve({ success: true });
+				}
+			});
+
+			setTimeout(async () => {
+				if (!this.connected) {
+					await this.disconnect();
+					resolve({ success: false });
+				}
+			}, 5000);
+		});
 	}
 	async disconnect(): Promise<{ success: boolean }> {
 		if (!this.connected || !this.client) return { success: false };
@@ -253,7 +261,9 @@ class ServiceManager extends (EventEmitter as {
 
 		if (!service || service.connected) return { success: false };
 		
-		await service.connect(data);
+		const s = await service.connect(data);
+		if (!s.success) return { success: false }
+		
 		this.emit("ServiceConnected", name, service);
 		return { success: true };
 	}

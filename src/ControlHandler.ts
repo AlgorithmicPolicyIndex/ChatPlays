@@ -1,5 +1,5 @@
 import * as nut from "@nut-tree-fork/nut-js";
-import { PythonShell } from "python-shell";
+// import { PythonShell } from "python-shell";
 
 export function getControls(control: { Dir?: string, Key?: nut.Key, Amt: number }) {
 	if (Object.keys(control).includes("Dir")) {
@@ -14,6 +14,7 @@ export function getControls(control: { Dir?: string, Key?: nut.Key, Amt: number 
 let aiming = 0;
 
 async function MouseHandler(control: { Dir: string, Amt: number}) {
+	const MousePos = await nut.mouse.getPosition();
 	switch (control.Dir) {
 	case "lclick":
 		await nut.mouse.pressButton(nut.Button.LEFT);
@@ -42,12 +43,25 @@ async function MouseHandler(control: { Dir: string, Amt: number}) {
 	case "sdown":
 		await nut.mouse.scrollDown(control.Amt);
 		return;
-	default: // ! This is used for the hacky python handler, so I can just have on instance of it
+	case "up":
+		// X: 0, Y: 0 is Top Left of the screen. Positive Y moves right, Positive X moves down
+		await nut.mouse.move(nut.straightTo(new nut.Point(MousePos.x, MousePos.y - control.Amt)));
+		return;
+	case "down":
+		await nut.mouse.move(nut.straightTo(new nut.Point(MousePos.x, MousePos.y + control.Amt)));
+		return;
+	case "left":
+		await nut.mouse.move(nut.straightTo(new nut.Point(MousePos.x - control.Amt, MousePos.y)));
+		return;
+	case "right":
+		await nut.mouse.move(nut.straightTo(new nut.Point(MousePos.y + control.Amt, MousePos.y)));
+		return;
+	// default: // ! This is used for the hacky python handler, so I can just have on instance of it
 		// ! This handles the up, down, left, right movements of the mouse
 		// ! I'm doing this, because of the way the offset works in PythonDirectInput.
 		// ! Nut.Js and ultimately Robot.js have a position issue, where it doesn't take note of snap in games. which has a jarring/null effect to the camera movement.
-		await PythonShell.run("python/mouse.py", { args: [control.Dir, `${control.Amt}`]});
-		return;
+		// await PythonShell.run("python/mouse.py", { args: [control.Dir, `${control.Amt}`]});
+		// return;
 	}
 }
 

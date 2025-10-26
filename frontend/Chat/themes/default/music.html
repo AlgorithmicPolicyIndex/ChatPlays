@@ -32,7 +32,7 @@
         top: -24px;
         position: absolute;
         left: 184px;
-        width: 50%;
+        width: 55%;
         -webkit-app-region: drag;
     }
     .Author {
@@ -82,9 +82,9 @@
 		return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 	}
 
-	setInterval(() => {
-		window.electron.requestMusic();
-	}, 1500);
+    setInterval(() => {
+        window.electron.requestMusic();
+    }, 1500);
 
 	let displayedTime, lastReport;
 

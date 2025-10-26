@@ -4,7 +4,55 @@
 	<meta charset="UTF-8">
 </head>
 <body>
-
+    <div id="winamp" style="height: 100vh;"></div>
 </body>
+<script type="module">
+    import Webamp from "https://unpkg.com/webamp@^2/lazy";
+    const webamp = new Webamp({
+        windowLayout: {
+            main: {
+                position: { top: 0, left: 0 },
+                shadeMode: false,
+                closed: false
+            },
+        },
+        enableDoubleSizeMode: true,
+    });
+
+    setInterval(() => {
+            window.electron.requestMusic();
+    }, 1500);
+
+    webamp.renderWhenReady(document.getElementById("winamp")).then(() => {
+        // Initial Grab
+        window.electron.requestMusic();
+
+        window.electron.getMusic(parsed => {
+            if (parsed === "np") return webamp.pause();
+            const store = webamp.store;
+            const state = store.getState();
+            if (state.playlist.currentTrack !== null && parsed.Title === state.tracks[state.playlist.currentTrack].title)
+                return;
+
+            webamp.appendTracks([{
+                url: "",
+                defaultName: `${parsed.Author} - ${parsed.Title}`,
+                metaData: {
+                    artist: parsed.Author,
+                    title: parsed.Title,
+                },
+                duration: Math.ceil(parsed.Position[1]/1000),
+            }]);
+            webamp.nextTrack();
+            webamp.play();
+        });
+    });
+</script>
+<style>
+    html, body, #winamp {
+        -webkit-app-region: drag;
+        overflow: hidden;
+    }
+</style>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </html>

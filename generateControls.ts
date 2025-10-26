@@ -44,8 +44,9 @@ class ControlGenerator {
 		let text: string = "\n";
 		game.controls.forEach((set) => {
 			Object.keys(set).forEach(key => {
-				const setkey = set[key];
-				if (!setkey.Dir || !setkey.Key)
+				const setkey = set[key as keyof [standard | stratagem]];
+                if ()
+
 				text += `- ${key}:\n  - ${
 					// Handle Keyboard
 					typeof setkey == "string" ? `Code: \`${setkey}\`` :

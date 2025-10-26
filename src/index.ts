@@ -30,11 +30,12 @@ function isVersionLessThan(version: {major: number, minor: number}, target: { ma
 }
 
 // * Electron
+app.commandLine.appendSwitch('disable-features', 'MediaSessionService');
 app.whenReady().then(async () => {
 	if (!await import("electron-squirrel-startup")) app.quit();
 	const lock = app.requestSingleInstanceLock();
 	if (!lock) return app.quit();
-	
+
 	const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
 	const pythonVersion = getPythonVersion(pythonCmd);
 	if (!pythonVersion) {
@@ -50,43 +51,36 @@ app.whenReady().then(async () => {
 		return;
 	}
 
-	
-	const pyDep = ["pydirectinput", "asyncio", "PIL"];
-	if (process.platform == "win32") pyDep.push("winsdk");
+	const pyDep = ["pydirectinput", "asyncio"];
 	const missingDeps = pyDep.filter(dep => {
 		const pyPack = execSync(`${pythonCmd} -c "import importlib.util; print(True if importlib.util.find_spec('${dep}') else False)"`, { encoding: "utf8" }).trim();
 		return pyPack !== "True";
 	});
-	
+
 	if (missingDeps.length > 0) {
 		await dialog.showMessageBox({
 			title: "Pip install",
 			type: "info",
 			message: `Installing package(s):\n\n${missingDeps.join(",\n")}`
 		});
-		
-		let error = false;
+
 		const installs = missingDeps.map(dep => {
 			const out = execSync(`pip install ${dep == "PIL" ? "pillow" : dep}`, { encoding: "utf8" }).trim();
 			if (out.includes("satisfied"))
 				return `${dep}: Already Satisfied`;
 			else if (out.includes("No Matching Distribution")) {
-				error = true;
 				return `${dep}: No Matching Distribution`;
-			} else if (out.includes("ERROR")) {
-				error = true;
+			} else if (out.includes("Failed")) {
 				return `${dep}: Error installing Package`;
 			} else
 				return `${dep}: Installed`;
 		});
-		
+
 		await dialog.showMessageBox({
 			title: "Pip install",
 			type: "info",
 			message: `${installs.join("\n")}\n\nPlease manually install any failed packages.`
 		});
-		
-		if (error) return app.quit();
 	}
 	
 	const win = new BrowserWindow({

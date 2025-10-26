@@ -26,11 +26,10 @@
 	"OBSPASS": "",
 	"audio": "none",
 	"voiceKey": "L",
-	"voiceChance": "1"
+	"voiceChance": "1",
+    "usePython": false,
 };
 
-let Enabled = [];
-let Disabled = [];
 $('.close').on('click', function() {
 	// Make sure Database has all current updated settings on closure
 	$('.setting').each(function() {
@@ -81,8 +80,8 @@ $('.setting').on("change", function() {
 	} else {
 		Settings[name] = item.val();
 	}
-	
-	return window.electron.UpdateSettings(Settings);
+
+    return window.electron.UpdateSettings(Settings);
 });
 
 window.electron.getSettings(function(settings) {
@@ -105,6 +104,7 @@ window.electron.getSettings(function(settings) {
 		} else {
 			item.val(setting);
 		}
+
 	}
 });
 

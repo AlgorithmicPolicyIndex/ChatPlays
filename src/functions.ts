@@ -7,10 +7,12 @@ import {services} from './index';
 import {serviceData, serviceNames} from './Services';
 import path from "path";
 import {existsSync, readdirSync, watch} from "node:fs";
-import {PythonShell} from 'python-shell';
 import * as fs from 'node:fs';
 import * as nut from "@nut-tree-fork/nut-js";
-import { musicRequest } from "./LinuxMusic";
+import {musicRequest} from "./Music";
+import { Worker } from "worker_threads";
+import {PythonShell} from "python-shell";
+import * as os from "node:os";
 const filter = new Filter();
 
 export async function command(message: string, user: any) {
@@ -165,6 +167,7 @@ export class TTS {
 	}
 }
 
+let worker: Worker | null = null;
 export class ipcManager {
 	private windows: {
 		"chatWindow"?: BrowserWindow,
@@ -277,6 +280,10 @@ export class ipcManager {
 	}
 	async close(_evt: any, settings: any) {
 		try {
+			fs.rm(path.join(os.tmpdir(), "ChatPlays"), {recursive: true, force: true}, (err) => {
+				if (err) throw err;
+			});
+
 			const data = await getData();
 			Object.assign(data, settings);
 			await updateData(data);
@@ -313,31 +320,39 @@ export class ipcManager {
 		await updateData(settings);
 	}
 	async MusicRequest() {
-		const musicWindow = BrowserWindow.getAllWindows().find((w) => w.title === "ChatPlays - Music");
-		if (process.platform === "linux") {
-			const data = await musicRequest();
-			if (data == "np") return musicWindow?.webContents.send("getMusic", "np");
-			musicWindow?.webContents.send("getMusic", data);
-		} else {
-			await PythonShell.run(path.join(__dirname, "..", "python", "music.py"), {
-				pythonPath: "python",
-				pythonOptions: ["-u"],
-				encoding: "utf-8",
-			}).then((data: string[]) => {
-				if (data[0] === "np")
-					return musicWindow?.webContents.send("getMusic", "np");
-	
-				const parsed = JSON.parse(data[0]);
-				if (parsed.Thumbnail) {
-					if (this.Thumbnail === null) this.Thumbnail = parsed.Thumbnail;
-					if (this.Thumbnail !== parsed.Thumbnail) {
-						fs.rm(this.Thumbnail as string, () => {return;});
-						this.Thumbnail = parsed.Thumbnail;
+		const musicWindow = this.windows["musicWindow"];
+		if (!musicWindow) return;
+
+		try {
+			if (process.platform === "linux") {
+				const data = await musicRequest();
+				if (data == "np") return musicWindow.webContents.send("getMusic", "np");
+				musicWindow.webContents.send("getMusic", data);
+			} else {
+				if (!(await getData()).usePython) return fetchMedia(musicWindow);
+
+				await PythonShell.run(path.join(__dirname, "..", "python", "music.py"), {
+					pythonPath: "python",
+					pythonOptions: ["-u"],
+					encoding: "utf-8",
+				}).then((data: string[]) => {
+					if (data[0] === "np")
+						return musicWindow?.webContents.send("getMusic", "np");
+
+					const parsed = JSON.parse(data[0]);
+					if (parsed.Thumbnail) {
+						if (this.Thumbnail === null) this.Thumbnail = parsed.Thumbnail;
+						if (this.Thumbnail !== parsed.Thumbnail) {
+							fs.rm(this.Thumbnail as string, () => {return;});
+							this.Thumbnail = parsed.Thumbnail;
+						}
 					}
-				}
-	
-				musicWindow?.webContents.send("getMusic", parsed);
-			});
+
+					musicWindow?.webContents.send("getMusic", parsed);
+				});
+			}
+		} catch (e) {
+			console.error("Music Request Died", e);
 		}
 	}
 	async createWindow(_evt: any, type: "chatWindow" | "chatSettings" | "musicWindow") {
@@ -358,7 +373,6 @@ export class ipcManager {
 			}
 		});
 		const window = this.windows[type];
-
 		
 		switch (type) {
 			case "chatSettings":
@@ -401,14 +415,23 @@ export class ipcManager {
 				newWindow.close();
 				window.close();
 				delete this.windows[type];
+				worker?.terminate();
+				worker = null;
 				return;
 			}
-			newWindow.setSize(600, 200);
-			newWindow.setResizable(false);
+
+
 			newWindow.title = "ChatPlays - Music";
-			// await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "Chat", settings.theme, "music.html"));
-			await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "Chat", "themes", "default", "music.html"));
-			newWindow.show();
+			await newWindow.loadFile(path.resolve(__dirname, "..", "frontend", "Chat", "themes", settings.theme, "music.html"));
+			newWindow.once("ready-to-show", function() {
+				const [w, h] = settings.theme === "winxp" ? [550, 232] : [600, 200];
+				newWindow.setSize(w, h);
+				newWindow.setBounds({ x, y, width: w, height: h });
+
+				newWindow.setResizable(false);
+				newWindow.webContents.send("chatSettings", settings);
+				newWindow.show();
+			});
 			break;
 		}
 
@@ -416,3 +439,99 @@ export class ipcManager {
 		return;
 	}
 }
+
+// let innertube: Innertube;
+
+function fetchMedia(musicWindow: BrowserWindow) {
+	if (!worker) {
+		worker = new Worker(path.join(__dirname, 'SMTCWorker.js'));
+
+		worker.on('message', async (msg: any) => {
+			// const mp3 = path.join(__dirname, "silence.mp3");
+			// const args = ["-t", msg.result.Position[1], "-i", mp3, "-acodec", "copy", "y", mp3];
+			// const ffmpeg = spawn(ffmpegPath!, args);
+			// ffmpeg.stderr.on("data", (d) => process.stdout.write(d.toString()));
+			// ffmpeg.on("close", (code) => {
+			// 	if (code === 0) return;
+			// 	else throw new Error(`ffmpeg exited with code ${code}`);
+			// });
+
+			switch (msg.type) {
+				case 'media':
+					musicWindow.webContents.send("getMusic", msg.result);
+					break;
+				case 'np':
+					musicWindow.webContents.send("getMusic", "np");
+					break;
+				case 'error':
+					console.error("Worker error:", msg.error);
+					break;
+			}
+		});
+
+		worker.on('error', (err: any) => {
+			console.error("Worker thread crashed:", err);
+		});
+
+		worker.on('exit', (code: any) => {
+			if (code !== 0) {
+				console.error(`Worker stopped unexpectedly with code ${code}`);
+			}
+		});
+	}
+
+	// Send the request
+	worker.postMessage('getCurrentMedia');
+}
+
+// async function ensureInnertube() {
+// 	if (!innertube) innertube = await Innertube.create({
+// 		user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+// 		client_type: ClientType.WEB,
+// 		retrieve_player: true,
+// 		device_category: "desktop",
+// 	});
+// 	return innertube;
+// }
+//
+// function getVideoIdFromResult(item: any): string | null {
+// 	if (!item) return null;
+//
+// 	if (typeof item.video_id === "string" && item.video_id) return item.video_id;
+// 	if (typeof item.videoId === "string" && item.videoId) return item.videoId;
+// 	if (typeof item.id === "string" && item.id) return item.id;
+//
+// 	try {
+// 		const payload = item?.endpoint?.payload;
+// 		if (payload && typeof payload.videoId === "string") return payload.videoId;
+// 	} catch (e) { /* ignore */ }
+//
+// 	try {
+// 		const v = item?.navigationEndpoint?.payload?.videoId
+// 			|| item?.watchEndpoint?.payload?.videoId
+// 			|| item?.endpoint?.command?.payload?.videoId
+// 			|| item?.id?.videoId;
+// 		if (typeof v === "string" && v) return v;
+// 	} catch (e) { /* ignore */ }
+//
+// 	try {
+// 		if (item.id && typeof item.id === 'object') {
+// 			if (typeof item.id.videoId === "string") return item.id.videoId;
+// 			if (typeof item.id.video_id === "string") return item.id.video_id;
+// 		}
+// 		if (item.video && typeof item.video === 'object') {
+// 			if (typeof item.video.videoId === "string") return item.video.videoId;
+// 			if (typeof item.video.video_id === "string") return item.video.video_id;
+// 		}
+// 	} catch (e) {}
+//
+// 	try {
+// 		const url = item?.url || item?.navigationEndpoint?.metadata?.url || item?.serviceEndpoint?.metadata?.url;
+// 		if (typeof url === "string") {
+// 			const m = url.match(/[?&]v=([A-Za-z0-9_-]{6,})/);
+// 			if (m) return m[1];
+// 		}
+// 	} catch (e) {}
+//
+// 	return null;
+// }
