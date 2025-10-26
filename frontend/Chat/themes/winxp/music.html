@@ -23,19 +23,29 @@
             window.electron.requestMusic();
     }, 1500);
 
+    let paused = false;
     webamp.renderWhenReady(document.getElementById("winamp")).then(() => {
         // Initial Grab
         window.electron.requestMusic();
 
         window.electron.getMusic(parsed => {
-            if (parsed === "np") return webamp.pause();
-            const store = webamp.store;
-            const state = store.getState();
+            if (parsed === "np" && !paused) {
+                paused = true;
+                return webamp.pause();
+            }
+
+            const state = webamp.store.getState();
             if (state.playlist.currentTrack !== null && parsed.Title === state.tracks[state.playlist.currentTrack].title)
+                if (paused) {
+                    paused = false;
+                    return webamp.play();
+                } else return;
+
+            if (paused && parsed === "np")
                 return;
 
             webamp.appendTracks([{
-                url: "",
+                url: parsed.audioURL,
                 defaultName: `${parsed.Author} - ${parsed.Title}`,
                 metaData: {
                     artist: parsed.Author,

@@ -18,10 +18,8 @@ port.on("message", async (message) => {
 		return;
 	}
 
-	switch(CurrentMedia.playback.playbackStatus) {
-	case PlaybackStatus.PAUSED:
-		port.postMessage({ type: "np" });
-	}
+	if (CurrentMedia.playback.playbackStatus == PlaybackStatus.PAUSED)
+		return port.postMessage({ type: "np" });
 
 	let result: NowPlaying = {
 		Author: CurrentMedia.media.artist,

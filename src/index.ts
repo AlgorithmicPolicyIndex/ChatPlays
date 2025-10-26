@@ -5,7 +5,7 @@ import {OBS, ServiceManager, serviceNames, servicesTypes, Twitch, YouTube} from 
 import * as fs from "node:fs";
 import {ipcManager, TTS} from "./functions";
 import {runTwitch, runYouTube} from './ChatService';
-import {execSync} from "node:child_process";
+import {exec, execSync} from "node:child_process";
 
 function getPythonVersion(pythonCmd: string) {
 	try {
@@ -36,10 +36,18 @@ app.whenReady().then(async () => {
 	const lock = app.requestSingleInstanceLock();
 	if (!lock) return app.quit();
 
+	exec("ffmpeg -version", (err) => {
+		if (err) {
+			dialog.showErrorBox("Missing FFMPEG", "https://www.ffmpeg.org/download.html");
+			app.quit();
+			return;
+		}
+	})
+
 	const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
 	const pythonVersion = getPythonVersion(pythonCmd);
 	if (!pythonVersion) {
-		dialog.showErrorBox("Missing Python", "Unable to get a Python version. Python may not be installed. You need version 3.13.X or higher.");
+		dialog.showErrorBox("Missing Python", "Unable to get a Python version. Python may not be installed. You need version 3.13.X or higher.\nhttps://www.python.org/downloads");
 		app.quit();
 		return;
 	}

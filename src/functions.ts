@@ -12,6 +12,7 @@ import * as nut from "@nut-tree-fork/nut-js";
 import {musicRequest} from "./Music";
 import { Worker } from "worker_threads";
 import {PythonShell} from "python-shell";
+import ffmpeg from "fluent-ffmpeg"
 import * as os from "node:os";
 const filter = new Filter();
 
@@ -410,7 +411,7 @@ export class ipcManager {
 			newWindow.on("ready-to-show", function() { newWindow.webContents.send("chatSettings", settings); });
 			newWindow.show();
 			break;
-		case "musicWindow":
+			case "musicWindow":
 			if (window) {
 				newWindow.close();
 				window.close();
@@ -430,8 +431,8 @@ export class ipcManager {
 
 				newWindow.setResizable(false);
 				newWindow.webContents.send("chatSettings", settings);
-				newWindow.show();
 			});
+			newWindow.show();
 			break;
 		}
 
@@ -440,25 +441,29 @@ export class ipcManager {
 	}
 }
 
-// let innertube: Innertube;
-
+let oldSong: string = "";
 function fetchMedia(musicWindow: BrowserWindow) {
 	if (!worker) {
 		worker = new Worker(path.join(__dirname, 'SMTCWorker.js'));
 
 		worker.on('message', async (msg: any) => {
-			// const mp3 = path.join(__dirname, "silence.mp3");
-			// const args = ["-t", msg.result.Position[1], "-i", mp3, "-acodec", "copy", "y", mp3];
-			// const ffmpeg = spawn(ffmpegPath!, args);
-			// ffmpeg.stderr.on("data", (d) => process.stdout.write(d.toString()));
-			// ffmpeg.on("close", (code) => {
-			// 	if (code === 0) return;
-			// 	else throw new Error(`ffmpeg exited with code ${code}`);
-			// });
-
 			switch (msg.type) {
 				case 'media':
-					musicWindow.webContents.send("getMusic", msg.result);
+					const silentAudio = path.join(__dirname, "..", "silent.mp3");
+					msg.result.audioURL = path.join(__dirname, "..", "trimmed.mp3");
+					if (oldSong == msg.result.Title) {
+						musicWindow.webContents.send("getMusic", msg.result);
+					}
+
+					oldSong = msg.result.Title;
+					ffmpeg(silentAudio)
+					.setStartTime("00:00:00")
+					.setDuration(Math.ceil(msg.result.Position[1]/1000))
+					.output("trimmed.mp3")
+					.outputOptions("-c copy")
+					.on("end", () => {
+						musicWindow.webContents.send("getMusic", msg.result);
+					}).run();
 					break;
 				case 'np':
 					musicWindow.webContents.send("getMusic", "np");
@@ -483,55 +488,3 @@ function fetchMedia(musicWindow: BrowserWindow) {
 	// Send the request
 	worker.postMessage('getCurrentMedia');
 }
-
-// async function ensureInnertube() {
-// 	if (!innertube) innertube = await Innertube.create({
-// 		user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
-// 		client_type: ClientType.WEB,
-// 		retrieve_player: true,
-// 		device_category: "desktop",
-// 	});
-// 	return innertube;
-// }
-//
-// function getVideoIdFromResult(item: any): string | null {
-// 	if (!item) return null;
-//
-// 	if (typeof item.video_id === "string" && item.video_id) return item.video_id;
-// 	if (typeof item.videoId === "string" && item.videoId) return item.videoId;
-// 	if (typeof item.id === "string" && item.id) return item.id;
-//
-// 	try {
-// 		const payload = item?.endpoint?.payload;
-// 		if (payload && typeof payload.videoId === "string") return payload.videoId;
-// 	} catch (e) { /* ignore */ }
-//
-// 	try {
-// 		const v = item?.navigationEndpoint?.payload?.videoId
-// 			|| item?.watchEndpoint?.payload?.videoId
-// 			|| item?.endpoint?.command?.payload?.videoId
-// 			|| item?.id?.videoId;
-// 		if (typeof v === "string" && v) return v;
-// 	} catch (e) { /* ignore */ }
-//
-// 	try {
-// 		if (item.id && typeof item.id === 'object') {
-// 			if (typeof item.id.videoId === "string") return item.id.videoId;
-// 			if (typeof item.id.video_id === "string") return item.id.video_id;
-// 		}
-// 		if (item.video && typeof item.video === 'object') {
-// 			if (typeof item.video.videoId === "string") return item.video.videoId;
-// 			if (typeof item.video.video_id === "string") return item.video.video_id;
-// 		}
-// 	} catch (e) {}
-//
-// 	try {
-// 		const url = item?.url || item?.navigationEndpoint?.metadata?.url || item?.serviceEndpoint?.metadata?.url;
-// 		if (typeof url === "string") {
-// 			const m = url.match(/[?&]v=([A-Za-z0-9_-]{6,})/);
-// 			if (m) return m[1];
-// 		}
-// 	} catch (e) {}
-//
-// 	return null;
-// }

@@ -190,7 +190,7 @@ function brbHandler(brb) {
 function pingMessage(msg) {
 	const list = msg.split(" ");
 	for (const ping of list) {
-		if (!ping.includes("@")) continue;
+		if (!ping.startsWith("@")) continue;
 		list[list.indexOf(ping)] = `<span id="ping"><strong>${ping}</strong></span>`;
 	}
 	return list.join(" ");

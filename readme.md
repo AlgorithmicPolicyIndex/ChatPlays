@@ -22,8 +22,7 @@ I hope to see what people come up with for features, themes and plugins for the 
   - OVERALL
     - Music
       - Auto Switch theme | currently requires Music panel to be restarted.
-      - Make the WebAmp actually "play" | Only useful for song name for now.
-  - Linux
+  - Linux (I'm no longer on Linux)
     - TTS (Windows only)
     - Mouse Movement (ChatPlays)
 
@@ -37,8 +36,10 @@ Package Managers for people who do not have development environments:
 - PNPM: `npm install -g pnpm`
 - [Bun](https://bun.sh)
 
-Install packages via: `npm install`, `pnpm install`, `bun install`  
-AND install [Python](https://www.python.org/downloads/) 
+Install packages via: `npm install`, `pnpm install`, `bun install`
+
+#### Requirements
+[Python](https://www.python.org/downloads/), [FFMPEG](https://www.ffmpeg.org/download.html)
 
 Edit settings mainly stated inside the [wiki settings](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki/Settings#main-settings), such as your Channel Name.  
 Run `bun run electron`  
