@@ -31,7 +31,8 @@
 	</div>
 	<hr>
 	<div>
-		<h2>Plugins</h2>
+		<h2><strike>Plugins</strike> WIP</h2>
+		<label>Open Plugin Window <input type="button" class="plugins" name="spawnPlugins" value="Spawn"></label>
 		<label class="setting">Enable Plugins <select class="plugins" name="disabledPlugs" disabled>
 			<option value="" disabled selected>None</option>
 		</select></label>
@@ -45,9 +46,8 @@
 		<h1>Services</h1>
 		<div>
 			<h2>Twitch</h2>
-			<label class="setting">Twitch Channel Name <input name="twitchID"
-			                                                  type="text" class="Twitch"></label>
-			<label class="setting">User ID <input type="number" name="userId" disabled></label>
+			<label class="setting">Twitch Channel Name <input name="twitchID" type="text" class="Twitch"></label>
+			<label class="setting">User ID <input type="number" name="userId" placeholder="Type in your own chat..." disabled></label>
 			<button class="service" data-service="Twitch">Connect</button>
 			<button class="service" data-service="Twitch" disabled>Disconnect</button>
 			<span class="error-message Twitch" data-service="Twitch" style="color: red; display: none;">Unable to connect</span>

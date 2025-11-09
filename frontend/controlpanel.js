@@ -84,28 +84,31 @@ $('.setting').on("change", function() {
     return window.electron.UpdateSettings(Settings);
 });
 
+function handleSettings(settings) {
+    if (!settings || Object.keys(settings).length === 0)
+        return;
+
+    for (const key of Object.keys(settings)) {
+        if (key === "brb")
+            continue;
+
+        Settings[key] = settings[key];
+        const setting = settings[key];
+        const item = $(`input[name="${key}"], select[name="${key}"]`);
+        if (item.is(':checkbox')) {
+            item.prop('checked', setting);
+            if (key === "enableChat") {
+                const chat = $('.chat');
+                item.prop("checked") ? chat.show() : chat.hide();
+            }
+        } else {
+            item.val(setting);
+        }
+    }
+}
+
 window.electron.getSettings(function(settings) {
-	if (Object.keys(settings).length === 0) {
-		return;
-	}
-
-	for (const key of Object.keys(settings)) {
-		if (key === "brb") continue;
-		
-		Settings[key] = settings[key];
-		const setting = settings[key];
-		const item = $(`input[name="${key}"], select[name="${key}"]`);
-		if (item.is(':checkbox')) {
-			item.prop('checked', setting);
-			if (key === "enableChat") {
-				const chat = $('.chat');
-				item.prop("checked") ? chat.show() : chat.hide();	
-			}
-		} else {
-			item.val(setting);
-		}
-
-	}
+    handleSettings(settings);
 });
 
 // Fallback: actively fetch settings on load in case the initial IPC event was missed
@@ -113,22 +116,7 @@ window.electron.getSettings(function(settings) {
 	try {
 		if (!window.electron.getSettingsAsync) return;
 		const settings = await window.electron.getSettingsAsync();
-		if (!settings || Object.keys(settings).length === 0) return;
-		for (const key of Object.keys(settings)) {
-			if (key === "brb") continue;
-			Settings[key] = settings[key];
-			const setting = settings[key];
-			const item = $(`input[name="${key}"], select[name="${key}"]`);
-			if (item.is(':checkbox')) {
-				item.prop('checked', setting);
-				if (key === "enableChat") {
-					const chat = $('.chat');
-					item.prop("checked") ? chat.show() : chat.hide();
-				}
-			} else {
-				item.val(setting);
-			}
-		}
+		handleSettings(settings);
 	} catch (e) {
 		console.error(e);
 	}
@@ -138,14 +126,8 @@ $('input[name="chatSettings"]').on("click", function() {
 	window.electron.createWindow("chatSettings");
 });
 
-const userId = Settings.userId;
-const userField = $(`input[name="userId"]`);
-window.electron.getID(function(id, name) {
-	if (userField.val() === userId) return;
-	if (name !== $('input[name="twitchID"]').val().toLowerCase()) return;
-	Settings.userId = id;
-	userField.val(id);
-	window.electron.UpdateSettings(Settings);
+window.electron.getID(function(id) {
+    $(`input[name="userId"]`).val(id);
 });
 
 $('.plays').each(function() {
@@ -196,62 +178,66 @@ $('input[type="checkbox"]').on("click", function() {
 	}
 });
 
-const enabledPlugins = $('select[name="enabledPlugs"]');
-const disabledPlugins = $('select[name="disabledPlugs"]');
-window.electron.pluginsUpdated(function(plugins) {
-	for (const plugin of plugins) {
-		const existsInEnabled = enabledPlugins.find(`option[value='${plugin}']`).length > 0;
-		const existsInDisabled = disabledPlugins.find(`option[value='${plugin}']`).length > 0;
-
-		if (existsInEnabled)
-			window.electron.handlePlugin("unload", plugin);
-
-		if (!existsInEnabled && !existsInDisabled)
-			if (Settings.Plugins.Enabled.includes(plugin))
-				enabledPlugins.append(`<option value='${plugin}'>${plugin}</option>`);
-			else
-				disabledPlugins.append(`<option value="${plugin}">${plugin}</option>`);
-	}
-	
-	$(".plugins option").each(function() {
-		const optionValue = $(this).val();
-		if (optionValue && !plugins.includes(optionValue))
-			$(this).remove();
-	});
-	
-	enabledPlugins.find("option").length > 1 ? enabledPlugins.prop("disabled", false) : enabledPlugins.prop("disabled", true);
-	disabledPlugins.find("option").length > 1 ? disabledPlugins.prop("disabled", false) : disabledPlugins.prop("disabled", true);
-});
-disabledPlugins.on("change", function() {
-	handlePlugins(disabledPlugins, this);
-});
-enabledPlugins.on("change", function() {
-	handlePlugins(enabledPlugins, this);
+$('input[name="spawnPlugins"]').on("click", function() {
+	return window.electron.createWindow("pluginWindow");
 });
 
-function handlePlugins(menu, obj) {
-	const other = menu === disabledPlugins ? enabledPlugins : disabledPlugins;
-	const selected = $(obj).find(":selected");
-	selected.appendTo(other);
-
-	if (menu === disabledPlugins) {
-		// Enabled Plugin
-		Settings.Plugins.Disabled = Settings.Plugins.Disabled.filter(plugin => plugin !== selected.val());
-		Settings.Plugins.Enabled.push(selected.val());
-		window.electron.handlePlugin("load", selected.val());
-	} else {
-		// Disabled Plugin
-		Settings.Plugins.Enabled = Settings.Plugins.Enabled.filter(plugin => plugin !== selected.val());
-		Settings.Plugins.Disabled.push(selected.val());
-		window.electron.handlePlugin("unload", selected.val());
-	}
-	
-	$(other).prop("disabled", other[0].options.length <= 1);
-	$(menu).prop("disabled", menu[0].options.length <= 1);
-	
-	$(other).val("");
-	return $(menu).val("");
-}
+// const enabledPlugins = $('select[name="enabledPlugs"]');
+// const disabledPlugins = $('select[name="disabledPlugs"]');
+// window.electron.pluginsUpdated(function(plugins) {
+// 	for (const plugin of plugins) {
+// 		const existsInEnabled = enabledPlugins.find(`option[value='${plugin}']`).length > 0;
+// 		const existsInDisabled = disabledPlugins.find(`option[value='${plugin}']`).length > 0;
+//
+// 		if (existsInEnabled)
+// 			window.electron.handlePlugin("unload", plugin);
+//
+// 		if (!existsInEnabled && !existsInDisabled)
+// 			if (Settings.Plugins.Enabled.includes(plugin))
+// 				enabledPlugins.append(`<option value='${plugin}'>${plugin}</option>`);
+// 			else
+// 				disabledPlugins.append(`<option value="${plugin}">${plugin}</option>`);
+// 	}
+//
+// 	$(".plugins option").each(function() {
+// 		const optionValue = $(this).val();
+// 		if (optionValue && !plugins.includes(optionValue))
+// 			$(this).remove();
+// 	});
+//
+// 	enabledPlugins.find("option").length > 1 ? enabledPlugins.prop("disabled", false) : enabledPlugins.prop("disabled", true);
+// 	disabledPlugins.find("option").length > 1 ? disabledPlugins.prop("disabled", false) : disabledPlugins.prop("disabled", true);
+// });
+// disabledPlugins.on("change", function() {
+// 	handlePlugins(disabledPlugins, this);
+// });
+// enabledPlugins.on("change", function() {
+// 	handlePlugins(enabledPlugins, this);
+// });
+//
+// function handlePlugins(menu, obj) {
+// 	const other = menu === disabledPlugins ? enabledPlugins : disabledPlugins;
+// 	const selected = $(obj).find(":selected");
+// 	selected.appendTo(other);
+//
+// 	if (menu === disabledPlugins) {
+// 		// Enabled Plugin
+// 		Settings.Plugins.Disabled = Settings.Plugins.Disabled.filter(plugin => plugin !== selected.val());
+// 		Settings.Plugins.Enabled.push(selected.val());
+// 		window.electron.handlePlugin("load", selected.val());
+// 	} else {
+// 		// Disabled Plugin
+// 		Settings.Plugins.Enabled = Settings.Plugins.Enabled.filter(plugin => plugin !== selected.val());
+// 		Settings.Plugins.Disabled.push(selected.val());
+// 		window.electron.handlePlugin("unload", selected.val());
+// 	}
+//
+// 	$(other).prop("disabled", other[0].options.length <= 1);
+// 	$(menu).prop("disabled", menu[0].options.length <= 1);
+//
+// 	$(other).val("");
+// 	return $(menu).val("");
+// }
 
 window.electron.getAudioInputs((i) => {
 	for (const input of i) {

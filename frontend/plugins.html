@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<link id="css" rel="stylesheet" href="./controlpanel.css">
+</head>
+<body>
+<ul class="plugins" style="list-style-type: none;"></ul>
+</body>
+<style>
+.buttons {
+	margin-top: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+button {
+	margin-left: 5px;
+}
+</style>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+	window.electron.getPlugins(pluginData => {
+                const plugins = JSON.parse(pluginData);
+
+                const ul = $('.plugins');
+	        for (const plugin of plugins) {
+			const li = $('<li></li>');
+			const div = $(`<div class="plugin"><h2>${plugin.name} - ${String(plugin.type).charAt(0).toUpperCase() + String(plugin.type).slice(1)}</h2></div>`);
+			const info = $(`<div class="info">Description: ${plugin.description}<br>Author: ${plugin.author}</div>`);
+			const buttons = $('<div class="buttons">');
+			const enable = $("<button class='enable'>Enable</button>");
+			const disable = $("<button class='disable'>Disable</button>");
+		        const configure = $(`<button class='configure'>Configure</button>`);
+
+			if (!plugin.options.configurable) configure.prop("disabled", true);
+
+			div.data("info", plugin);
+			div.append(info).append(buttons.append([enable, disable, configure]));
+			ul.append(li.append(div));
+	        }
+	});
+
+	$(".plugins")
+	.on("click", ".enable", function () {
+		window.electron.handlePlugin("enable", $(this).closest(".plugin").data("info"));
+	})
+	.on("click", ".disable", function () {
+		window.electron.handlePlugin("disable", $(this).closest(".plugin").data("info"));
+	})
+	.on("click", ".configure", function () {
+		window.electron.handlePlugin("configure", $(this).closest(".plugin").data("info"));
+	});
+</script>
+</html>

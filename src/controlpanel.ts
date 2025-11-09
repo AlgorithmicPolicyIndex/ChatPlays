@@ -1,5 +1,5 @@
 ﻿import {contextBridge, ipcRenderer} from "electron";
-import {NowPlaying} from "./Music";
+import {NowPlaying} from "./Music/Music";
 
 contextBridge.exposeInMainWorld("electron", {
 	handleService: async (service: "YouTube" | "Twitch" | "OBS", data: any) => {
@@ -9,9 +9,9 @@ contextBridge.exposeInMainWorld("electron", {
 	getMessage: (func: (messageData: any) => void) => {
 		ipcRenderer.on("message", (_evt, messageData: any) => func(messageData));
 	},
-	sendID: async (id: string, name: string) => ipcRenderer.send("sendID", id, name),
-	getID: (func: (id: string, name: string) => void) => {
-		ipcRenderer.on("sendID", (_evt, id: string, name: string) => func(id, name));
+	sendID: async (id: string) => ipcRenderer.send("sendID", id),
+	getID: (func: (id: string) => void) => {
+		ipcRenderer.on("sendID", (_evt, id: string) => func(id));
 	},
 	UpdateSettings: (settings: any) => ipcRenderer.send("updateSettings", settings),
 	sendSettings: (chatSettings: any) => ipcRenderer.send("chatSettings", chatSettings),
@@ -35,21 +35,12 @@ contextBridge.exposeInMainWorld("electron", {
 	updateGame: (func: (name: string) => void) => {
 		ipcRenderer.on("updateGame", (_evt, name: string) => func(name));
 	},
-	handlePlugin: (method: "load" | "unload", plugin: string) => {
-		ipcRenderer.send("handlePlugin", method, plugin);
+
+	getPlugins: (func: (plugins: string) => void) => {
+		ipcRenderer.on("sendPlugins", (_evt, plugins: string) => func (plugins));
 	},
-	plugins: (func: (plugins: string[]) => void) => {
-		ipcRenderer.on("plugins", (_evt, plugins) => func(plugins));
-	},
-	loadPlugin: (func: (plugin: string) => void) => {
-		ipcRenderer.on("loadPlugin", (_evt, plugin) => func(plugin));
-	},
-	unloadPlugin: (func: (plugin: string) => void) => {
-		ipcRenderer.on("unloadPlugin", (_evt, plugin) => func(plugin));
-	},
-	pluginsUpdated: (func: (plugins: string[]) => void) => {
-		ipcRenderer.on("pluginsUpdated", (_evt, plugins) => func(plugins));
-	},
+	handlePlugin: (func: string, info: string) => ipcRenderer.send("handlePlugin", func, info),
+
 	subscription: (func: (User: string, Gifter?: string) => void) => {
 		ipcRenderer.on("subscription", (_evt, User, Gifter) => func(User, Gifter));
 	},

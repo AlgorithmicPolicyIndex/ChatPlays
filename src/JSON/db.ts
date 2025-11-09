@@ -1,7 +1,41 @@
 import { JsonDB } from "node-json-db";
 import { Config } from "node-json-db/dist/lib/JsonDBConfig.js";
+import {PluginInfo} from "../functions/plugins";
 
 const db = new JsonDB(new Config("JSON/settings", true, true, "/"));
+
+type Settings = {
+	"brb": boolean,
+	"chatWidth": string,
+	"chatHeight": string,
+	"theme": string,
+	"maxblobs": string,
+	"maxhistory": string,
+	"otherEmotes": boolean,
+	"popupEvents": boolean,
+	"monitor": string,
+	"popupW": string,
+	"popupH": string,
+	"enableChat": boolean,
+	"name": string,
+	"gamePath": string,
+	"playsChance": string,
+	"playtime": string,
+	"Plugins": {
+		"Enabled": PluginInfo[] | [],
+		"Disabled": PluginInfo[] | [],
+	},
+	"twitchID": string,
+	"userId": string | undefined,
+	"youtubeID": string,
+	"OBSPort": string,
+	"OBSPASS": string,
+	"audio": string,
+	"voiceKey": string,
+	"voiceChance": string,
+	"usePython": boolean,
+	"ChatPlaysActive": boolean,
+}
 
 export async function updateData(data: any) {
 	if (!await db.exists("/")) {
@@ -41,9 +75,8 @@ export async function updateData(data: any) {
 }
 
 
-export async function getData() {
-	const data = await db.getData("/");
-	if (data.ChatPlaysActive) data.ChatPlaysActive = false;
+export async function getData(): Promise<Settings> {
+	const data: Settings = await db.getData("/");
 	await updateData(data);
 	return data;
 }

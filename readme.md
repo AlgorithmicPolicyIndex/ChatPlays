@@ -17,14 +17,15 @@ I hope to see what people come up with for features, themes and plugins for the 
   - TWITCH
       - Channel Point reward to start for viewers (I'm not affiliated, so that's hard to test)
       - Follower Request (as it's not a part of the API)
+        - Requires OAuth, Result - Forward development on Twitch Chat Bot
   - YOUTUBE
       - Subscribe / Membership Event (not a part of the chat module I use)
   - OVERALL
-    - Music
-      - Auto Switch theme | currently requires Music panel to be restarted.
-  - Linux (I'm no longer on Linux)
-    - TTS (Windows only)
-    - Mouse Movement (ChatPlays)
+    - Plugins
+      - Enable/Disable button
+      - Config editor
+      - scrollable window (for both Plugin and Main window)
+      - Make Plugin Types function
 
 ### Running
 <sup>Note: The best way to get the most up-to-date code is through the normal download of this Repo. The Releases page is not always update as I'm too busy IRL to be working too much on my projects anymore.</sup>

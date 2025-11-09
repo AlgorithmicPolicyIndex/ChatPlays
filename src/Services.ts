@@ -149,7 +149,7 @@ class OBS extends Service<OBSWebSocket, "OBS"> {
 	
 	async newPopup(title: string, user: string, gifter?: string) {
 		const settings = await getData();
-		const display = electron.screen.getAllDisplays()[settings.monitor];
+		const display = electron.screen.getAllDisplays()[parseInt(settings.monitor)];
 		if (!display) return console.error("No external display. Please make sure the monitor index is correct.");
 
 		await this.HandleQueue(async () => {
@@ -204,7 +204,7 @@ class OBS extends Service<OBSWebSocket, "OBS"> {
 			inputKind,
 			sceneItemEnabled: false
 		});
-		await this.transformSource(t.sceneItemId, settings.popupW, settings.popupH);
+		await this.transformSource(t.sceneItemId, parseInt(settings.popupW), parseInt(settings.popupH));
 		await this.client.call("SetSceneItemEnabled", {
 			sceneUuid: (await this.client.call("GetCurrentProgramScene")).sceneUuid,
 			sceneItemId: t.sceneItemId,

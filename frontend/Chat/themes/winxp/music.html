@@ -7,56 +7,66 @@
     <div id="winamp" style="height: 100vh;"></div>
 </body>
 <script type="module">
-    import Webamp from "https://unpkg.com/webamp@^2/lazy";
-    const webamp = new Webamp({
-        windowLayout: {
-            main: {
-                position: { top: 0, left: 0 },
-                shadeMode: false,
-                closed: false
-            },
-        },
-        enableDoubleSizeMode: true,
-    });
+	import Webamp from "https://unpkg.com/webamp@^2/butterchurn";
+	const webamp = new Webamp({
+		windowLayout: {
+		    main: {
+			position: { top: 0, left: 0 },
+			shadeMode: false,
+			closed: false
+		    },
+		},
+		enableDoubleSizeMode: true,
+	});
 
-    setInterval(() => {
-            window.electron.requestMusic();
-    }, 1500);
+	setInterval(() => {
+		window.electron.requestMusic();
+	}, 1500);
 
-    let paused = false;
-    webamp.renderWhenReady(document.getElementById("winamp")).then(() => {
-        // Initial Grab
-        window.electron.requestMusic();
+	let paused = false;
+	let LastTimestamp;
+	webamp.renderWhenReady(document.getElementById("winamp")).then(() => {
+		// Initial Grab
+		window.electron.requestMusic();
 
-        window.electron.getMusic(parsed => {
-            if (parsed === "np" && !paused) {
-                paused = true;
-                return webamp.pause();
-            }
+		window.electron.getMusic(parsed => {
+			if (parsed === "np" && !paused) {
+				paused = true;
+				return webamp.pause();
+			}
+			if (parsed === "np") return;
 
-            const state = webamp.store.getState();
-            if (state.playlist.currentTrack !== null && parsed.Title === state.tracks[state.playlist.currentTrack].title)
-                if (paused) {
-                    paused = false;
-                    return webamp.play();
-                } else return;
 
-            if (paused && parsed === "np")
-                return;
+			const state = webamp.store.getState();
+			if (state.playlist.currentTrack !== null && parsed.Title === state.tracks[state.playlist.currentTrack].title) {
+				if (paused) {
+					paused = false;
+					return webamp.play();
+				} else if (parsed.Position[0] / 1000 - state.media.timeElapsed > 1) {
+					webamp.seekToTime(parsed.Position[0] / 1000);
+				} else if (LastTimestamp && parsed.Position[0] / 1000 < LastTimestamp) {
+					webamp.seekToTime(parsed.Position[0] / 1000);
+				}
+				LastTimestamp = parsed.Position[0]/1000;
+				return;
+			}
 
-            webamp.appendTracks([{
-                url: parsed.audioURL,
-                defaultName: `${parsed.Author} - ${parsed.Title}`,
-                metaData: {
-                    artist: parsed.Author,
-                    title: parsed.Title,
-                },
-                duration: Math.ceil(parsed.Position[1]/1000),
-            }]);
-            webamp.nextTrack();
-            webamp.play();
-        });
-    });
+			if (paused && parsed === "np")
+				return;
+
+			webamp.appendTracks([{
+				url: parsed.audioURL,
+				defaultName: `${parsed.Author} - ${parsed.Title}`,
+				metaData: {
+					artist: parsed.Author,
+					title: parsed.Title,
+				},
+				duration: Math.ceil(parsed.Position[1]/1000),
+			}]);
+			webamp.nextTrack();
+			webamp.play();
+		});
+	});
 </script>
 <style>
     html, body, #winamp {

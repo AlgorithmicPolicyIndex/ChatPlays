@@ -1,7 +1,7 @@
 ﻿import {servicesTypes} from "./Services";
 import {BrowserWindow} from 'electron';
-import {command, filterWithoutEmojis} from './functions';
-import {getData} from './JSON/db';
+import {command, filterWithoutEmojis} from './functions/chat';
+import {getData, updateData} from './JSON/db';
 import * as fs from 'node:fs';
 import {EmojiItem} from 'youtube-chat/dist/types/data';
 import {services} from "./index";
@@ -27,8 +27,16 @@ export async function runTwitch(service: servicesTypes["Twitch"]) {
 		if (settings.ChatPlaysActive && fs.existsSync(settings.gamePath))
 			return (await import(settings.gamePath)).execute(message.toLowerCase());
 
+
+		if ((settings.userId === "" || settings.userId !== user["user-id"]) && user.username === settings.twitchID.toLowerCase()) {
+			settings.userId = user["user-id"];
+			BrowserWindow.getAllWindows().find((window) => window.title === "ChatPlays - Control Panel")!.webContents.send("sendID", user["user-id"]);
+			await updateData(settings);
+		}
+
 		chatWindow = getChatWindow();
 		if (!chatWindow) return;
+
 		chatWindow.webContents.send("message", {
 			User: user,
 			Message: await filterWithoutEmojis(message),
