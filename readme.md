@@ -22,10 +22,10 @@ I hope to see what people come up with for features, themes and plugins for the 
       - Subscribe / Membership Event (not a part of the chat module I use)
   - OVERALL
     - Plugins
-      - Enable/Disable button
+      - Enable/Disable Buttons Auto disable if plugin is noticed inside Settings.Plugins.Enabled 
       - Config editor
       - scrollable window (for both Plugin and Main window)
-      - Make Plugin Types function
+      - Make Plugin Types function (They technically work, so long the window is open.)
 
 ### Running
 <sup>Note: The best way to get the most up-to-date code is through the normal download of this Repo. The Releases page is not always update as I'm too busy IRL to be working too much on my projects anymore.</sup>
