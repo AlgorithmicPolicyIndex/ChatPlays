@@ -10,7 +10,7 @@
 
 window.electron.getSettings(async function (settings) {
 	for (const key in settings) {
-		if (Settings[key] === settings[key] || !ValidKeys.includes(key)) continue;
+		if (Settings[key] === settings[key]) continue;
 		
 		Settings[key] = settings[key];
 		switch (key) {
@@ -114,47 +114,31 @@ function strToEmote(message, emote, replacements) {
 }
 
 window.electron.loadPlugin(function(plugin) {
-	return loadPlugin(plugin);
-});
-function loadPlugin(plugin) {
-	if (loadedPlugins[plugin]) return;
+	if (loadedPlugins[plugin.fileName]) return;
 
-	const script = $('<script></script>');
-	script.attr("src", `../plugins/${plugin}`);
-	$('body').append(script);
-	script.onload = () => {
-		if (window[plugin] && typeof window[plugin].init === 'function') {
-			window[plugin].init();
-			loadedPlugins[plugin] = true;
+	window[plugin.fileName] = plugin;
+
+	const scriptPath = `../../plugins/${plugin.fileName}.js`;
+	import(scriptPath).then(mod => {
+		if (mod && typeof mod.info.init === 'function') {
+			loadedPlugins[plugin.fileName] = { observer: mod.info.init() };
+			console.log(`${plugin.fileName} loaded.`);
 		} else {
-			console.error(`Plugin ${plugin} failed to init.`);
+			console.error(`Plugin ${plugin.name} failed to init (no init() export).`);
 		}
-	};
-}
+
+	}).catch(err => {
+		console.error(`Failed to load plugin ${plugin.name}:`, err);
+	});
+});
 
 window.electron.unloadPlugin(function(plugin) {
-	if (window[plugin] && window[plugin].observer) {
-		window[plugin].observer.disconnect();
-		delete window[plugin]
-	}
+	const entry = loadedPlugins[plugin.fileName];
+	if (!entry) return;
 
-	const script = $(`script[src="../plugins/${plugin}"]`);
-	if (!script.length) return;
-	
-	script.remove();
-	delete loadedPlugins[plugin];
-	window["loadedPlugins"] = loadedPlugins;
-	console.log("Disabled " + plugin);
-});
-
-function onThemeChangeComplete() { document.dispatchEvent(new CustomEvent('themeChanged')); }
-
-document.addEventListener('themeChanged', function() {
-	if (!Settings.Plugins.Enabled) return;
-	for (const plugin of Settings.Plugins.Enabled) {
-		if (!window.loadedPlugins[plugin] && typeof window[plugin].init !== 'function') return;
-		window[plugin].init();
-	}
+	entry.observer.disconnect();
+	delete loadedPlugins[plugin.fileName];
+	console.log(`Plugin ${plugin.name} disabled.`);
 });
 
 async function changeCSS(theme, channel) {
@@ -178,7 +162,11 @@ async function changeCSS(theme, channel) {
 			.attr("href", `themes/${theme}/${theme}.css`)
 	);
 
-	onThemeChangeComplete();
+	if (!Settings.Plugins.Enabled) return;
+	for (const plugin of Settings.Plugins.Enabled) {
+		if (!window.loadedPlugins[plugin] && typeof window[plugin].init !== 'function') return;
+		window[plugin].init();
+	}
 }
 
 function brbHandler(brb) {

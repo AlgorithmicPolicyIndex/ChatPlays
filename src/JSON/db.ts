@@ -22,8 +22,7 @@ type Settings = {
 	"playsChance": string,
 	"playtime": string,
 	"Plugins": {
-		"Enabled": PluginInfo[] | [],
-		"Disabled": PluginInfo[] | [],
+		"Enabled": PluginInfo[],
 	},
 	"twitchID": string,
 	"userId": string | undefined,
@@ -57,8 +56,7 @@ export async function updateData(data: any) {
 			"playsChance": "1",
 			"playtime": "30",
 			"Plugins": {
-				"Enabled": [],
-				"Disabled": []
+				"Enabled": []
 			},
 			"twitchID": "",
 			"userId": "",

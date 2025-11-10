@@ -40,8 +40,9 @@ function init() {
 export const info = {
 	author: "AlgorithmicPolicyIndex",
 	name: "Rainbow Messages",
+	fileName: "rainbowMessages",
 	description: "Give all messages a rainbow color cycle",
-	type: 1, // Chat Enum Type
+	type: "chat",
 	init: init,
 	options: {
 		configurable: true,

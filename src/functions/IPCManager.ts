@@ -136,24 +136,26 @@ export class ipcManager {
 		const type = info.type === "chat" ? this.windows["chatWindow"]
 			: info.type === "application" || info.type === "service" ? this.mainWindow : this.windows["musicWindow"];
 		const settings = await getData();
+		const plugin = settings.Plugins.Enabled.find((plugin) => plugin.name == info.name);
 
 		switch (func) {
-			case "enable":
-			// TODO: Use settings to enable and disable plugins, just in case a window isn't opened.
-			const plugin = settings.Plugins.Disabled.find((plugin) => plugin.name == info.name);
-			if (!plugin) throw new Error(`Unknown plugin "${info.name}" at ${info.pathName}`);
+		case "enable":
+			if (plugin) return;
 
-
-
+			settings.Plugins.Enabled.push(info);
 			this.Plugins.enable(info, type!);
 			break;
-		// case "disable":
-		// 	this.Plugins.disable(info, type);
-		// 	break;
+		case "disable":
+			if (!plugin) return;
+
+			settings.Plugins.Enabled.splice(settings.Plugins.Enabled.indexOf(info), 1);
+			this.Plugins.disable(info, type!);
+			break;
 		// case "configure":
 		// 	this.Plugins.configure(info);
 		// 	break;
 		}
+		await updateData(settings);
 	}
 	async closePopup(event: any) {
 		const win = BrowserWindow.fromWebContents(event.sender);

@@ -1,5 +1,6 @@
 ﻿import {contextBridge, ipcRenderer} from "electron";
 import {NowPlaying} from "./Music/Music";
+import {PluginInfo} from "./functions/plugins";
 
 contextBridge.exposeInMainWorld("electron", {
 	handleService: async (service: "YouTube" | "Twitch" | "OBS", data: any) => {
@@ -40,6 +41,12 @@ contextBridge.exposeInMainWorld("electron", {
 		ipcRenderer.on("sendPlugins", (_evt, plugins: string) => func (plugins));
 	},
 	handlePlugin: (func: string, info: string) => ipcRenderer.send("handlePlugin", func, info),
+	loadPlugin: (func: (info: PluginInfo) => void) => {
+		ipcRenderer.on("loadPlugin", (_evt, info: PluginInfo) => func(info));
+	},
+	unloadPlugin: (func: (info: PluginInfo) => void) => {
+		ipcRenderer.on("unloadPlugin", (_evt, info: PluginInfo) => func(info));
+	},
 
 	subscription: (func: (User: string, Gifter?: string) => void) => {
 		ipcRenderer.on("subscription", (_evt, User, Gifter) => func(User, Gifter));

@@ -30,6 +30,7 @@ button {
 			const div = $(`<div class="plugin"><h2>${plugin.name} - ${String(plugin.type).charAt(0).toUpperCase() + String(plugin.type).slice(1)}</h2></div>`);
 			const info = $(`<div class="info">Description: ${plugin.description}<br>Author: ${plugin.author}</div>`);
 			const buttons = $('<div class="buttons">');
+			// TODO: Handle auto disabler for buttons
 			const enable = $("<button class='enable'>Enable</button>");
 			const disable = $("<button class='disable'>Disable</button>");
 		        const configure = $(`<button class='configure'>Configure</button>`);
@@ -44,9 +45,13 @@ button {
 
 	$(".plugins")
 	.on("click", ".enable", function () {
+		$(".enable").prop("disabled", true);
+		$(".disable").prop("disabled", false);
 		window.electron.handlePlugin("enable", $(this).closest(".plugin").data("info"));
 	})
 	.on("click", ".disable", function () {
+		$(".enable").prop("disabled", false);
+		$(".disable").prop("disabled", true);
 		window.electron.handlePlugin("disable", $(this).closest(".plugin").data("info"));
 	})
 	.on("click", ".configure", function () {

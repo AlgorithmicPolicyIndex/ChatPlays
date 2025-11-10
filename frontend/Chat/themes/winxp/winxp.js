@@ -180,7 +180,6 @@ async function initMsg(user, mod, broadcaster, settings, message, platform) {
 	let historyBlob = document.createElement('li');
 	historyBlob.setAttribute("class", user);
 	historyBlob.setAttribute("id", `${count}`);
-	console.log(historyBlob)
 	let name = document.createElement("h2");
 	name.setAttribute("id", "name");
 
