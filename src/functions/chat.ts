@@ -4,7 +4,7 @@ import Filter from "bad-words";
 import {BrowserWindow} from "electron";
 import {getData, updateData} from "../JSON/db";
 import * as nut from "@nut-tree-fork/nut-js"
-import phrases from "../ Phrases.json";
+import phrases from "../Phrases.json";
 
 const filter = new Filter();
 const domainPattern = new RegExp(
@@ -48,6 +48,8 @@ export async function command(message: string, user: any) {
 	const chatWindow = BrowserWindow.getAllWindows().find((win) => win.title == "ChatPlays - Chat");
 
 	switch (command) {
+		// TODO: Fuck this shit.
+		// TODO: Make this separate files, files are to be called after their command, makes it easier to find.
 		case "start":
 			if (parseInt(data.playsChance) <= Math.floor(Math.random() * 100) + 1 || data.gamePath == "") return;
 

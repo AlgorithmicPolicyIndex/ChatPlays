@@ -1,6 +1,7 @@
 ﻿import {contextBridge, ipcRenderer} from "electron";
 import {NowPlaying} from "./Music/Music";
 import {PluginInfo} from "./functions/plugins";
+import {Settings} from "./JSON/db";
 
 contextBridge.exposeInMainWorld("electron", {
 	handleService: async (service: "YouTube" | "Twitch" | "OBS", data: any) => {
@@ -37,8 +38,8 @@ contextBridge.exposeInMainWorld("electron", {
 		ipcRenderer.on("updateGame", (_evt, name: string) => func(name));
 	},
 
-	getPlugins: (func: (plugins: string) => void) => {
-		ipcRenderer.on("sendPlugins", (_evt, plugins: string) => func (plugins));
+	getPlugins: (func: (plugins: string, settings: Settings) => void) => {
+		ipcRenderer.on("sendPlugins", (_evt, plugins: string, settings: Settings) => func(plugins, settings));
 	},
 	handlePlugin: (func: string, info: string) => ipcRenderer.send("handlePlugin", func, info),
 	loadPlugin: (func: (info: PluginInfo) => void) => {

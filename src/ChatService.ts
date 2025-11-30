@@ -5,6 +5,7 @@ import {getData, updateData} from './JSON/db';
 import * as fs from 'node:fs';
 import {EmojiItem} from 'youtube-chat/dist/types/data';
 import {services} from "./index";
+import {MessageBus} from "./functions/messageBus";
 
 export async function runTwitch(service: servicesTypes["Twitch"]) {
 	const client = service.client;
@@ -18,8 +19,14 @@ export async function runTwitch(service: servicesTypes["Twitch"]) {
 		return chatWindow;
 	};
 
-	client.on("message", async (_channel, user, message, self) => {
+	client.on("message", async (channel, user, message, self) => {
 		if (self) return;
+
+		MessageBus.emit("chat_message", {
+			channel,
+			user,
+			message,
+		});
 
 		if (message.startsWith("!"))
 			return await command(message, user);
@@ -37,12 +44,32 @@ export async function runTwitch(service: servicesTypes["Twitch"]) {
 		chatWindow = getChatWindow();
 		if (!chatWindow) return;
 
+		const msg = await filterWithoutEmojis(message);
+		if (msg === "[FILTERED]") {
+			const twitch = services.getService("Twitch");
+			if (twitch) {
+				try {
+					await twitch.client!.timeout(channel, user.username!,  60 * 60 * 1000, "Likely View/Follower Bot.");
+					console.error(`${user.username} has been timed out: Likely View/Follower Bot. `);
+				} catch {
+					console.error("Unable to time out person. Either Twitch failed to time out, this person is a Moderator or I am not a moderator in channel.");
+				}
+			}
+		}
+
 		chatWindow.webContents.send("message", {
 			User: user,
-			Message: await filterWithoutEmojis(message),
+			Message: msg,
 			Platform: "Twitch",
 		});
 	});
+
+	client.on("join", async (_channel, user, self) => {
+		if (self) {
+			await client.say(_channel,"hello?");
+			return console.log(`Joined ${_channel} as ${user}`);
+		}
+	})
 
 	client.on("subscription", async function (_channel, user) {
 		const obs = services.getService("OBS");
@@ -62,6 +89,10 @@ export async function runTwitch(service: servicesTypes["Twitch"]) {
 		chatWindow = getChatWindow();
 		if (!chatWindow) return;
 		chatWindow.webContents.send("subscription", user, recipient);
+	});
+
+	client.on("redeem", async (channel, user, rewardType) => {
+		console.log(channel, user, rewardType);
 	});
 }
 

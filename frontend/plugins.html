@@ -21,7 +21,7 @@ button {
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script>
-	window.electron.getPlugins(pluginData => {
+	window.electron.getPlugins((pluginData, Settings) => {
                 const plugins = JSON.parse(pluginData);
 
                 const ul = $('.plugins');
@@ -31,9 +31,15 @@ button {
 			const info = $(`<div class="info">Description: ${plugin.description}<br>Author: ${plugin.author}</div>`);
 			const buttons = $('<div class="buttons">');
 			// TODO: Handle auto disabler for buttons
-			const enable = $("<button class='enable'>Enable</button>");
-			const disable = $("<button class='disable'>Disable</button>");
+			const enable = $(`<button class='enable'>Enable</button>`);
+			const disable = $("<button class='disable' disabled>Disable</button>");
 		        const configure = $(`<button class='configure'>Configure</button>`);
+
+			const exists = Settings.Plugins.find(p => p.name === plugin.name);
+			if (exists) {
+				enable.prop('disabled', true);
+				disable.prop('disabled', false);
+			}
 
 			if (!plugin.options.configurable) configure.prop("disabled", true);
 
@@ -45,17 +51,31 @@ button {
 
 	$(".plugins")
 	.on("click", ".enable", function () {
-		$(".enable").prop("disabled", true);
-		$(".disable").prop("disabled", false);
-		window.electron.handlePlugin("enable", $(this).closest(".plugin").data("info"));
+		const plugin = $(this).closest(".plugin");
+		plugin.find(".enable").prop("disabled", true);
+		plugin.find(".disable").prop("disabled", false);
+
+		window.electron.handlePlugin(
+			"enable",
+			plugin.data("info")
+		);
 	})
 	.on("click", ".disable", function () {
-		$(".enable").prop("disabled", false);
-		$(".disable").prop("disabled", true);
-		window.electron.handlePlugin("disable", $(this).closest(".plugin").data("info"));
+		const plugin = $(this).closest(".plugin");
+		plugin.find(".enable").prop("disabled", false);
+		plugin.find(".disable").prop("disabled", true);
+
+		window.electron.handlePlugin(
+			"disable",
+			plugin.data("info")
+		);
 	})
 	.on("click", ".configure", function () {
-		window.electron.handlePlugin("configure", $(this).closest(".plugin").data("info"));
+		const plugin = $(this).closest(".plugin");
+		window.electron.handlePlugin(
+			"configure",
+			plugin.data("info")
+		);
 	});
 </script>
 </html>

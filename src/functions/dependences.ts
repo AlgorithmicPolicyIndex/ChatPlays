@@ -63,7 +63,7 @@ async function checkPythonVersion() {
 		});
 
 		const installs = missingDeps.map(dep => {
-			const out = execSync(`pip install ${dep == "PIL" ? "pillow" : dep}`, { encoding: "utf8" }).trim();
+			const out = execSync(`pip install ${dep}`, { encoding: "utf8" }).trim();
 			if (out.includes("satisfied"))
 				return `${dep}: Already Satisfied`;
 			else if (out.includes("No Matching Distribution")) {

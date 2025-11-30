@@ -4,7 +4,7 @@ import {PluginInfo} from "../functions/plugins";
 
 const db = new JsonDB(new Config("JSON/settings", true, true, "/"));
 
-type Settings = {
+export type Settings = {
 	"brb": boolean,
 	"chatWidth": string,
 	"chatHeight": string,
@@ -21,9 +21,7 @@ type Settings = {
 	"gamePath": string,
 	"playsChance": string,
 	"playtime": string,
-	"Plugins": {
-		"Enabled": PluginInfo[],
-	},
+	"Plugins": PluginInfo[],
 	"twitchID": string,
 	"userId": string | undefined,
 	"youtubeID": string,
@@ -55,9 +53,7 @@ export async function updateData(data: any) {
 			"gamePath": "",
 			"playsChance": "1",
 			"playtime": "30",
-			"Plugins": {
-				"Enabled": []
-			},
+			"Plugins": [],
 			"twitchID": "",
 			"userId": "",
 			"youtubeID": "",

@@ -40,7 +40,12 @@ port.on("message", async (message) => {
 function saveToTemp(buffer: Buffer, title: string) {
 	const tmp = path.join(os.tmpdir(), "ChatPlays");
 	if (!fs.existsSync(tmp)) fs.mkdirSync(tmp);
-	const tmpPath = path.join(tmp, `${title.replace(new RegExp('[<>:"/\|?*]'), "")}.png`);
-	fs.writeFileSync(tmpPath, buffer);
+	let tmpPath = path.join(tmp, `${title.replace(new RegExp('[<>:"/\|?*]'), "")}.png`);
+	try {
+		fs.writeFileSync(tmpPath, buffer);
+	} catch {
+		tmpPath = path.join(__dirname, "placeholder.png");
+	}
+
 	return `file://${tmpPath}`;
 }

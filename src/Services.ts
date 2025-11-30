@@ -5,10 +5,14 @@ import { EventEmitter } from "node:events";
 import {getData} from './JSON/db';
 import electron, {BrowserWindow} from 'electron';
 import path from 'path';
+import { config } from "dotenv";
+config({ path: path.join(__dirname, "..", "secrets", ".env") });
 import {clearTimeout} from 'node:timers';
+import {initBotTokens} from "./bot";
 
 interface Data {
 	Channel: string;
+	useBot?: boolean;
 }
 interface OBSData {
 	Port: string;
@@ -28,16 +32,37 @@ export abstract class Service<service, Data extends serviceNames> {
 }
 
 class Twitch extends Service<Client, "Twitch"> {
+
 	async connect(data: Data): Promise<{ success: boolean }> {
 		if (!data.Channel) return { success: false };
-		this.client = new Client({
-			connection: {
-				reconnect: true,
-				secure: true
-			},
-			channels: [ data.Channel ]
-		});
-		
+
+		if (data.useBot) {
+			const token = await initBotTokens();
+
+			this.client = new Client({
+				options: {
+					clientId: process.env.CLIENT_ID
+				},
+				identity: {
+					username: process.env.BOT_USERNAME,
+					password: `oauth:${token}`,
+				},
+				connection: {
+					reconnect: true,
+					secure: true
+				},
+				channels: [ data.Channel ]
+			});
+		} else {
+			this.client = new Client({
+				connection: {
+					reconnect: true,
+					secure: true
+				},
+				channels: [ data.Channel ]
+			});
+		}
+
 		return new Promise(resolve => {
 			this.client?.connect();
 			this.client?.on("join", (_c, _u, self) => {
@@ -66,6 +91,7 @@ class Twitch extends Service<Client, "Twitch"> {
 			return { success: false };
 		}
 	}
+
 }
 
 class YouTube extends Service<LiveChat, "YouTube"> {

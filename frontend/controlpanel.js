@@ -15,10 +15,7 @@
 	"gamePath": "D:\\Coding_Projects\\ChatPlays\\out\\ChatPlays-win32-x64\\resources\\app.asar\\build\\games\\Destiny2.js",
 	"playsChance": "1",
 	"playtime": "30",
-	"Plugins": {
-		"Enabled": [],
-		"Disabled": []
-	},
+	"Plugins": [],
 	"twitchID": "",
 	"userId": "",
 	"youtubeID": "",
@@ -35,21 +32,9 @@ $('.close').on('click', function() {
 	$('.setting').each(function() {
 		const item = $(this).find("input, select");
 		const name = item.attr('name');
-		Enabled = [];
-		Disabled = [];
 
 		if (item.is(':checkbox')) {
 			Settings[name] = item.prop('checked');
-		} else if (name.includes("Plugs")) {
-			$(item).find("option").each(function() {
-				if (this.value === "") return true;
-				if (name === "enabledPlugs") {
-					Enabled.push(this.value);
-				} else if (name === "disabledPlugs") {
-					Disabled.push(this.value);
-				}
-			});
-			Settings["Plugins"] = { Enabled, Disabled };
 		} else {
 			Settings[name] = item.val();
 		}
@@ -62,21 +47,9 @@ $('.close').on('click', function() {
 $('.setting').on("change", function() {
 	const item = $(this).find("input, select");
 	const name = item.attr('name');
-	let Enabled = Settings.Plugins.Enabled ? [...Settings.Plugins.Enabled] : [];
-	let Disabled = Settings.Plugins.Disabled ? [...Settings.Plugins.Disabled] : [];
 
 	if (item.is(':checkbox')) {
 		Settings[name] = item.prop('checked');
-	} else if (name.includes("Plugs")) {
-		$(item).find("option").each(function() {
-			if (this.value === "") return true;
-			if (name === "enabledPlugs" && !Enabled.includes(this.value)) {
-				Enabled.push(this.value);
-			} else if (name === "disabledPlugs" && !Disabled.includes(this.value)) {
-				Disabled.push(this.value);
-			}
-		});
-		Settings["Plugins"] = { Enabled, Disabled };
 	} else {
 		Settings[name] = item.val();
 	}
@@ -182,63 +155,6 @@ $('input[name="spawnPlugins"]').on("click", function() {
 	return window.electron.createWindow("pluginWindow");
 });
 
-// const enabledPlugins = $('select[name="enabledPlugs"]');
-// const disabledPlugins = $('select[name="disabledPlugs"]');
-// window.electron.pluginsUpdated(function(plugins) {
-// 	for (const plugin of plugins) {
-// 		const existsInEnabled = enabledPlugins.find(`option[value='${plugin}']`).length > 0;
-// 		const existsInDisabled = disabledPlugins.find(`option[value='${plugin}']`).length > 0;
-//
-// 		if (existsInEnabled)
-// 			window.electron.handlePlugin("unload", plugin);
-//
-// 		if (!existsInEnabled && !existsInDisabled)
-// 			if (Settings.Plugins.Enabled.includes(plugin))
-// 				enabledPlugins.append(`<option value='${plugin}'>${plugin}</option>`);
-// 			else
-// 				disabledPlugins.append(`<option value="${plugin}">${plugin}</option>`);
-// 	}
-//
-// 	$(".plugins option").each(function() {
-// 		const optionValue = $(this).val();
-// 		if (optionValue && !plugins.includes(optionValue))
-// 			$(this).remove();
-// 	});
-//
-// 	enabledPlugins.find("option").length > 1 ? enabledPlugins.prop("disabled", false) : enabledPlugins.prop("disabled", true);
-// 	disabledPlugins.find("option").length > 1 ? disabledPlugins.prop("disabled", false) : disabledPlugins.prop("disabled", true);
-// });
-// disabledPlugins.on("change", function() {
-// 	handlePlugins(disabledPlugins, this);
-// });
-// enabledPlugins.on("change", function() {
-// 	handlePlugins(enabledPlugins, this);
-// });
-//
-// function handlePlugins(menu, obj) {
-// 	const other = menu === disabledPlugins ? enabledPlugins : disabledPlugins;
-// 	const selected = $(obj).find(":selected");
-// 	selected.appendTo(other);
-//
-// 	if (menu === disabledPlugins) {
-// 		// Enabled Plugin
-// 		Settings.Plugins.Disabled = Settings.Plugins.Disabled.filter(plugin => plugin !== selected.val());
-// 		Settings.Plugins.Enabled.push(selected.val());
-// 		window.electron.handlePlugin("load", selected.val());
-// 	} else {
-// 		// Disabled Plugin
-// 		Settings.Plugins.Enabled = Settings.Plugins.Enabled.filter(plugin => plugin !== selected.val());
-// 		Settings.Plugins.Disabled.push(selected.val());
-// 		window.electron.handlePlugin("unload", selected.val());
-// 	}
-//
-// 	$(other).prop("disabled", other[0].options.length <= 1);
-// 	$(menu).prop("disabled", menu[0].options.length <= 1);
-//
-// 	$(other).val("");
-// 	return $(menu).val("");
-// }
-
 window.electron.getAudioInputs((i) => {
 	for (const input of i) {
 		let newInput = document.createElement("option");
@@ -269,7 +185,16 @@ $('.service').on("click", async function() {
 	let disconnect = $(`.service[data-service="${service}"]:last`);
 	let errorMessage = $(`.error-message.${service}`);
 	let data = $(`.${service}`);
-	let values = data.map((item, element) => $(element).val()).get();
+
+	let values = data.map((index, element) => {
+		const $el = $(element);
+
+		if ($el.is(':checkbox')) {
+			return $el.is(':checked');
+		}
+
+		return $el.val();
+	}).get();
 
 	try {
 		let response = await window.electron.handleService(service, values);

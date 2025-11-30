@@ -2,46 +2,65 @@
 import fs from "node:fs";
 import {BrowserWindow} from "electron";
 
-export type PluginType = "application" | "chat" | "service" | "music"
+export type PluginType = "application" | "chat" | "music" | "external";
 
 export interface PluginInfo {
 	author: string;
 	name: string;
-	fileName: string;
+	dirName: string;
 	description: string;
 	type: PluginType;
-	init: MutationObserver;
-	Options?: {
-		configurable: boolean;
+	init: () => any;
+	options?: {
+		configurable?: boolean;
 	}
-	pathName: string;
 }
 
 export class Plugins {
 	private readonly pluginDir = path.resolve(__dirname, "..", "..", "plugins");
 
 	async get(): Promise<PluginInfo[]> {
-		const pluginsFiles = fs.readdirSync(this.pluginDir).filter(file => {
-			return file.endsWith(".js");
-		});
-
-		// TODO: Sort enabled and disabled plugins
-		return pluginsFiles.map((file) => {
-			return require(path.join(this.pluginDir, file)).info;
-		});
+		return (await Promise.all(
+			fs.readdirSync(this.pluginDir, { withFileTypes: true })
+				.filter(d => d.isDirectory())
+				.map(d => {
+					const plugin = require(path.join(this.pluginDir, d.name, "index.js")).info;
+					return isPluginInfo(plugin) ? plugin : null;
+				})
+		)).filter(Boolean) as PluginInfo[];
 	}
 
-	enable(info: PluginInfo, window: BrowserWindow) {
-		if (!window) throw new Error(`Plugin not available. Please make sure the correct window is open.\n${info.type}`);
+	enable(info: PluginInfo, window?: BrowserWindow) {
+		if (!window) return;
 
-		window.webContents.send("loadPlugin", info);
+		window!.webContents.send("loadPlugin", info);
 	}
-	disable(info: PluginInfo, window: BrowserWindow) {
-		if (!window) throw new Error(`Plugin not available. Please make sure the correct window is open.\n${info.type}`);
+	disable(info: PluginInfo, window?: BrowserWindow) {
+		if (!window) return;
 
-		window.webContents.send("unloadPlugin", info);
+		window!.webContents.send("unloadPlugin", info);
 	}
 	// configure(info: PluginInfo) {
 	//
 	// }
+}
+
+function isPluginInfo(obj: any): obj is PluginInfo {
+	const template: Partial<Record<keyof PluginInfo, true>> = {
+		author: true,
+		name: true,
+		dirName: true,
+		description: true,
+		type: true,
+		init: true,
+		options: true,
+	};
+
+	for (const key in template) {
+		if (!(key in obj)) return false;
+
+		if (key === "init" && typeof obj.init !== "function") return false;
+	}
+
+	return !(obj.Options && typeof obj.Options.configurable !== "boolean" && obj.Options.configurable !== undefined);
 }

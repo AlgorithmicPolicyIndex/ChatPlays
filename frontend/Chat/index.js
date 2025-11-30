@@ -1,10 +1,5 @@
 ﻿window.electron.settingsOnLoad(async settings => {
 	if (settings.theme !== "default") await changeCSS(settings.theme, settings.name);
-	if (settings.Plugins.Enabled.length > 0) {
-		for (const plugin of settings.Plugins.Enabled) {
-			loadPlugin(plugin);
-		}
-	}
 	Settings = settings;
 });
 
@@ -114,15 +109,15 @@ function strToEmote(message, emote, replacements) {
 }
 
 window.electron.loadPlugin(function(plugin) {
-	if (loadedPlugins[plugin.fileName]) return;
+	if (loadedPlugins[plugin.dirName]) return;
 
-	window[plugin.fileName] = plugin;
+	window[plugin.dirName] = plugin;
 
-	const scriptPath = `../../plugins/${plugin.fileName}.js`;
+	const scriptPath = `../../plugins/${plugin.dirName}/index.js`;
 	import(scriptPath).then(mod => {
 		if (mod && typeof mod.info.init === 'function') {
-			loadedPlugins[plugin.fileName] = { observer: mod.info.init() };
-			console.log(`${plugin.fileName} loaded.`);
+			loadedPlugins[plugin.dirName] = { observer: mod.info.init() };
+			console.log(`${plugin.dirName} loaded.`);
 		} else {
 			console.error(`Plugin ${plugin.name} failed to init (no init() export).`);
 		}
@@ -133,11 +128,11 @@ window.electron.loadPlugin(function(plugin) {
 });
 
 window.electron.unloadPlugin(function(plugin) {
-	const entry = loadedPlugins[plugin.fileName];
+	const entry = loadedPlugins[plugin.dirName];
 	if (!entry) return;
 
 	entry.observer.disconnect();
-	delete loadedPlugins[plugin.fileName];
+	delete loadedPlugins[plugin.dirName];
 	console.log(`Plugin ${plugin.name} disabled.`);
 });
 
@@ -162,8 +157,8 @@ async function changeCSS(theme, channel) {
 			.attr("href", `themes/${theme}/${theme}.css`)
 	);
 
-	if (!Settings.Plugins.Enabled) return;
-	for (const plugin of Settings.Plugins.Enabled) {
+	if (!Settings.Plugins) return;
+	for (const plugin of Settings.Plugins) {
 		if (!window.loadedPlugins[plugin] && typeof window[plugin].init !== 'function') return;
 		window[plugin].init();
 	}

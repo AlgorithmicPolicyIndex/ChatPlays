@@ -10,7 +10,8 @@ import {PythonShell} from "python-shell";
 import ffmpeg from "fluent-ffmpeg"
 import * as os from "node:os";
 import {serviceData, serviceNames} from "../Services";
-import { Plugins } from "./plugins";
+import {PluginInfo, Plugins} from "./plugins";
+import {MessageBus} from "./messageBus";
 
 type windowType = "chatWindow" | "chatSettings" | "musicWindow" | "pluginWindow";
 let worker: Worker | null = null;
@@ -65,14 +66,18 @@ export class ipcManager {
 				break;
 			case "YouTube":
 			case "Twitch":
-				data = {Channel: Data[0]} as serviceData[T];
+				console.log(Data)
+				data = {
+					Channel: Data[0],
+					useBot: Data[1] === "true",
+				} as serviceData[T];
 				break;
 			default:
 				console.error(new Error("Unknown Service Type."));
 				return {success: false};
 		}
 
-		if (Object.values(data).some(v => !v)) {
+		if (Object.values(data).some(v => v === null)) {
 			return {success: false};
 		}
 
@@ -133,29 +138,46 @@ export class ipcManager {
 		this.mainWindow.webContents.send("sendID", id, name);
 	}
 	async handlePlugin(_evt: any, func: string, info: any) {
-		const type = info.type === "chat" ? this.windows["chatWindow"]
-			: info.type === "application" || info.type === "service" ? this.mainWindow : this.windows["musicWindow"];
 		const settings = await getData();
-		const plugin = settings.Plugins.Enabled.find((plugin) => plugin.name == info.name);
+		const plugin = settings.Plugins.find((plugin) => plugin.name == info.name);
 
 		switch (func) {
 		case "enable":
 			if (plugin) return;
 
-			settings.Plugins.Enabled.push(info);
-			this.Plugins.enable(info, type!);
+			if (info.type !== "external") {
+				settings.Plugins.push(info);
+			}
+			
+			await this.handleType(true, info);
 			break;
 		case "disable":
-			if (!plugin) return;
-
-			settings.Plugins.Enabled.splice(settings.Plugins.Enabled.indexOf(info), 1);
-			this.Plugins.disable(info, type!);
+			settings.Plugins.splice(settings.Plugins.indexOf(info), 1);
+			await this.handleType(false, info);
 			break;
 		// case "configure":
 		// 	this.Plugins.configure(info);
 		// 	break;
 		}
 		await updateData(settings);
+	}
+	private async handleType(Enable: boolean, info: PluginInfo) {
+		switch (info.type) {
+			case "external":
+				const pluginOptions = {
+					Enable,
+					MessageBus
+				};
+
+				(await import(path.join(__dirname, "..", "..", "plugins", info.dirName, "index.js"))).info.init({ ...pluginOptions });
+				break;
+			case "chat":
+				const chat = this.windows["chatWindow"];
+				if (Enable)
+					this.Plugins.enable(info, chat);
+				else
+					this.Plugins.disable(info, chat);
+		}
 	}
 	async closePopup(event: any) {
 		const win = BrowserWindow.fromWebContents(event.sender);
@@ -248,7 +270,9 @@ export class ipcManager {
 			Math.round(mainBounds.x + (mainBounds.width - 400) / 2),
 			Math.round(mainBounds.y + (mainBounds.height - 575) / 2)
 		];
+
 		const newWindow = new BrowserWindow({
+			title: "new",
 			width: 400, height: 575,
 			x, y, show: false, frame: false,
 			roundedCorners: false,
@@ -259,6 +283,7 @@ export class ipcManager {
 				preload: path.join(__dirname, "..", "controlpanel.js")
 			}
 		});
+
 		const window = this.windows[type];
 
 		switch (type) {
@@ -294,7 +319,15 @@ export class ipcManager {
 			newWindow.setResizable(false);
 			newWindow.title = "ChatPlays - Chat";
 			await newWindow.loadFile(path.resolve(__dirname, "..", "..", "frontend", "Chat", "index.html"));
-			newWindow.on("ready-to-show", function() { newWindow.webContents.send("chatSettings", settings); });
+			newWindow.on("ready-to-show", function() {
+				newWindow.webContents.send("chatSettings", settings);
+				const plugins = settings.Plugins.filter(plugin => plugin.type === "chat");
+				if (plugins) {
+					for (const plugin of plugins) {
+						newWindow.webContents.send("loadPlugin", plugin);
+					}
+				}
+			});
 			newWindow.show();
 			break;
 		case "musicWindow":
@@ -340,7 +373,7 @@ export class ipcManager {
 
 			await newWindow.loadFile(path.resolve(__dirname, "..", "..", "frontend", "plugins.html"));
 			newWindow.once("ready-to-show", async function() {
-				newWindow.webContents.send("sendPlugins", JSON.stringify(plugins));
+				newWindow.webContents.send("sendPlugins", JSON.stringify(plugins), await getData());
 			});
 			newWindow.show();
 			break;
@@ -359,7 +392,7 @@ let oldSong: string = "";
 function fetchMedia(musicWindow: BrowserWindow) {
 	if (worker) return worker.postMessage('getCurrentMedia');
 
-	worker = new Worker(path.join(__dirname, "..", 'SMTCWorker.js'));
+	worker = new Worker(path.join(__dirname, "..", "Music", 'SMTCWorker.js'));
 
 	worker.on('message', async (msg: any) => {
 		switch (msg.type) {
@@ -370,6 +403,7 @@ function fetchMedia(musicWindow: BrowserWindow) {
 					return musicWindow.webContents.send("getMusic", msg.result);
 				}
 
+				console.log("Trimming Silent Video");
 				oldSong = msg.result.Title;
 				ffmpeg(silentAudio)
 				.setStartTime("00:00:00")
