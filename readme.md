@@ -1,6 +1,14 @@
 # Ackknowledgement
 I will attempt to continue working on this project, but come March, maybe earlier, I will be gone, at minimum, for 9 months.
 
+
+
+This is a personal Project of mine (check below). I'm realizing there's a lot of things I could do better and in fact want to do better. Such as services.  
+My service manager is hardcoded for Twitch, Youtube and OBS. I want to make this a better generic and format so that plugins could introduce new services to the service handler without any errors.    
+I plan on slowly piecing together a newer version. It will specifically be made to be compilable, so I can make an executable. Everything will be more modular and actually properally documented.  
+To go with the better documentation, with plugins, I plan on having a well documented section of exposed functions, such as right now, the MessageBus for plugins, that passes messages from Twitch out that plugins can interact with, see [Mine Sweeper (WIP)](./plugins/minesweeper/index.js)  
+
+
 # ChatPlays
 Head over to the [Wiki](https://github.com/AlgorithmicPolicyIndex/ChatPlays/wiki) to read more and specific things about Controls and Settings!  
 
@@ -15,7 +23,9 @@ I hope to see what people come up with for features, themes and plugins for the 
 # Work Load / Plans
   - TWITCH
       - Channel Point rewards
-        - Just need to write a path for Channel Point rewards, similar to ChatPlays control files
+        - Make chatplays start reward and code to make it work
+        - Sound alerts? Might also look into Voicemod API, maybe make it customizable and find a way to get other soundboards to be dynamically handled, if possible.
+          - Sounds hard, we'll see as time goes on.
       - Follower Request (as it's not a part of the API)
         - Chat Bot completed, need to handle follower popup 
   - YOUTUBE

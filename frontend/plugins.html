@@ -6,6 +6,7 @@
 	<link id="css" rel="stylesheet" href="./controlpanel.css">
 </head>
 <body>
+<div class="close"><u>X</u></div>
 <ul class="plugins" style="list-style-type: none;"></ul>
 </body>
 <style>
@@ -21,6 +22,10 @@ button {
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script>
+	$('.close').on('click', async function() {
+		return window.close();
+	});
+
 	window.electron.getPlugins((pluginData, Settings) => {
                 const plugins = JSON.parse(pluginData);
 
